@@ -21,9 +21,10 @@ func ErrorHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func IndexHandler(w http.ResponseWriter, r *http.Request) {
-	tplt := template.Must(template.ParseFiles("./static/index.html"))
+	files := []string{"./static/index.html", "./static/base.html"}
+	tplt := template.Must(template.ParseFiles(files...))
 
-	err := tplt.Execute(w, interface{}(nil))
+	err := tplt.ExecuteTemplate(w, "base", tplt)
 	if err != nil {
 		log.Fatal(err)
 	}

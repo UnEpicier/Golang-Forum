@@ -1,10 +1,8 @@
 package main
 
-// Make a http server using templates.
-
 import (
 	"fmt"
-	f "forum"
+	forum "forum"
 	"log"
 	"net/http"
 	"os"
@@ -17,8 +15,8 @@ func main() {
 	http.Handle("/js/", http.StripPrefix("/js/", http.FileServer(http.Dir("./static/js"))))
 
 	// Handle Pages templates + 404 error
-	http.HandleFunc("/", f.ErrorHandler)
-	http.HandleFunc("/index", f.IndexHandler)
+	http.HandleFunc("/", forum.ErrorHandler)
+	http.HandleFunc("/index", forum.IndexHandler)
 
 	// Start the server
 	port := os.Getenv("PORT")
@@ -28,7 +26,7 @@ func main() {
 
 	fmt.Println("Server started: http://localhost:" + port)
 
-	err := http.ListenAndServe(":"+port, nil)
+	err := http.ListenAndServe("localhost:"+port, nil)
 	if err != nil {
 		log.Fatal("Unable to start the server:\n", err)
 	}

@@ -1,0 +1,21 @@
+.landing {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+}
+
+.title {
+	font-size: 3rem;
+	font-weight: 300;
+	color: #E79E4F;
+}
+
+.btn {
+	display: block;
+	padding: 18px 30px;
+	border-radius: 10px;
+	background-color: #A05344;
+	text-decoration: none;
+	color: #E79E4F;
+}
