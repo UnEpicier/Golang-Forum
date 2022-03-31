@@ -1,0 +1,107 @@
+body {
+	display: flex;
+	justify-content: center;
+	align-items: flex-start;
+	padding-top: 100px;
+}
+
+.profile {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	padding: 20px 40px;
+	width: 95%;
+	max-width: 600px;
+	border: 1px solid #A05344;
+	border-radius: 10px;
+	background-color: #734046;
+}
+
+.username {
+	font-size: 2rem;
+	font-weight: 300;
+	color: #E79E4F;
+}
+
+.settings {
+	width: 100%;
+}
+
+.row {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	width: 100%;
+}
+
+.title {
+	text-align: center;
+	font-size: 1.5rem;
+}
+
+.subtitle {
+	align-self: flex-start;
+	margin-top: 30px;
+	margin-bottom: 15px;
+	font-size: 1.25rem;
+	color: #E79E4F;
+}
+
+.input {
+    margin: 0 0 15px;
+    padding: 15px;
+    width: 100%;
+    border: 0;
+    border-radius: 5px;
+    background: #A05344;
+    font-size: 1rem;
+    color: #bfbfbf;
+    outline: 0;
+	transition: background-color .3s ease;
+}
+
+.input::placeholder{
+    color: #bfbfbf;
+}
+  
+.input:focus {
+    background: #bb6f60;
+}
+
+.btn {
+    padding: 15px;
+    width: 100%;
+    border: 0;
+    border-radius: 5px;
+    background: #E79E4F;
+    font-size: 14px;
+    text-transform: uppercase;
+    color: #321F28;
+    outline: 0;
+    transition: all 0.3 ease;
+    cursor: pointer;
+}
+  
+.btn:active {
+    background: #E79E4F;
+}
+
+.danger {
+	position: relative;
+	display: block;
+	margin: 40px 0;
+	width: 100%;
+	border-top: 2px solid #FD5D5D;
+	border-radius: 2px;
+}
+
+.danger::after {
+	content: attr(data-text);
+	position: absolute;
+	top: 0;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	padding: 0 10px;
+	background-color: #734046;
+	color: #FD5D5D;
+}

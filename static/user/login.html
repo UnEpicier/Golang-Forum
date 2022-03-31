@@ -1,0 +1,18 @@
+{{ define "header"}}
+
+<title>Login | Forum</title>
+<link rel="stylesheet" href="/css/user/login.css">
+
+{{ end }}
+
+{{ define "body"}}
+
+<form class="form">
+	<i class="icon fas fa-lock"></i>
+	<input type="email" name="email" placeholder="Email" required pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$"
+		required />
+	<input type="password" name="psswd" placeholder="Password" required />
+	<button>login</button>
+</form>
+
+{{ end }}

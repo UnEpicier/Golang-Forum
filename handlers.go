@@ -29,3 +29,33 @@ func IndexHandler(w http.ResponseWriter, r *http.Request) {
 		log.Fatal(err)
 	}
 }
+
+func LoginHandler(w http.ResponseWriter, r *http.Request) {
+	files := []string{"./static/user/login.html", "./static/base.html"}
+	tplt := template.Must(template.ParseFiles(files...))
+
+	err := tplt.ExecuteTemplate(w, "base", tplt)
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
+func RegisterHandler(w http.ResponseWriter, r *http.Request) {
+	files := []string{"./static/user/register.html", "./static/base.html"}
+	tplt := template.Must(template.ParseFiles(files...))
+	
+	err := tplt.ExecuteTemplate(w, "base", tplt)
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
+func ProfileHandler(w http.ResponseWriter, r *http.Request) {
+	files := []string{"./static/user/profile.html", "./static/base.html"}
+	tplt := template.Must(template.ParseFiles(files...))
+
+	err := tplt.ExecuteTemplate(w, "base", tplt)
+	if err != nil {
+		log.Fatal(err)
+	}
+}

@@ -1,0 +1,45 @@
+{{ define "header"}}
+
+<title>Profile | Forum</title>
+<link rel="stylesheet" href="/css/user/profile.css">
+
+{{ end }}
+
+{{ define "body"}}
+
+<div class="profile">
+	<div class="row">
+		<p class="username">Username</p>
+	</div>
+	<div class="settings">
+		<p class="title">Settings</p>
+		<form method="POST" class="row">
+			<p class="subtitle">Change Username</p>
+			<input type="text" name="username" class="input" placeholder="Current username" required>
+			<input type="text" name="newusername" class="input" placeholder="New username" required>
+			<input type="submit" class="btn" value="Save">
+		</form>
+		<div class="sep"></div>
+		<form method="POST" class="row">
+			<p class="subtitle">Change Email</p>
+			<input type="email" name="oldemail" class="input" placeholder="Current email" required>
+			<input type="email" name="newemail" class="input" placeholder="New email" required>
+			<input type="email" name="oldemail" class="input" placeholder="Confirm new email" required>
+			<input type="submit" class="btn" value="Save">
+		</form>
+		<div class="sep"></div>
+		<form method="POST" class="row">
+			<p class="subtitle">Change Password</p>
+			<input type="password" name="oldpswd" class="input" placeholder="Current email" required>
+			<input type="password" name="newpswd" class="input" placeholder="New email" required>
+			<input type="password" name="confpswd" class="input" placeholder="Confirm new email" required>
+			<input type="submit" class="btn" value="Save">
+		</form>
+		<p class="danger" data-text="Danger Zone"></p>
+		<form method="POST" class="row">
+			<button class="btn" type="submit">Delete Account</button>
+		</form>
+	</div>
+</div>
+
+{{ end }}
