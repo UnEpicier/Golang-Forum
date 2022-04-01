@@ -1,72 +1,75 @@
 body {
-    display: flex;
-    justify-content: center;
-    padding-top: 100px;
+	display: flex;
+	justify-content: center;
+	padding-top: 100px;
 }
 
 .container {
-    margin-bottom: 50px;
-    padding: 30px;
-    width: 95%;
-    max-width: 800px;
-    border-radius: 10px;
-    border: 1px solid #A05344;
-    background: #734046;
+	margin-bottom: 50px;
+	padding: 30px;
+	width: 95%;
+	max-width: 800px;
+	border-radius: 10px;
+	border: 1px solid #A05344;
+	background: #734046;
 }
 
 .topic {
-    margin-bottom: 30px;
-    padding: 20px;
-    border-radius: 10px;
-    background: #321F28;
+	margin-bottom: 30px;
+	padding: 20px;
+	border-radius: 10px;
+	background: #321F28;
 }
 
 .comment {
-    padding: 20px;
-    border-radius: 10px;
-    background: #593747;
+	padding: 20px;
+	border-radius: 10px;
+	background: #593747;
 }
 
 .comment:not(:last-child) {
-    margin-bottom: 30px;
+	margin-bottom: 30px;
 }
 
 .info {
-    font-size: 1.2rem;
-    color: #E79E4F;
+	font-size: 1.2rem;
+	color: #E79E4F;
 }
 
 .infocmt {
-    font-size: 1.1rem;
-    color: #eaac69;
+	font-size: 1.1rem;
+	color: #eaac69;
 }
 
 .content {
-    margin: 0 10px;
-    padding-top: 10px;
-    font-size: 1.1rem;
-    color: #eaac69;
+	margin: 0 10px;
+	padding-top: 10px;
+	font-size: 1.1rem;
+	color: #eaac69;
 }
 
 .cmtcontent {
-    margin: 0 10px;
-    padding-top: 10px;
-    font-size: 1rem;
-    color: #ecb478;
+	margin: 0 10px;
+	padding-top: 10px;
+	font-size: 1rem;
+	color: #ecb478;
 }
 
 .like {
-    color: #E79E4F;
-}
-
-.dislike {
-    color: #E79E4F;
+	color: #E79E4F;
 }
 
 .likecmt {
-    color: #ecb478;
+	color: #ecb478;
 }
 
-.dislikecmt {
-    color: #ecb478;
+.like> :first-child,
+.likecmt> :first-child {
+	margin: 5px 10px 0;
+}
+
+
+.like>*,
+.likecmt>* {
+	cursor: pointer;
 }

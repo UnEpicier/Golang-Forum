@@ -3,7 +3,6 @@ body {
 	justify-content: center;
 	align-items: flex-start;
 	padding-top: 100px;
-	;
 }
 
 .profile {
@@ -20,11 +19,9 @@ body {
 /* Tabs Menu */
 
 .tabs {
-	position: relative;
 	display: flex;
 	flex-direction: column;
-	width: 25%;
-	max-width: 200px;
+	width: 200px;
 	border-right: 1px solid #af6617;
 }
 
@@ -52,6 +49,16 @@ body {
 	color: #E79E4F;
 }
 
+@media screen and (max-width: 768px) {
+	.profile {
+		flex-direction: column;
+	}
+
+	.tabs {
+		width: 100%;
+		border-right: none;
+	}
+}
 
 
 
@@ -219,7 +226,8 @@ body {
 
 .title {
 	margin-top: 1rem;
-	font-size: 1.5rem;
+	font-size: 2rem;
+	font-weight: 300;
 	text-align: center;
 	color: #E79E4F;
 }
