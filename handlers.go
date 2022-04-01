@@ -30,6 +30,27 @@ func IndexHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+/*
+	FORUM
+*/
+func CategoriesHandler(w http.ResponseWriter, r *http.Request) {
+	files := []string{"./static/categories.html", "./static/base.html"}
+	tplt := template.Must(template.ParseFiles(files...))
+
+	err := tplt.ExecuteTemplate(w, "base", tplt)
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
+/*
+	ADMIN
+*/
+
+/*
+	USER
+*/
+
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	files := []string{"./static/user/login.html", "./static/base.html"}
 	tplt := template.Must(template.ParseFiles(files...))
@@ -43,7 +64,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	files := []string{"./static/user/register.html", "./static/base.html"}
 	tplt := template.Must(template.ParseFiles(files...))
-	
+
 	err := tplt.ExecuteTemplate(w, "base", tplt)
 	if err != nil {
 		log.Fatal(err)
