@@ -20,6 +20,7 @@ func main() {
 
 	// Forum
 	http.HandleFunc("/categories", forum.CategoriesHandler)
+	http.HandleFunc("/post", forum.PostHandler)
 
 	// Admin
 

@@ -1,1 +1,5 @@
 package forum
+
+func confirmPWD() {
+
+}

@@ -43,6 +43,16 @@ func CategoriesHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func PostHandler(w http.ResponseWriter, r *http.Request) {
+	files := []string{"./static/post/html", "./static/base.html"}
+	tplt := template.Must(template.ParseFiles(files...))
+
+	err := tplt.ExecuteTemplate(w, "base", tplt)
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
 /*
 	ADMIN
 */
