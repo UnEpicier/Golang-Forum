@@ -9,12 +9,15 @@
 
 <form class="form">
 	<i class="icon fas fa-user-plus"></i>
-	<input type="email" name="username" placeholder="Username" required />
-	<input type="email" name="email" placeholder="Email" required />
-	<input type="email" name="confemail" placeholder="Confirm Email" required />
-	<input type="password" name="passwd" placeholder="Password" required />
-	<input type="password" name="confpasswd" placeholder="Confirm Password" required />
-	<button>Sign up</button>
+	<input type="text" name="username" placeholder="Username" required autocomplete="off" />
+	<input type="email" name="email" placeholder="Email" required autocomplete="off" />
+	<input type="email" name="confemail" placeholder="Confirm Email" required autocomplete="off" />
+	<input type="password" id="passwd" placeholder="Password" required autocomplete="off" />
+	<input type="password" id="confpasswd" placeholder="Confirm Password" required
+		autocomplete="off" />
+	<span id="error"></span>
+	<button type="submit" id="button">Sign up</button>
 </form>
 
+<script type="text/javascript" src="../js/user/confirm.js"></script>
 {{ end }}

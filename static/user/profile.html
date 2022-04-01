@@ -8,11 +8,93 @@
 {{ define "body"}}
 
 <div class="profile">
-	<div class="infos">
-		<p class="username">Username</p>
-		<span class="role" id="admin">Admin</span>
+	<div class="tabs">
+		<button class="tab-btn active" onclick="toggleTab('profile')">Profile</button>
+		<button class="tab-btn" onclick="toggleTab('settings')">Settings</button>
 	</div>
-	<div class="settings">
+
+	<!-- Profile -->
+	<div class="tab" id="profile">
+		<div class="row">
+			<p class="username">{Username}</p>
+			<span class="role" id="admin">Admin</span>
+		</div>
+		<p class="email">{email}</p>
+		<p class="joined">Joined at: {dd/MM/YYYY}</p>
+		<p class="desc">
+			{description}
+		</p>
+
+		<div class="sep"></div>
+
+		<div class="posts">
+			<div class="post">
+				<div class="row">
+					<p class="post-title">{Title}</p>
+					<p class="date">{dd/MM/YYYY}</p>
+				</div>
+				<p class="content">{Content}</p>
+			</div>
+
+
+			<div class="post">
+				<div class="row">
+					<p class="post-title">{Title}</p>
+					<p class="date">{dd/MM/YYYY}</p>
+				</div>
+				<p class="content">{Content}</p>
+			</div>
+
+
+			<div class="post">
+				<div class="row">
+					<p class="post-title">{Title}</p>
+					<p class="date">{dd/MM/YYYY}</p>
+				</div>
+				<p class="content">{Content}</p>
+			</div>
+
+
+			<div class="post">
+				<div class="row">
+					<p class="post-title">{Title}</p>
+					<p class="date">{dd/MM/YYYY}</p>
+				</div>
+				<p class="content">{Content}</p>
+			</div>
+
+
+			<div class="post">
+				<div class="row">
+					<p class="post-title">{Title}</p>
+					<p class="date">{dd/MM/YYYY}</p>
+				</div>
+				<p class="content">{Content}</p>
+			</div>
+
+
+			<div class="post">
+				<div class="row">
+					<p class="post-title">{Title}</p>
+					<p class="date">{dd/MM/YYYY}</p>
+				</div>
+				<p class="content">{Content}</p>
+			</div>
+
+
+			<div class="post">
+				<div class="row">
+					<p class="post-title">{Title}</p>
+					<p class="date">{dd/MM/YYYY}</p>
+				</div>
+				<p class="content">{Content}</p>
+			</div>
+		</div>
+
+	</div>
+
+	<!-- Settings -->
+	<div class="tab hidden" id="settings">
 		<p class="title">Settings</p>
 		<form method="POST" class="row">
 			<p class="subtitle">Change Username</p>
@@ -44,5 +126,7 @@
 		</form>
 	</div>
 </div>
+
+<script src="/js/user/tabs.js"></script>
 
 {{ end }}

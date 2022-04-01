@@ -3,24 +3,91 @@ body {
 	justify-content: center;
 	align-items: flex-start;
 	padding-top: 100px;
+	;
 }
 
 .profile {
 	display: flex;
-	flex-direction: column;
-	align-items: center;
-	padding: 20px 40px;
+	margin-bottom: 35px;
 	width: 95%;
-	max-width: 600px;
+	max-width: 900px;
 	border: 1px solid #A05344;
 	border-radius: 10px;
 	background-color: #734046;
+	overflow: hidden;
 }
 
-.infos {
+/* Tabs Menu */
+
+.tabs {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	width: 25%;
+	max-width: 200px;
+	border-right: 1px solid #af6617;
+}
+
+.tab-btn {
+	display: block;
+	width: 100%;
+	height: 60px;
+	border: none;
+	border-bottom: 1px solid #af6617;
+	background-color: transparent;
+	font-size: 1.3rem;
+	color: #af6617;
+	font-weight: 300;
+	cursor: pointer;
+	transition: background-color .3s ease, color .3s ease;
+}
+
+.tab-btn:not(.active):hover {
+	background-color: #82484f;
+	color: #e18726;
+}
+
+.tab-btn.active {
+	background-color: #925159;
+	color: #E79E4F;
+}
+
+
+
+
+/* 
+	TABS
+*/
+.hidden {
+	display: none !important;
+}
+
+.tab {
+	flex-grow: 1;
+	display: flex;
+	flex-direction: column;
+	padding: 20px 40px;
+	height: 100%;
+}
+
+.sep {
+	display: block;
+	width: 100%;
+	height: 1px;
+	background-color: #333;
+}
+
+
+
+/*
+	PROFILE
+*/
+
+.row {
 	display: flex;
 	flex-direction: row;
 	align-items: center;
+	width: 100%;
 }
 
 .username {
@@ -49,11 +116,59 @@ body {
 	background-color: #FFB72B;
 }
 
-.settings {
+.email {
+	margin: 10px 0 15px;
+	font-size: 1.2rem;
+	font-weight: 300;
+	color: #E79E4F;
+}
+
+.joined {
+	margin-bottom: 20px;
+	font-size: .9rem;
+	font-weight: 300;
+	color: #ccc;
+}
+
+.desc {
+	font-size: 1.2rem;
+	font-weight: 300;
+	color: #ddd;
+}
+
+/* POST */
+.container {
+
+}
+
+.card {
+
+}
+
+.card-title {
+	font-size: 1.2rem;
+	font-weight: 300;
+	color: #E79E4F;
+}
+
+.date {
+
+}
+
+.content {
+
+}
+
+
+/*
+	SETTINGS
+*/
+
+.tab#settings {
 	width: 100%;
 }
 
-.row {
+.tab#settings .row {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
@@ -76,42 +191,42 @@ body {
 }
 
 .input {
-    margin: 0 0 15px;
-    padding: 15px;
-    width: 100%;
-    border: 0;
-    border-radius: 5px;
-    background: #A05344;
-    font-size: 1rem;
-    color: #bfbfbf;
-    outline: 0;
+	margin: 0 0 15px;
+	padding: 15px;
+	width: 100%;
+	border: 0;
+	border-radius: 5px;
+	background: #A05344;
+	font-size: 1rem;
+	color: #bfbfbf;
+	outline: 0;
 	transition: background-color .3s ease;
 }
 
-.input::placeholder{
-    color: #bfbfbf;
+.input::placeholder {
+	color: #bfbfbf;
 }
-  
+
 .input:focus {
-    background: #bb6f60;
+	background: #bb6f60;
 }
 
 .btn {
-    padding: 15px;
-    width: 100%;
-    border: 0;
-    border-radius: 5px;
-    background: #E79E4F;
-    font-size: 14px;
-    text-transform: uppercase;
-    color: #321F28;
-    outline: 0;
-    transition: all 0.3 ease;
-    cursor: pointer;
+	padding: 15px;
+	width: 100%;
+	border: 0;
+	border-radius: 5px;
+	background: #E79E4F;
+	font-size: 14px;
+	text-transform: uppercase;
+	color: #321F28;
+	outline: 0;
+	transition: all 0.3 ease;
+	cursor: pointer;
 }
-  
+
 .btn:active {
-    background: #E79E4F;
+	background: #E79E4F;
 }
 
 .danger {
