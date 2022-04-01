@@ -47,6 +47,7 @@
 	width: 100%;
 	height: max-content;
 	background-color: #734046;
+	user-select: none;
 }
 
 .nav-title {
@@ -106,6 +107,7 @@
 	font-size: 1rem;
 	text-align: center;
 	text-decoration: none;
+	transition: background-color .3s ease;
 }
 
 .nav-btn.primary {
@@ -113,8 +115,16 @@
 	color: #E79E4F;
 }
 
+.nav-btn.primary:hover {
+	background-color: #b76656;
+}
+
 .nav-btn.secondary {
 	color: #E79E4F;
+}
+
+.nav-btn.secondary:hover {
+	background-color: #925159;
 }
 
 @media screen and (max-width: 992px) {
