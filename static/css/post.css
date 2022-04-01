@@ -54,3 +54,19 @@ body {
     font-size: 1rem;
     color: #ecb478;
 }
+
+.like {
+    color: #E79E4F;
+}
+
+.dislike {
+    color: #E79E4F;
+}
+
+.likecmt {
+    color: #ecb478;
+}
+
+.dislikecmt {
+    color: #ecb478;
+}
