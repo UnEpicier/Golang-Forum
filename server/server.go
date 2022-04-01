@@ -17,6 +17,13 @@ func main() {
 	// Handle Pages templates + 404 error
 	http.HandleFunc("/", forum.ErrorHandler)
 	http.HandleFunc("/index", forum.IndexHandler)
+
+	// Forum
+	http.HandleFunc("/categories", forum.CategoriesHandler)
+
+	// Admin
+
+	// User
 	http.HandleFunc("/user/login", forum.LoginHandler)
 	http.HandleFunc("/user/register", forum.RegisterHandler)
 	http.HandleFunc("/user/profile", forum.ProfileHandler)
