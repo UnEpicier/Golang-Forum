@@ -5,10 +5,10 @@
 }
 
 body {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	padding-top: 100px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 100px;
 }
 
 .title {
@@ -16,7 +16,12 @@ body {
     color: #E79E4F;
     font-size: 3em;
 }
-  
+
+.error {
+    color: #FD5D5D;
+    font-size: 1em;
+}
+
 .form {
     z-index: 1;
     position: relative;
@@ -27,7 +32,7 @@ body {
     background: #734046;
     text-align: center;
 }
-  
+
 .form input {
     margin: 0 0 15px;
     padding: 15px;
@@ -38,17 +43,17 @@ body {
     font-size: 1rem;
     color: #bfbfbf;
     outline: 0;
-	transition: background-color .3s ease;
+    transition: background-color .3s ease;
 }
 
-.form input::placeholder{
+.form input::placeholder {
     color: #bfbfbf;
 }
-  
+
 .form input:focus {
     background: #bb6f60;
 }
-  
+
 .form button {
     padding: 15px;
     width: 100%;
@@ -61,13 +66,9 @@ body {
     outline: 0;
     transition: all 0.3 ease;
     cursor: pointer;
+    margin-bottom: 1em;
 }
-  
+
 .form button:active {
     background: #E79E4F;
-}
-  
-.form span {
-    font-size: 75px;
-    color: #4b6cb7;
 }

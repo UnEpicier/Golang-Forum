@@ -6,7 +6,22 @@ const error = document.getElementById('error')
 confirm_password.addEventListener("input", () => {
   if (password.value != confirm_password.value) {
     button.disabled = true
-    error.innerHTML = "Vos deux mots de passe sont différents"
+    error.innerHTML = "The passwords are not match"
+  } else {
+    button.disabled = false
+    error.innerHTML = ""
+  }
+})
+
+
+const email = document.getElementById("email")
+const confirm_email = document.getElementById("confemail");
+console.log(confirm_email)
+
+confirm_email.addEventListener("input", () => {
+  if (email.value != confirm_email.value) {
+    button.disabled = true
+    error.innerHTML = "The emails are not match"
   } else {
     button.disabled = false
     error.innerHTML = ""
