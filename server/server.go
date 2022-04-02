@@ -28,6 +28,7 @@ func main() {
 	http.HandleFunc("/user/login", forum.LoginHandler)
 	http.HandleFunc("/user/register", forum.RegisterHandler)
 	http.HandleFunc("/user/profile", forum.ProfileHandler)
+	http.HandleFunc("/user/logout", forum.LogoutHandler)
 
 	// Start the server
 	port := os.Getenv("PORT")

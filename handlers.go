@@ -178,16 +178,14 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 
-		fmt.Println(db_email == email, CheckPasswordhash(password, db_password), db_email == email && CheckPasswordhash(password, db_password))
-
 		if db_email == email && CheckPasswordhash(password, db_password) {
 			cookie := http.Cookie{
 				Name:    "user",
 				Value:   db_uuid,
+				Path:    "/",
 				Expires: time.Now().Add(time.Hour * 24),
 			}
 			http.SetCookie(w, &cookie)
-			fmt.Println("Cookie set")
 			http.Redirect(w, r, "/user/profile", http.StatusSeeOther)
 		} else {
 			fmt.Println("Not working")
@@ -464,7 +462,6 @@ func ProfileHandler(w http.ResponseWriter, r *http.Request) {
 		db.Close()
 
 		page.Content = user
-		fmt.Println(page.Error)
 
 		err = tplt.Execute(w, page)
 		if err != nil {
@@ -473,4 +470,15 @@ func ProfileHandler(w http.ResponseWriter, r *http.Request) {
 	} else {
 		http.Redirect(w, r, "/user/login", http.StatusSeeOther)
 	}
+}
+
+func LogoutHandler(w http.ResponseWriter, r *http.Request) {
+	cookie := http.Cookie{
+		Name:    "user",
+		Value:   "",
+		Path:    "/",
+		Expires: time.Unix(0, 0),
+	}
+	http.SetCookie(w, &cookie)
+	http.Redirect(w, r, "/user/login", http.StatusSeeOther)
 }

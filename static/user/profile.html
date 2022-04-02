@@ -16,17 +16,22 @@
 
 	<!-- Profile -->
 	<div class="tab" id="profile">
-		<div class="row">
-			<p class="username">{{ .Content.Username }}</p>
-			{{ if ne .Content.Role "Member" }}
-			<span class="role" id="{{ .Content.Role }}">{{ .Content.Role }}</span>
-			{{ end }}
+		<div class="infos">
+			<div class="col">
+				<div class="row">
+					<p class="username">{{ .Content.Username }}</p>
+					{{ if ne .Content.Role "Member" }}
+					<span class="role" id="{{ .Content.Role }}">{{ .Content.Role }}</span>
+					{{ end }}
+				</div>
+				<p class="email">{{ .Content.Email }}</p>
+				<p class="joined">Joined at: {{ .Content.Joined }}</p>
+				<p class="desc">
+					{{ .Content.Description}}
+				</p>
+			</div>
+			<a href="/user/logout" class="btn logout">Logout</a>
 		</div>
-		<p class="email">{{ .Content.Email }}</p>
-		<p class="joined">Joined at: {{ .Content.Joined }}</p>
-		<p class="desc">
-			{{ .Content.Description}}
-		</p>
 
 		<div class="container">
 			<div class="header">

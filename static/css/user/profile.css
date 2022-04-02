@@ -91,6 +91,18 @@ body {
 	PROFILE
 */
 
+.infos {
+	display: flex;
+	justify-content: space-between;
+}
+
+.col {}
+
+.logout {
+	width: max-content !important;
+	height: max-content;
+}
+
 .row {
 	display: flex;
 	flex-direction: row;
@@ -278,14 +290,15 @@ body {
 	background: #E79E4F;
 	font-size: 14px;
 	text-transform: uppercase;
+	text-decoration: none;
 	color: #321F28;
 	outline: 0;
-	transition: all 0.3 ease;
+	transition: background-color .3s ease;
 	cursor: pointer;
 }
 
-.btn:active {
-	background: #E79E4F;
+.btn:hover {
+	background-color: #eaac69;
 }
 
 .danger {
