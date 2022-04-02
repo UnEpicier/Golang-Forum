@@ -16,13 +16,15 @@
 	<!-- Profile -->
 	<div class="tab" id="profile">
 		<div class="row">
-			<p class="username">{Username}</p>
-			<span class="role" id="admin">Admin</span>
+			<p class="username">{{ .Username }}</p>
+			{{ if ne .Role "Member" }}
+			<span class="role" id="{{ .Role }}">{{ .Role }}</span>
+			{{ end }}
 		</div>
-		<p class="email">{email}</p>
-		<p class="joined">Joined at: {dd/MM/YYYY}</p>
+		<p class="email">{{ .Email }}</p>
+		<p class="joined">Joined at: {{ .Joined }}</p>
 		<p class="desc">
-			{description}
+			{{ .Description}}
 		</p>
 
 		<div class="container">

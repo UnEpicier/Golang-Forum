@@ -116,11 +116,11 @@ body {
 	user-select: none;
 }
 
-.role#admin {
+.role#Admin {
 	background-color: #FD5D5D;
 }
 
-.role#mod {
+.role#Mod {
 	background-color: #FFB72B;
 }
 
