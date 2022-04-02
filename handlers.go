@@ -40,11 +40,54 @@ func IndexHandler(w http.ResponseWriter, r *http.Request) {
 /*
 	FORUM
 */
-func CategoriesHandler(w http.ResponseWriter, r *http.Request) {
-	files := []string{"./static/categories.html", "./static/base.html"}
+func ForumHandler(w http.ResponseWriter, r *http.Request) {
+	files := []string{"./static/forum.html", "./static/base.html"}
 	tplt := template.Must(template.ParseFiles(files...))
 
-	err := tplt.ExecuteTemplate(w, "base", tplt)
+	var forum Forum
+	var categories []Category
+	db, err := sql.Open("sqlite3", "./forum.db")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	row, err := db.Query("SELECT COUNT(*) FROM categories")
+	if err != nil {
+		log.Fatal(err)
+	}
+	var count int
+	for row.Next() {
+		err = row.Scan(&count)
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
+	row.Close()
+
+	if count > 0 {
+		row, err = db.Query("SELECT * FROM categories")
+		if err != nil {
+			log.Fatal(err)
+		}
+		for row.Next() {
+			var category Category
+			err = row.Scan(&category.Uuid, &category.Name, &category.Link)
+			if err != nil {
+				log.Fatal(err)
+			}
+			categories = append(categories, category)
+		}
+		row.Close()
+		forum.Categories = categories
+		forum.Error = ""
+	} else {
+		forum.Categories = []Category{}
+		forum.Error = "No categories found"
+	}
+
+	db.Close()
+
+	err = tplt.ExecuteTemplate(w, "base", forum)
 	if err != nil {
 		log.Fatal(err)
 	}

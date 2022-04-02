@@ -1,6 +1,19 @@
 package forum
 
-// Forum
+/*
+	FORUM
+*/
+// Categories
+type Forum struct {
+	Categories []Category
+	Error      string
+}
+
+type Category struct {
+	Uuid string
+	Name string
+	Link string
+}
 
 /*
 	USER

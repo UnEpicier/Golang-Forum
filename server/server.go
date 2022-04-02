@@ -19,7 +19,7 @@ func main() {
 	http.HandleFunc("/index", forum.IndexHandler)
 
 	// Forum
-	http.HandleFunc("/categories", forum.CategoriesHandler)
+	http.HandleFunc("/forum", forum.ForumHandler)
 	http.HandleFunc("/post", forum.PostHandler)
 
 	// Admin
@@ -42,4 +42,3 @@ func main() {
 		log.Fatal("Unable to start the server:\n", err)
 	}
 }
-

@@ -1,0 +1,26 @@
+{{ define "header" }}
+
+<title>Categories | Forum</title>
+<link rel="stylesheet" href="/css/forum.css">
+
+{{ end }}
+
+{{ define "body" }}
+
+<h1 class="title">Categories</h1>
+
+{{ if (eq .Error "") }}
+
+<div class="categories">
+	{{ range .Categories }}
+	<a class="card" href="{{ .Link }}">{{ .Name }}</a>
+	{{ end }}
+</div>
+
+{{ else }}
+
+<p class="error">{{ .Error }}</p>
+
+{{ end }}
+
+{{ end }}
