@@ -1,3 +1,4 @@
+{{ template "base" . }}
 {{ define "header"}}
 
 <title>Profile | Forum</title>
@@ -16,15 +17,15 @@
 	<!-- Profile -->
 	<div class="tab" id="profile">
 		<div class="row">
-			<p class="username">{{ .Username }}</p>
-			{{ if ne .Role "Member" }}
-			<span class="role" id="{{ .Role }}">{{ .Role }}</span>
+			<p class="username">{{ .Content.Username }}</p>
+			{{ if ne .Content.Role "Member" }}
+			<span class="role" id="{{ .Content.Role }}">{{ .Content.Role }}</span>
 			{{ end }}
 		</div>
-		<p class="email">{{ .Email }}</p>
-		<p class="joined">Joined at: {{ .Joined }}</p>
+		<p class="email">{{ .Content.Email }}</p>
+		<p class="joined">Joined at: {{ .Content.Joined }}</p>
 		<p class="desc">
-			{{ .Description}}
+			{{ .Content.Description}}
 		</p>
 
 		<div class="container">
@@ -92,26 +93,32 @@
 		<p class="title">Settings</p>
 		<form method="POST" class="row">
 			<p class="subtitle">Change Username</p>
+			<p class="error hidden" id="username"></p>
 			<input type="text" name="username" class="input" placeholder="Current username" required>
 			<input type="text" name="newusername" class="input" placeholder="New username" required>
-			<input type="password" name="psswd" class="input" placeholder="Type your password" required>
+			<input type="password" name="passwd" class="input" placeholder="Type your password" required>
+			<input type="hidden" name="form" value="username">
 			<input type="submit" class="btn" value="Save">
 		</form>
 		<div class="sep"></div>
 		<form method="POST" class="row">
 			<p class="subtitle">Change Email</p>
+			<p class="error hidden" id="email"></p>
 			<input type="email" name="oldemail" class="input" placeholder="Current email" required>
 			<input type="email" name="newemail" class="input" placeholder="New email" required>
-			<input type="email" name="oldemail" class="input" placeholder="Confirm new email" required>
-			<input type="password" name="psswd" class="input" placeholder="Type your password" required>
+			<input type="email" name="confemail" class="input" placeholder="Confirm new email" required>
+			<input type="password" name="passwd" class="input" placeholder="Type your password" required>
+			<input type="hidden" name="form" value="email">
 			<input type="submit" class="btn" value="Save">
 		</form>
 		<div class="sep"></div>
-		<form method="POST" class="row">
+		<form method="POST" name="password" class="row">
 			<p class="subtitle">Change Password</p>
+			<p class="error hidden" id="password"></p>
 			<input type="password" name="oldpswd" class="input" placeholder="Current password" required>
 			<input type="password" name="newpswd" class="input" placeholder="New password" required>
 			<input type="password" name="confpswd" class="input" placeholder="Confirm password" required>
+			<input type="hidden" name="form" value="password">
 			<input type="submit" class="btn" value="Save">
 		</form>
 		<p class="danger" data-text="Danger Zone"></p>
@@ -120,7 +127,8 @@
 		</form>
 	</div>
 </div>
+<span id="error" class="hidden">{{ .Error }}</span>
 
-<script src="/js/user/tabs.js"></script>
+<script src="/js/user/profile.js"></script>
 
 {{ end }}

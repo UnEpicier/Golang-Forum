@@ -31,7 +31,15 @@ func IndexHandler(w http.ResponseWriter, r *http.Request) {
 	files := []string{"./static/index.html", "./static/base.html"}
 	tplt := template.Must(template.ParseFiles(files...))
 
-	err := tplt.ExecuteTemplate(w, "base", tplt)
+	var page Page
+	page.Logged = false
+
+	cookie, _ := r.Cookie("user")
+	if cookie != nil {
+		page.Logged = true
+	}
+
+	err := tplt.Execute(w, page)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -44,8 +52,17 @@ func ForumHandler(w http.ResponseWriter, r *http.Request) {
 	files := []string{"./static/forum.html", "./static/base.html"}
 	tplt := template.Must(template.ParseFiles(files...))
 
+	var page Page
+	page.Logged = false
+
+	cookie, _ := r.Cookie("user")
+	if cookie != nil {
+		page.Logged = true
+	}
+
 	var forum Forum
 	var categories []Category
+
 	db, err := sql.Open("sqlite3", "./forum.db")
 	if err != nil {
 		log.Fatal(err)
@@ -87,7 +104,9 @@ func ForumHandler(w http.ResponseWriter, r *http.Request) {
 
 	db.Close()
 
-	err = tplt.ExecuteTemplate(w, "base", forum)
+	page.Content = forum
+
+	err = tplt.Execute(w, page)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -97,7 +116,15 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 	files := []string{"./static/post.html", "./static/base.html"}
 	tplt := template.Must(template.ParseFiles(files...))
 
-	err := tplt.ExecuteTemplate(w, "base", tplt)
+	var page Page
+	page.Logged = false
+
+	cookie, _ := r.Cookie("user")
+	if cookie != nil {
+		page.Logged = true
+	}
+
+	err := tplt.Execute(w, page)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -115,8 +142,12 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	files := []string{"./static/user/login.html", "./static/base.html"}
 	tplt := template.Must(template.ParseFiles(files...))
 
+	var page Page
+	page.Logged = false
+
 	cookie, _ := r.Cookie("user")
 	if cookie != nil {
+		page.Logged = true
 		http.Redirect(w, r, "/user/profile", http.StatusSeeOther)
 	}
 
@@ -164,7 +195,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	err := tplt.ExecuteTemplate(w, "base", tplt)
+	err := tplt.Execute(w, page)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -175,8 +206,12 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	tplt := template.Must(template.ParseFiles(files...))
 	backError := ""
 
+	var page Page
+	page.Logged = false
+
 	cookie, _ := r.Cookie("user")
 	if cookie != nil {
+		page.Logged = true
 		http.Redirect(w, r, "/user/profile", http.StatusSeeOther)
 		return
 	}
@@ -246,8 +281,9 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 
 		db.Close()
 	}
+	page.Content = backError
 
-	err := tplt.ExecuteTemplate(w, "base", backError)
+	err := tplt.Execute(w, page)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -257,9 +293,14 @@ func ProfileHandler(w http.ResponseWriter, r *http.Request) {
 	files := []string{"./static/user/profile.html", "./static/base.html"}
 	tplt := template.Must(template.ParseFiles(files...))
 
+	var page Page
+	page.Logged = false
+	page.Error = ""
+
 	cookie, _ := r.Cookie("user")
 
 	if cookie != nil {
+		page.Logged = true
 		var user User
 
 		db, err := sql.Open("sqlite3", "./forum.db")
@@ -278,12 +319,154 @@ func ProfileHandler(w http.ResponseWriter, r *http.Request) {
 				log.Fatal(err)
 			}
 		}
+		row.Close()
 		user.Joined = strings.Replace(user.Joined, "-", "/", -1)
 
-		row.Close()
+		/*
+			Settings
+		*/
+		if r.Method == "POST" {
+			if err := r.ParseForm(); err != nil {
+				log.Fatal(err)
+			}
+
+			/* Username */
+			if r.FormValue("form") == "username" {
+				current := r.FormValue("username")
+				new := r.FormValue("newusername")
+				password := r.FormValue("passwd")
+
+				var count int
+				row, err := db.Query("SELECT COUNT(*) FROM users WHERE uuid = ? AND username = ?", cookie.Value, current)
+				if err != nil {
+					log.Fatal(err)
+				}
+
+				for row.Next() {
+					err = row.Scan(&count)
+					if err != nil {
+						log.Fatal(err)
+					}
+				}
+
+				if count > 0 {
+					var db_pass string
+
+					row, err = db.Query("SELECT password FROM users WHERE uuid = ? AND username = ?", cookie.Value, current)
+					if err != nil {
+						log.Fatal(err)
+					}
+					for row.Next() {
+						err = row.Scan(&db_pass)
+						if err != nil {
+							log.Fatal(err)
+						}
+					}
+
+					if CheckPasswordhash(password, db_pass) {
+						_, err = db.Exec("UPDATE users SET username = ? WHERE uuid = ?", new, cookie.Value)
+						if err != nil {
+							log.Fatal(err)
+						}
+					} else {
+						page.Error = "[Username] Wrong password"
+					}
+				} else {
+					page.Error = "[Username] This is not your current username"
+				}
+			} else if r.FormValue("form") == "email" {
+				current := r.FormValue("oldemail")
+				new := r.FormValue("newemail")
+				confemail := r.FormValue("confemail")
+				password := r.FormValue("passwd")
+
+				if new != confemail {
+					page.Error = "[Email] Emails don't match"
+				} else {
+					var count int
+					row, err := db.Query("SELECT COUNT(*) FROM users WHERE uuid = ? AND email = ?", cookie.Value, current)
+					if err != nil {
+						log.Fatal(err)
+					}
+
+					for row.Next() {
+						err = row.Scan(&count)
+						if err != nil {
+							log.Fatal(err)
+						}
+					}
+
+					if count > 0 {
+						var db_pass string
+
+						row, err = db.Query("SELECT password FROM users WHERE uuid = ? AND email = ?", cookie.Value, current)
+						if err != nil {
+							log.Fatal(err)
+						}
+						for row.Next() {
+							err = row.Scan(&db_pass)
+							if err != nil {
+								log.Fatal(err)
+							}
+						}
+
+						if CheckPasswordhash(password, db_pass) {
+							_, err = db.Exec("UPDATE users SET email = ? WHERE uuid = ?", new, cookie.Value)
+							if err != nil {
+								log.Fatal(err)
+							}
+						} else {
+							page.Error = "[Email] Wrong password"
+						}
+					} else {
+						page.Error = "[Email] This is not your current mail address"
+					}
+				}
+			} else if r.FormValue("form") == "password" {
+				current := r.FormValue("oldpswd")
+				new := r.FormValue("newpswd")
+				conf := r.FormValue("confpswd")
+
+				if new != conf {
+					page.Error = "[Password] Passwords don't match"
+				} else {
+					var db_pass string
+					row, err := db.Query("SELECT password FROM users WHERE uuid = ?", cookie.Value)
+					if err != nil {
+						log.Fatal(err)
+					}
+
+					for row.Next() {
+						err = row.Scan(&db_pass)
+						if err != nil {
+							log.Fatal(err)
+						}
+					}
+
+					if CheckPasswordhash(current, db_pass) {
+						hash, err := HashPassword(new)
+						if err != nil {
+							log.Fatal(err)
+						}
+
+						_, err = db.Exec("UPDATE users SET password = ? WHERE uuid = ?", hash, cookie.Value)
+						if err != nil {
+							log.Fatal(err)
+						}
+					} else {
+						page.Error = "[Password] This is not your current password"
+					}
+				}
+			}
+
+		}
+
 		db.Close()
 
-		err = tplt.ExecuteTemplate(w, "base", user)
+		page.Content = user
+		fmt.Println(page.Error)
+
+		err = tplt.Execute(w, page)
 		if err != nil {
 			log.Fatal(err)
 		}

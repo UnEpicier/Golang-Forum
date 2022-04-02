@@ -1,5 +1,11 @@
 package forum
 
+type Page struct {
+	Logged  bool
+	Error   string
+	Content interface{}
+}
+
 /*
 	FORUM
 */

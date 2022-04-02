@@ -240,6 +240,15 @@ body {
 	color: #E79E4F;
 }
 
+.error {
+	margin-bottom: 20px;
+	padding: 5px 10px;
+	border-radius: 5px;
+	background-color: #FD5D5D;
+	font-size: 1.1rem;
+	color: #222;
+}
+
 .input {
 	margin: 0 0 15px;
 	padding: 15px;

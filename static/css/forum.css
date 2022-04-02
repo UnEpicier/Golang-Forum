@@ -12,6 +12,20 @@ body {
 	color: #E79E4F;
 }
 
+.write {
+	display: block;
+	margin-bottom: 20px;
+	padding: 15px 30px;
+	border-radius: 10px;
+	background-color: #E79E4F;
+	font-size: 1.1rem;
+	font-weight: 300;
+	text-align: center;
+	text-decoration: none;
+	color: #fff;
+	user-select: none;
+}
+
 .categories {
 	display: flex;
 	flex-wrap: wrap;

@@ -1,3 +1,4 @@
+{{ template "base" . }}
 {{ define "header" }}
 
 <title>Categories | Forum</title>
@@ -9,17 +10,21 @@
 
 <h1 class="title">Categories</h1>
 
-{{ if (eq .Error "") }}
+{{ if .Logged }}
+<a href="/write" class="write">Create a new post</a>
+{{ end }}
+
+{{ if (eq .Content.Error "") }}
 
 <div class="categories">
-	{{ range .Categories }}
+	{{ range .Content.Categories }}
 	<a class="card" href="{{ .Link }}">{{ .Name }}</a>
 	{{ end }}
 </div>
 
 {{ else }}
 
-<p class="error">{{ .Error }}</p>
+<p class="error">{{ .Content.Error }}</p>
 
 {{ end }}
 
