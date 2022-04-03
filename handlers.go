@@ -341,10 +341,46 @@ func ProfileHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		if count > 0 {
-
+			row, err = db.Query("SELECT * FROM posts WHERE user = ?", user.Uuid)
+			if err != nil {
+				log.Fatal(err)
+			}
+			for row.Next() {
+				var post Post
+				err = row.Scan(&post.Uuid, &post.Title, &post.Content, &post.Created, &post.User, &post.Likes, &post.Dislikes, &post.Category)
+				if err != nil {
+					log.Fatal(err)
+				}
+				user.Posts = append(user.Posts, post)
+			}
 		}
 
 		// Comments
+		row, err = db.Query("SELECT COUNT(*) FROM comments WHERE user = ?", user.Uuid)
+		if err != nil {
+			log.Fatal(err)
+		}
+		for row.Next() {
+			err := row.Scan(&count)
+			if err != nil {
+				log.Fatal(err)
+			}
+		}
+
+		if count > 0 {
+			row, err = db.Query("SELECT * FROM comments WHERE user = ?", user.Uuid)
+			if err != nil {
+				log.Fatal(err)
+			}
+			for row.Next() {
+				var comment Comment
+				err = row.Scan(&comment.Uuid, &comment.Content, &comment.Created, &comment.User, &comment.Post, &comment.Likes, &comment.Dislikes)
+				if err != nil {
+					log.Fatal(err)
+				}
+				user.Comments = append(user.Comments, comment)
+			}
+		}
 
 		/*
 			Settings
