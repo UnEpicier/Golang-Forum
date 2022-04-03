@@ -19,7 +19,7 @@ func ErrorHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tplt := template.Must(template.ParseFiles("./static/error.html"))
+	tplt := template.Must(template.ParseFiles("./static/error/error.html"))
 
 	err := tplt.Execute(w, tplt)
 	if err != nil {
@@ -28,7 +28,7 @@ func ErrorHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func IndexHandler(w http.ResponseWriter, r *http.Request) {
-	files := []string{"./static/index.html", "./static/base.html"}
+	files := []string{"./static/pages/index.html", "./static/layout/base.html"}
 	tplt := template.Must(template.ParseFiles(files...))
 
 	var page Page
@@ -49,7 +49,7 @@ func IndexHandler(w http.ResponseWriter, r *http.Request) {
 	FORUM
 */
 func ForumHandler(w http.ResponseWriter, r *http.Request) {
-	files := []string{"./static/forum.html", "./static/base.html"}
+	files := []string{"./static/pages/forum.html", "./static/layout/base.html"}
 	tplt := template.Must(template.ParseFiles(files...))
 
 	var page Page
@@ -113,7 +113,7 @@ func ForumHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func PostHandler(w http.ResponseWriter, r *http.Request) {
-	files := []string{"./static/post.html", "./static/base.html"}
+	files := []string{"./static/pages/post.html", "./static/layout/base.html"}
 	tplt := template.Must(template.ParseFiles(files...))
 
 	var page Page
@@ -139,7 +139,7 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 */
 
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
-	files := []string{"./static/user/login.html", "./static/base.html"}
+	files := []string{"./static/pages/user/login.html", "./static/layout/base.html"}
 	tplt := template.Must(template.ParseFiles(files...))
 
 	var page Page
@@ -200,7 +200,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func RegisterHandler(w http.ResponseWriter, r *http.Request) {
-	files := []string{"./static/user/register.html", "./static/base.html"}
+	files := []string{"./static/pages/user/register.html", "./static/layout/base.html"}
 	tplt := template.Must(template.ParseFiles(files...))
 
 	var page Page
@@ -291,7 +291,7 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func ProfileHandler(w http.ResponseWriter, r *http.Request) {
-	files := []string{"./static/user/profile.html", "./static/base.html"}
+	files := []string{"./static/pages/user/profile.html", "./static/layout/base.html"}
 	tplt := template.Must(template.ParseFiles(files...))
 
 	var page Page

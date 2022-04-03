@@ -21,6 +21,7 @@ func main() {
 	// Forum
 	http.HandleFunc("/forum", forum.ForumHandler)
 	http.HandleFunc("/post", forum.PostHandler)
+	http.HandleFunc("/write", forum.WriteHandler)
 
 	// Admin
 
