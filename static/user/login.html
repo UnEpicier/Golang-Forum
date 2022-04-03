@@ -10,9 +10,14 @@
 
 <form class="form" method="POST">
 	<i class="icon fas fa-lock"></i>
+	{{ if (ne .Error "")}}
+	<p class="backend_error">{{ .Error }}</p>
+	{{ end }}
 	<input type="email" name="email" placeholder="Email" required />
 	<input type="password" name="passwd" placeholder="Password" required />
-	<button>login</button>
+
+	<button>Login</button>
+	<a href="/user/register" class="btn-secondary">Register</a>
 </form>
 
 {{ end }}

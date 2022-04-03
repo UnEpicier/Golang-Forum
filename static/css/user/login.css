@@ -15,6 +15,7 @@ body {
 	z-index: 1;
 	position: relative;
 	padding: 45px;
+	padding-bottom: 20px;
 	max-width: 360px;
 	border: 1px solid #A05344;
 	border-radius: 10px;
@@ -64,4 +65,27 @@ body {
 .form span {
 	font-size: 75px;
 	color: #4b6cb7;
+}
+
+.btn-secondary {
+	display: block;
+	margin-top: 15px;
+	padding: 15px;
+	width: 100%;
+	border-radius: 5px;
+	font-size: 14px;
+	text-align: center;
+	text-decoration: none;
+	text-transform: uppercase;
+	color: #321F28;
+	cursor: pointer;
+	transition: background-color .3s ease;
+}
+
+.btn-secondary {
+	color: #E79E4F;
+}
+
+.btn-secondary:hover {
+	background-color: #925159;
 }

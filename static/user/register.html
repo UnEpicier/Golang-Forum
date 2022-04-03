@@ -10,7 +10,9 @@
 
 <form class="form" method="post">
 	<i class="icon fas fa-user-plus"></i>
-	<p>{{ . }}</p>
+	{{ if (ne .Error "")}}
+	<p class="backend_error">{{ .Error }}</p>
+	{{ end }}
 	<input type="text" name="username" placeholder="Username" required />
 
 	<input type="email" id="email" name="email" placeholder="Email" required />
@@ -20,6 +22,7 @@
 	<input type="password" id="confpasswd" name="confpasswd" placeholder="Confirm Password" minlength="8" required />
 
 	<button type="submit" id="button">Sign up</button>
+	<a href="/user/login" class="btn-secondary">Login</a>
 	<span class="error" id="error"></span>
 </form>
 
