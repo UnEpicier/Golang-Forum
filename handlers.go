@@ -304,6 +304,9 @@ func ProfileHandler(w http.ResponseWriter, r *http.Request) {
 		page.Logged = true
 		var user User
 
+		user.Posts = []Post{}
+		user.Comments = []Comment{}
+
 		db, err := sql.Open("sqlite3", "./forum.db")
 		if err != nil {
 			log.Fatal(err)
@@ -322,6 +325,26 @@ func ProfileHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		row.Close()
 		user.Joined = strings.Replace(user.Joined, "-", "/", -1)
+
+		// Posts
+		var count int
+
+		row, err = db.Query("SELECT COUNT(*) FROM posts WHERE user = ?", user.Uuid)
+		if err != nil {
+			log.Fatal(err)
+		}
+		for row.Next() {
+			err := row.Scan(&count)
+			if err != nil {
+				log.Fatal(err)
+			}
+		}
+
+		if count > 0 {
+
+		}
+
+		// Comments
 
 		/*
 			Settings

@@ -39,26 +39,18 @@
 			</div>
 
 			<div class="body">
+				{{ $length := len .Content.Posts }}
+				{{ if eq $length 0 }}
+				<p class="empty">Any posts yet.</p>
+				{{ else }}
+				{{ range .Content.Posts }}
 				<a class="card">
-					<p class="card-title">{Title}</p>
-					<p class="date">{dd/MM/YYYY}</p>
+					<!-- ADD HREF -->
+					<p class="card-title">{{ .Title }}</p>
+					<p class="date">{{ .Created }}</p>
 				</a>
-				<a class="card">
-					<p class="card-title">{Title}</p>
-					<p class="date">{dd/MM/YYYY}</p>
-				</a>
-				<a class="card">
-					<p class="card-title">{Title}</p>
-					<p class="date">{dd/MM/YYYY}</p>
-				</a>
-				<a class="card">
-					<p class="card-title">{Title}</p>
-					<p class="date">{dd/MM/YYYY}</p>
-				</a>
-				<a class="card">
-					<p class="card-title">{Title}</p>
-					<p class="date">{dd/MM/YYYY}</p>
-				</a>
+				{{ end }}
+				{{ end }}
 			</div>
 		</div>
 
@@ -68,26 +60,18 @@
 			</div>
 
 			<div class="body">
+				{{ $length := len .Content.Comments }}
+				{{ if eq $length 0 }}
+				<p class="empty">Any comments yet.</p>
+				{{ else }}
+				{{ range .Content.Comments }}
 				<a class="card">
-					<p class="card-title">{Title}</p>
-					<p class="date">{dd/MM/YYYY}</p>
+					<!-- ADD HREF -->
+					<p class="card-title">{{ .Content }}</p>
+					<p class="date">{{ .Created }}</p>
 				</a>
-				<a class="card">
-					<p class="card-title">{Title}</p>
-					<p class="date">{dd/MM/YYYY}</p>
-				</a>
-				<a class="card">
-					<p class="card-title">{Title}</p>
-					<p class="date">{dd/MM/YYYY}</p>
-				</a>
-				<a class="card">
-					<p class="card-title">{Title}</p>
-					<p class="date">{dd/MM/YYYY}</p>
-				</a>
-				<a class="card">
-					<p class="card-title">{Title}</p>
-					<p class="date">{dd/MM/YYYY}</p>
-				</a>
+				{{ end }}
+				{{ end }}
 			</div>
 		</div>
 

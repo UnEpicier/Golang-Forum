@@ -21,6 +21,27 @@ type Category struct {
 	Link string
 }
 
+type Post struct {
+	Uuid     string
+	Title    string
+	Content  string
+	Created  string
+	User     string
+	Likes    int
+	Dislikes int
+	Category string
+}
+
+type Comment struct {
+	Uuid     string
+	Content  string
+	Created  string
+	User     string
+	Post     string
+	Likes    int
+	Dislikes int
+}
+
 /*
 	USER
 */
@@ -33,4 +54,6 @@ type User struct {
 	Role        string
 	Joined      string
 	Description string
+	Posts       []Post
+	Comments    []Comment
 }
