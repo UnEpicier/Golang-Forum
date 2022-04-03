@@ -202,9 +202,9 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	files := []string{"./static/user/register.html", "./static/base.html"}
 	tplt := template.Must(template.ParseFiles(files...))
-	backError := ""
 
 	var page Page
+	page.Error = ""
 	page.Logged = false
 
 	cookie, _ := r.Cookie("user")
@@ -246,21 +246,25 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			log.Fatal(err)
 		}
-		row.Scan(&count)
+		for row.Next() {
+			row.Scan(&count)
+		}
 		row.Close()
 		if count > 0 {
 			create = false
-			backError = "Email is already used"
+			page.Error = "Email is already used"
 		}
 		row, err = db.Query("SELECT COUNT(*) FROM users WHERE username = ?", username)
 		if err != nil {
 			log.Fatal(err)
 		}
-		row.Scan(&count)
+		for row.Next() {
+			row.Scan(&count)
+		}
 		row.Close()
 		if count > 0 {
 			create = false
-			backError = "Username is already used"
+			page.Error = "Username is already used"
 		}
 
 		// The user is not registered, we create a new user
@@ -279,7 +283,6 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 
 		db.Close()
 	}
-	page.Content = backError
 
 	err := tplt.Execute(w, page)
 	if err != nil {
