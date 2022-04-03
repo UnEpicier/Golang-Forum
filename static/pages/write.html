@@ -1,0 +1,28 @@
+{{ template "base" . }}
+
+{{ define "header" }}
+
+<title>Write | Forum</title>
+<link rel="stylesheet" href="/css/write.css">
+
+{{ end }}
+
+{{ define "body" }}
+
+<h1 class="title">Write a new post</h1>
+<form class="container" method="POST">
+	<div class="inputWSuggests">
+		<input type="text" class="input" name="category" id="category-input" placeholder="Category" oninput="suggests()"
+			required />
+		<div class="suggests" id="category-suggests">
+		</div>
+	</div>
+	<div class="sep"></div>
+	<input type="text" class="input" name="title" placeholder="Title" requied />
+	<textarea name="content" class="input" cols="30" rows="10" placeholder="Your content..." requied></textarea>
+	<button type="submit" class="btn">Post</button>
+</form>
+<span class="hidden" id="pr-categories">Informatique/NSFW/Life</span>
+<script src="/js/write.js"></script>
+
+{{ end }}

@@ -130,6 +130,24 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func WriteHandler(w http.ResponseWriter, r *http.Request) {
+	files := []string{"./static/pages/write.html", "./static/layout/base.html"}
+	tplt := template.Must(template.ParseFiles(files...))
+
+	var page Page
+	page.Logged = false
+
+	cookie, _ := r.Cookie("user")
+	if cookie != nil {
+		page.Logged = true
+	}
+
+	err := tplt.Execute(w, page)
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
 /*
 	ADMIN
 */
