@@ -2,7 +2,6 @@ package forum
 
 import (
 	"database/sql"
-	"fmt"
 	"log"
 	"net/http"
 	"strings"
@@ -246,6 +245,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 
 		email := r.FormValue("email")
 		password := r.FormValue("passwd")
+		keepAlive := r.FormValue("keep-alive")
 
 		db, err := sql.Open("sqlite3", "./forum.db")
 		if err != nil {
@@ -267,16 +267,19 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		if db_email == email && CheckPasswordhash(password, db_password) {
+			ex := time.Now()
+			if keepAlive == "on" {
+				ex = ex.AddDate(1, 0, 0)
+			}
 			cookie := http.Cookie{
 				Name:    "user",
 				Value:   db_uuid,
 				Path:    "/",
-				Expires: time.Now().Add(time.Hour * 24),
+				Expires: ex,
 			}
 			http.SetCookie(w, &cookie)
 			http.Redirect(w, r, "/user/profile", http.StatusSeeOther)
 		} else {
-			fmt.Println("Not working")
 			http.Redirect(w, r, "/user/login", http.StatusSeeOther)
 		}
 	}

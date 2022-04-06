@@ -23,7 +23,7 @@ body {
 	text-align: center;
 }
 
-.form input {
+.form>input {
 	margin: 0 0 15px;
 	padding: 15px;
 	width: 100%;
@@ -36,12 +36,52 @@ body {
 	transition: background-color .3s ease;
 }
 
-.form input::placeholder {
+.form>input::placeholder {
 	color: #bfbfbf;
 }
 
-.form input:focus {
+.form>input:focus {
 	background: #bb6f60;
+}
+
+.cb {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	margin: 0 0 15px;
+	font-size: 1rem;
+	color: #bfbfbf;
+	user-select: none;
+	cursor: pointer;
+}
+
+.checkbox {
+	position: relative;
+	appearance: none;
+	margin-right: 10px;
+	width: 1.5rem;
+	height: 1.5rem;
+	border: 2px solid #A05344;
+	border-radius: 5px;
+	background-color: transparent;
+	cursor: pointer;
+}
+
+.checkbox::before {
+	content: "";
+	position: absolute;
+	top: 15%;
+	left: 15%;
+	width: calc(100% - 30%);
+	height: calc(100% - 30%);
+	transform: scale(0);
+	border-radius: 3px;
+	background-color: #E79E4F;
+	transition: .12s transform ease-in-out;
+}
+
+.checkbox:checked::before {
+	transform: scale(1);
 }
 
 .form button {
