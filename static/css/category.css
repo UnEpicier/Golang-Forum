@@ -1,0 +1,96 @@
+body {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	padding-top: 100px;
+}
+
+.title {
+	margin-bottom: 30px;
+	font-size: 3rem;
+	font-weight: 300;
+	color: #E79E4F;
+}
+
+.write {
+	display: block;
+	margin-bottom: 20px;
+	padding: 15px 30px;
+	border-radius: 10px;
+	background-color: #E79E4F;
+	font-size: 1.1rem;
+	font-weight: 300;
+	text-align: center;
+	text-decoration: none;
+	color: #fff;
+	user-select: none;
+}
+
+.body {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	padding: 20px 10px;
+	width: 100%;
+	max-width: 900px;
+	overflow-y: auto;
+}
+
+.empty {
+	font-size: 1.3rem;
+	color: #E79E4F;
+}
+
+.card {
+	display: flex;
+	flex-direction: column;
+	padding: 20px 40px;
+	width: 90%;
+	border-radius: 10px;
+	background-color: #bb6f60;
+	text-decoration: none;
+}
+
+.card:not(:last-child) {
+	margin-bottom: 30px;
+}
+
+.card-header {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.col {
+	display: flex;
+	flex-direction: column;
+}
+
+.card-title {
+	font-size: 1.3rem;
+	color: #eee;
+}
+
+.date {
+	margin: 5px 0 10px;
+	font-size: .9rem;
+	color: #ccc;
+}
+
+.card-author {
+	font-size: .9rem;
+	color: #ccc;
+}
+
+.sep {
+	margin: 10px 0;
+	width: 100%;
+	height: 1px;
+	background-color: #aaa;
+}
+
+.overview {
+	font-size: 1rem;
+	color: #eee;
+}

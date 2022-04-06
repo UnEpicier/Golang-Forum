@@ -129,6 +129,88 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func CategoryHandler(w http.ResponseWriter, r *http.Request) {
+	files := []string{"./static/pages/category.html", "./static/layout/base.html"}
+	tplt := template.Must(template.ParseFiles(files...))
+
+	var page Page
+	page.Logged = false
+
+	cookie, _ := r.Cookie("user")
+	if cookie != nil {
+		page.Logged = true
+	}
+
+	if r.URL.Query().Has("id") {
+		uuid := r.URL.Query().Get("id")
+
+		db, err := sql.Open("sqlite3", "./forum.db")
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		uuid_list := []string{}
+		row, err := db.Query("SELECT uuid FROM categories")
+		if err != nil {
+			log.Fatal(err)
+		}
+		for row.Next() {
+			var uuid string
+			err = row.Scan(&uuid)
+			if err != nil {
+				log.Fatal(err)
+			}
+			uuid_list = append(uuid_list, uuid)
+		}
+
+		if contains(uuid_list, uuid) {
+			row, err = db.Query("SELECT name FROM categories WHERE uuid = ?", uuid)
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			var name string
+			for row.Next() {
+				err = row.Scan(&name)
+				if err != nil {
+					log.Fatal(err)
+				}
+			}
+
+			posts := []Post{}
+
+			row, err = db.Query("SELECT * FROM posts WHERE category = ?", uuid)
+			if err != nil {
+				log.Fatal(err)
+			}
+			for row.Next() {
+				var post Post
+				err = row.Scan(&post.Uuid, &post.Title, &post.Content, &post.Created, &post.User, &post.Likes, &post.Dislikes, &post.Category)
+				if err != nil {
+					log.Fatal(err)
+				}
+				posts = append(posts, post)
+			}
+
+			type c struct {
+				Name  string
+				Posts []Post
+			}
+
+			page.Content = c{Name: name, Posts: posts}
+		} else {
+			http.Redirect(w, r, "/forum", http.StatusSeeOther)
+		}
+	} else {
+		http.Redirect(w, r, "/forum", http.StatusSeeOther)
+	}
+
+	err := tplt.Execute(w, page)
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
 func WriteHandler(w http.ResponseWriter, r *http.Request) {
 	files := []string{"./static/pages/write.html", "./static/layout/base.html"}
 	tplt := template.Must(template.ParseFiles(files...))
@@ -191,7 +273,7 @@ func WriteHandler(w http.ResponseWriter, r *http.Request) {
 
 				if !found {
 					uid = uuid.New().String()
-					_, err = db.Exec("INSERT INTO categories (uuid, name, link) VALUES (?, ?, ?)", uid, category, "/")
+					_, err = db.Exec("INSERT INTO categories (uuid, name, link) VALUES (?, ?, ?)", uid, category, "/category?id="+uid)
 					if err != nil {
 						log.Fatal(err)
 					}
