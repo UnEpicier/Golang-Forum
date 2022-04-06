@@ -267,9 +267,9 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		if db_email == email && CheckPasswordhash(password, db_password) {
-			ex := time.Now()
+			ex := time.Now().AddDate(0, 0, 7)
 			if keepAlive == "on" {
-				ex = ex.AddDate(1, 0, 0)
+				ex = ex.AddDate(5, 0, 0)
 			}
 			cookie := http.Cookie{
 				Name:    "user",
