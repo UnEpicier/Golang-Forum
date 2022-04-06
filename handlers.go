@@ -141,22 +141,64 @@ func WriteHandler(w http.ResponseWriter, r *http.Request) {
 	if cookie != nil {
 		page.Logged = true
 
+		db, err := sql.Open("sqlite3", "./forum.db")
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		var categories []string
+		row, err := db.Query("SELECT name FROM categories")
+		if err != nil {
+			log.Fatal(err)
+		}
+		for row.Next() {
+			var name string
+			err = row.Scan(&name)
+			if err != nil {
+				log.Fatal(err)
+			}
+			categories = append(categories, name)
+		}
+		page.Content = strings.Join(categories, "/")
+
 		if r.Method == "POST" {
 			r.ParseForm()
 			category := r.FormValue("category")
 			title := r.FormValue("title")
-			content := r.FormValue("content")
-			content = strings.Replace(content, "\r\n", "<br>", -1)
+			content := strings.Replace(r.FormValue("content"), "\r\n", "<br>", -1)
+			var uid string
 
 			if title == "" || content == "" || category == "" {
 				page.Error = "All fields are required"
 			} else {
-				db, err := sql.Open("sqlite3", "./forum.db")
+				row, err := db.Query("SELECT uuid, name FROM categories")
 				if err != nil {
 					log.Fatal(err)
 				}
+				var categoryName string
+				found := false
+				for row.Next() {
+					err = row.Scan(&uid, &categoryName)
+					if err != nil {
+						log.Fatal(err)
+					}
+					if strings.EqualFold(categoryName, category) {
+						category = categoryName
+						found = true
+						break
+					}
+				}
+				row.Close()
 
-				_, err = db.Exec("INSERT INTO posts (uuid, title, content, created, user, likes, dislikes, category) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", uuid.New().String(), title, content, time.Now().Format("02-01-2006"), cookie.Value, 0, 0, category)
+				if !found {
+					uid = uuid.New().String()
+					_, err = db.Exec("INSERT INTO categories (uuid, name, link) VALUES (?, ?, ?)", uid, category, "/")
+					if err != nil {
+						log.Fatal(err)
+					}
+				}
+
+				_, err = db.Exec("INSERT INTO posts (uuid, title, content, created, user, likes, dislikes, category) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", uuid.New().String(), title, content, time.Now().Format("02-01-2006"), cookie.Value, 0, 0, uid)
 				if err != nil {
 					log.Fatal(err)
 				}
@@ -167,7 +209,7 @@ func WriteHandler(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 
-		err := tplt.Execute(w, page)
+		err = tplt.Execute(w, page)
 		if err != nil {
 			log.Fatal(err)
 		}
