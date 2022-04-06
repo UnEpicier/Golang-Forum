@@ -140,11 +140,39 @@ func WriteHandler(w http.ResponseWriter, r *http.Request) {
 	cookie, _ := r.Cookie("user")
 	if cookie != nil {
 		page.Logged = true
-	}
 
-	err := tplt.Execute(w, page)
-	if err != nil {
-		log.Fatal(err)
+		if r.Method == "POST" {
+			r.ParseForm()
+			category := r.FormValue("category")
+			title := r.FormValue("title")
+			content := r.FormValue("content")
+			content = strings.Replace(content, "\r\n", "<br>", -1)
+
+			if title == "" || content == "" || category == "" {
+				page.Error = "All fields are required"
+			} else {
+				db, err := sql.Open("sqlite3", "./forum.db")
+				if err != nil {
+					log.Fatal(err)
+				}
+
+				_, err = db.Exec("INSERT INTO posts (uuid, title, content, created, user, likes, dislikes, category) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", uuid.New().String(), title, content, time.Now().Format("02-01-2006"), cookie.Value, 0, 0, category)
+				if err != nil {
+					log.Fatal(err)
+				}
+
+				db.Close()
+
+				http.Redirect(w, r, "/forum", http.StatusSeeOther)
+			}
+		}
+
+		err := tplt.Execute(w, page)
+		if err != nil {
+			log.Fatal(err)
+		}
+	} else {
+		http.Redirect(w, r, "/forum", http.StatusSeeOther)
 	}
 }
 
