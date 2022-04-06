@@ -61,6 +61,7 @@ body {
 	width: 100%;
 	font-size: 1rem;
 	color: #bfbfbf;
+	user-select: none;
 	cursor: pointer;
 	transition: background-color .3s ease;
 }

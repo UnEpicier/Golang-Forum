@@ -12,6 +12,10 @@ const suggests = () => {
 		s.forEach(suggest => {
 			const suggestEl = document.createElement('span')
 			suggestEl.innerText = suggest
+			suggestEl.onclick = () => {
+				document.getElementById('category-input').value = suggest
+				sContainter.innerHTML = ''
+			}
 			sContainter.appendChild(suggestEl)
 		})
 	} else {
