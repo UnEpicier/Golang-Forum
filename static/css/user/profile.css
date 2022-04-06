@@ -203,6 +203,7 @@ body {
 	width: 90%;
 	border-radius: 10px;
 	background-color: #bb6f60;
+	text-decoration: none;
 }
 
 .card:not(:last-child) {
