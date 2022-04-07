@@ -117,15 +117,86 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 
 	var page Page
 	page.Logged = false
+	page.Error = ""
 
 	cookie, _ := r.Cookie("user")
+
 	if cookie != nil {
 		page.Logged = true
 	}
 
-	err := tplt.Execute(w, page)
-	if err != nil {
-		log.Fatal(err)
+	if r.URL.Query().Has("id") {
+		uuid := r.URL.Query().Get("id")
+
+		db, err := sql.Open("sqlite3", "./forum.db")
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		uuid_list := []string{}
+		row, err := db.Query("SELECT uuid FROM posts")
+		if err != nil {
+			log.Fatal(err)
+		}
+		for row.Next() {
+			var uuid string
+			err = row.Scan(&uuid)
+			if err != nil {
+				log.Fatal(err)
+			}
+			uuid_list = append(uuid_list, uuid)
+		}
+		row.Close()
+
+		if contains(uuid_list, uuid) {
+			var post Post
+			row, err = db.Query("SELECT * FROM posts WHERE uuid = ?", uuid)
+			if err != nil {
+				log.Fatal(err)
+			}
+			var uid string
+			for row.Next() {
+				err = row.Scan(&post.Uuid, &post.Title, &post.Content, &post.Created, &uid, &post.Likes, &post.Dislikes, &post.Category)
+				if err != nil {
+					log.Fatal(err)
+				}
+			}
+			row.Close()
+
+			row, err = db.Query("SELECT * FROM users WHERE uuid = ?", uid)
+			if err != nil {
+				log.Fatal(err)
+			}
+			for row.Next() {
+				var user User
+				err = row.Scan(&user.Uuid, &user.Username, &user.Email, &user.Password, &user.Role, &user.Joined, &user.Description)
+				if err != nil {
+					log.Fatal(err)
+				}
+				post.User = user
+			}
+			row.Close()
+			type c struct {
+				Post Post
+				Comments []Comment
+			}
+			var content c
+			content.Post = post
+			content.Comments = []Comment{}
+			page.Content = content
+
+			db.Close()
+
+			err = tplt.Execute(w, page)
+			if err != nil {
+				log.Fatal(err)
+			}
+
+		} else {
+			http.Redirect(w, r, "/forum", http.StatusSeeOther)
+		}
+	} else {
+		http.Redirect(w, r, "/forum", http.StatusSeeOther)
 	}
 }
 
@@ -179,17 +250,34 @@ func CategoryHandler(w http.ResponseWriter, r *http.Request) {
 
 			posts := []Post{}
 
-			row, err = db.Query("SELECT * FROM posts WHERE category = ?", uuid)
+			row, err = db.Query("SELECT uuid, title, content, created, user, likes, dislikes, category FROM posts WHERE category = ?", uuid)
 			if err != nil {
 				log.Fatal(err)
 			}
+			var uid string
 			for row.Next() {
 				var post Post
-				err = row.Scan(&post.Uuid, &post.Title, &post.Content, &post.Created, &post.User, &post.Likes, &post.Dislikes, &post.Category)
+				post.User = User{}
+				err = row.Scan(&post.Uuid, &post.Title, &post.Content, &post.Created, &uid, &post.Likes, &post.Dislikes, &post.Category)
 				if err != nil {
 					log.Fatal(err)
 				}
 				posts = append(posts, post)
+			}
+
+			for post := range posts {
+				row, err := db.Query("SELECT * FROM users WHERE uuid = ?", uid)
+				if err != nil {
+					log.Fatal(err)
+				}
+				for row.Next() {
+					var user User
+					err = row.Scan(&user.Uuid, &user.Username, &user.Email, &user.Password, &user.Role, &user.Joined, &user.Description)
+					if err != nil {
+						log.Fatal(err)
+					}
+					posts[post].User = user
+				}
 			}
 
 			type c struct {
@@ -302,6 +390,49 @@ func WriteHandler(w http.ResponseWriter, r *http.Request) {
 /*
 	ADMIN
 */
+func AdminHandler(w http.ResponseWriter, r *http.Request) {
+	files := []string{"./static/pages/admin/admin.html", "./static/layout/base.html"}
+	tplt := template.Must(template.ParseFiles(files...))
+
+	var page Page
+	page.Logged = false
+
+	cookie, _ := r.Cookie("user")
+	if cookie != nil {
+		page.Logged = true
+
+		db, err := sql.Open("sqlite3", "./forum.db")
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		row, err := db.Query("SELECT role FROM users WHERE uuid = ?", cookie.Value)
+		if err != nil {
+			log.Fatal(err)
+		}
+		var role string
+		for row.Next() {
+			err = row.Scan(&role)
+			if err != nil {
+				log.Fatal(err)
+			}
+		}
+		row.Close()
+		if role == "Admin" {
+
+			err := tplt.Execute(w, page)
+			if err != nil {
+				log.Fatal(err)
+			}
+		} else {
+			http.Redirect(w, r, "/", http.StatusSeeOther)
+		}
+
+		db.Close()
+	} else {
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+	}
+}
 
 /*
 	USER
@@ -354,10 +485,9 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 				ex = ex.AddDate(5, 0, 0)
 			}
 			cookie := http.Cookie{
-				Name:    "user",
-				Value:   db_uuid,
-				Path:    "/",
-				Expires: ex,
+				Name:  "user",
+				Value: db_uuid,
+				Path:  "/",
 			}
 			http.SetCookie(w, &cookie)
 			http.Redirect(w, r, "/user/profile", http.StatusSeeOther)

@@ -26,7 +26,7 @@ type Post struct {
 	Title    string
 	Content  string
 	Created  string
-	User     string
+	User     User
 	Likes    int
 	Dislikes int
 	Category string

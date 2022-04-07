@@ -1,0 +1,38 @@
+{{ template "base" . }}
+
+{{ define "header" }}
+
+<title>Admin | Forum</title>
+<link rel="stylesheet" href="/css/admin/admin.css">
+
+{{ end }}
+
+{{ define "body" }}
+
+<div class="container">
+    <div class="tabs">
+        <span class="tab-btn active" onclick="toggleTab('stats');">Stats</span>
+        <span class="tab-btn" onclick="toggleTab('users');">Users</span>
+        <span class="tab-btn" onclick="toggleTab('categories');">Categories</span>
+    </div>
+
+    <!-- Stats -->
+    <div class="tab" id="stats">
+		
+    </div>
+
+    <!-- User -->
+    <div class="tab hidden" id="users">
+        <span>user</span>
+    </div>
+
+
+    <!-- Categories -->
+    <div class="tab hidden" id="categories">
+        <span>cat</span>
+    </div>
+</div>
+
+<script src="/js/user/profile.js"></script>
+
+{{ end }}
