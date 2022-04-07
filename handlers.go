@@ -2,6 +2,7 @@ package forum
 
 import (
 	"database/sql"
+	"fmt"
 	"log"
 	"net/http"
 	"strings"
@@ -173,11 +174,13 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 				if err != nil {
 					log.Fatal(err)
 				}
+				user.Joined = strings.Replace(user.Joined, "-", "/", -1)
+				fmt.Println(user.Joined)
 				post.User = user
 			}
 			row.Close()
 			type c struct {
-				Post Post
+				Post     Post
 				Comments []Comment
 			}
 			var content c

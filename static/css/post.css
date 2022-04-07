@@ -21,6 +21,13 @@ body {
 	background: #321F28;
 }
 
+.title {
+	color: #E79E4F;
+	font-size: 1.6em;
+	text-decoration: underline;
+	padding-bottom: .3em;
+}
+
 .comment {
 	padding: 20px;
 	border-radius: 10px;
