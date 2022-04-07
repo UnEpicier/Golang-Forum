@@ -1,7 +1,7 @@
 {{ template "base" . }}
 {{ define "header" }}
 
-<title> POST | Forum</title>
+<title>{{.Content.Post.Title}} | Forum</title>
 <link rel="stylesheet" href="/css/post.css">
 
 {{ end }}
@@ -15,36 +15,16 @@
 		<div class="like"><i class="fa-solid fa-heart"></i><i class="fa-solid fa-heart-crack"></i></div>
 		<div class="content">{{.Content.Post.Content}}</div>
 	</div>
+	{{ $len := len .Content.Comments }}
+	{{ if gt $len 0 }}
+	{{ range $i, $comment := .Content.Comments }}
 	<div class="comment">
-		<div class="infocmt">Posted by PSEUDO on XX.XX.XXXX</div>
-		<div class="likecmt"><i class="fa-solid fa-heart"></i><i class="fa-solid fa-heart-crack"></i></div>
-		<div class="cmtcontent">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum
-			has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of
-			type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the
-			leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the
-			release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing
-			software like Aldus PageMaker including versions of Lorem Ipsum.</div>
+		<p class="infocmt">Posted by {{ .User.Username }} on {{ .Created }}</p>
+		<p class="likecmt"><i class="fa-solid fa-heart"></i><i class="fa-solid fa-heart-crack"></i></p>
+		<p class="cmtcontent">{{ .Content }}</p>
 	</div>
-	<div class="comment">
-		<div class="infocmt">Posted by PSEUDO on XX.XX.XXXX</div>
-		<div class="likecmt"><i class="fa-solid fa-heart"></i><i class="fa-solid fa-heart-crack"></i></div>
-		<div class="cmtcontent">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum
-			has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of
-			type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the
-			leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the
-			release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing
-			software like Aldus PageMaker including versions of Lorem Ipsum.</div>
-	</div>
-	<div class="comment">
-		<div class="infocmt">Posted by PSEUDO on XX.XX.XXXX</div>
-		<div class="likecmt"><i class="fa-solid fa-heart"></i><i class="fa-solid fa-heart-crack"></i></div>
-		<div class="cmtcontent">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum
-			has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of
-			type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the
-			leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the
-			release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing
-			software like Aldus PageMaker including versions of Lorem Ipsum.</div>
-	</div>
+	{{ end }}
+	{{ end }}
 </div>
 </div>
 

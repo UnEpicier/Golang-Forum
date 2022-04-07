@@ -179,13 +179,48 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 				post.User = user
 			}
 			row.Close()
+
+			row, err = db.Query("SELECT * FROM comments WHERE post = ?", post.Uuid)
+			if err != nil {
+				log.Fatal(err)
+			}
+			var comments []Comment
+			for row.Next() {
+				var comment Comment
+				comment.User = User{}
+				err = row.Scan(&comment.Uuid, &comment.Content, &comment.Created, &uid, &comment.Post, &comment.Likes, &comment.Dislikes)
+				if err != nil {
+					log.Fatal(err)
+				}
+				comments = append(comments, comment)
+			}
+			row.Close()
+
+			for comment := range comments {
+				row, err = db.Query("SELECT * FROM users WHERE uuid = ?", uid)
+				if err != nil {
+					log.Fatal(err)
+				}
+				for row.Next() {
+					var user User
+					err = row.Scan(&user.Uuid, &user.Username, &user.Email, &user.Password, &user.Role, &user.Joined, &user.Description)
+					if err != nil {
+						log.Fatal(err)
+					}
+					user.Joined = strings.Replace(user.Joined, "-", "/", -1)
+					comments[comment].User = user
+				}
+				row.Close()
+			}
+
 			type c struct {
 				Post     Post
 				Comments []Comment
 			}
+
 			var content c
 			content.Post = post
-			content.Comments = []Comment{}
+			content.Comments = comments
 			page.Content = content
 
 			db.Close()

@@ -36,7 +36,7 @@ type Comment struct {
 	Uuid     string
 	Content  string
 	Created  string
-	User     string
+	User     User
 	Post     string
 	Likes    int
 	Dislikes int

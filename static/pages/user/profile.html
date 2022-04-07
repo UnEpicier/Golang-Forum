@@ -45,7 +45,6 @@
 				{{ else }}
 				{{ range .Content.Posts }}
 				<a class="card" href="/post?id={{ .Uuid }}">
-					<!-- ADD HREF -->
 					<p class="card-title">{{ .Title }}</p>
 					<p class="date">{{ .Created }}</p>
 				</a>
@@ -66,7 +65,6 @@
 				{{ else }}
 				{{ range .Content.Comments }}
 				<a class="card" href="/post?id={{ .Post }}">
-					<!-- ADD HREF -->
 					<p class="card-title">{{ .Content }}</p>
 					<p class="date">{{ .Created }}</p>
 				</a>
