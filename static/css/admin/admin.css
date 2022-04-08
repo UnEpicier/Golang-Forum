@@ -109,6 +109,8 @@ body {
 }
 
 .col {
+    width: 100%;
+    height: 50px;
     display: flex;
     flex-direction: column;
 }
@@ -124,20 +126,47 @@ body {
 }
 
 .info {
-	font-size: 1.2rem;
-	color: #E79E4F;
+    font-size: 1.2rem;
+    color: #E79E4F;
 }
 
 .date {
-	margin: 5px 0 10px;
-	font-size: .9rem;
-	color: #ccc;
+    margin: 5px 0 10px;
+    font-size: .9rem;
+    color: #ccc;
 }
 
-.btn {
-    color : #ccc;
+.btn-edit {
+    font-size: 1.5em;
+    margin-bottom: 10px;
+    margin-top: -60px;
+    color: #ccc;
+    display: flex;
+    justify-content: end;
 }
 
-.btn:hover {
+.btn-delete {
+    font-size: 1.5em;
+    color: #ccc;
+    display: flex;
+    justify-content: end;
+}
+
+.btn-edit:hover {
     color: #eee;
+}
+
+.btn-delete:hover {
+    color: #eee;
+}
+
+.counter-signin {
+    padding: 15px 20px;
+    font-size: 25px;
+    width: 16%;
+    border-style: solid;
+    border: 5px solid #af6617;
+    border-radius: 12px;
+    background-color: transparent;
+    color: white;
 }

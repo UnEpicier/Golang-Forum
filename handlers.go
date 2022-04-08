@@ -288,19 +288,20 @@ func CategoryHandler(w http.ResponseWriter, r *http.Request) {
 
 			posts := []Post{}
 
-			row, err = db.Query("SELECT uuid, title, content, created, user, likes, dislikes, category FROM posts WHERE category = ?", uuid)
+			row, err = db.Query("SELECT u.username FROM users as u INNER JOIN posts as p ON u.uuid = p.user WHERE p.uuid = ?", uuid)
 			if err != nil {
 				log.Fatal(err)
 			}
-			var uid string
+			// var uid string
 			for row.Next() {
 				var post Post
-				post.User = User{}
-				err = row.Scan(&post.Uuid, &post.Title, &post.Content, &post.Created, &uid, &post.Likes, &post.Dislikes, &post.Category)
+				// err = row.Scan(&post.User.Uuid, &post.User.Username, &post.User.Email, &post.User.Password, &post.User.Role, &post.User.Joined, &post.User.Description, &post.Title, &post.Content, &post.Created, &uid, &post.Likes, &post.Dislikes, &post.Category)
+				err = row.Scan(&post.User.Username)
 				if err != nil {
 					log.Fatal(err)
 				}
 				posts = append(posts, post)
+				fmt.Println("wsh", post)
 			}
 
 			type c struct {
@@ -503,16 +504,26 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		if db_email == email && CheckPasswordhash(password, db_password) {
-			ex := time.Now().AddDate(0, 0, 7)
-			if keepAlive == "on" {
-				ex = ex.AddDate(5, 0, 0)
-			}
+
 			cookie := http.Cookie{
-				Name:  "user",
-				Value: db_uuid,
-				Path:  "/",
+				Name:       "user",
+				Value:      db_uuid,
+				Path:       "/",
+				Domain:     "",
+				Expires:    time.Time{},
+				RawExpires: "",
+				MaxAge:     0,
+				Secure:     false,
+				HttpOnly:   false,
+				SameSite:   0,
+				Raw:        "",
+				Unparsed:   []string{},
+			}
+			if keepAlive == "on" {
+				cookie.Expires = time.Now().AddDate(5, 0, 0)
 			}
 			http.SetCookie(w, &cookie)
+
 			http.Redirect(w, r, "/user/profile", http.StatusSeeOther)
 		} else {
 			http.Redirect(w, r, "/user/login", http.StatusSeeOther)
@@ -866,7 +877,13 @@ func ProfileHandler(w http.ResponseWriter, r *http.Request) {
 					if err != nil {
 						log.Fatal(err)
 					}
-					http.SetCookie(w, cookie)
+					cookie := http.Cookie{
+						Name:    "user",
+						Value:   "",
+						Path:    "/",
+						Expires: time.Unix(0, 0),
+					}
+					http.SetCookie(w, &cookie)
 					http.Redirect(w, r, "/", http.StatusFound)
 				} else {
 					page.Error = "[Delete] This is not your current password"
