@@ -109,11 +109,25 @@
 			<input type="submit" class="btn" value="Save">
 		</form>
 		<p class="danger" data-text="Danger Zone"></p>
-		<form method="POST" class="row">
-			<button class="btn" type="submit">Delete Account</button>
+		<button class="btn" type="button" onclick="showDeletePopup();">Delete Account</button>
+	</div>
+</div>
+
+<div class="popup-bg hidden" id="delete-popup">
+	<div class="popup">
+		<i class="fa-solid fa-times close" onclick="hideDeletePopup()"></i>
+		<div class="pp-header">
+			<p class="pp-title">Delete Account</p>
+			<p class="pp-subtitle">Are you sure you want to delete your account?</p>
+		</div>
+		<form method="POST" name="delete" class="row pp-body">
+			<input type="password" name="passwd" class="input" placeholder="Type your password" required>
+			<input type="hidden" name="form" value="delete">
+			<input type="submit" class="btn" value="Delete">
 		</form>
 	</div>
 </div>
+
 <span id="error" class="hidden">{{ .Error }}</span>
 
 <script src="/js/user/profile.js"></script>

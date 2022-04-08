@@ -303,21 +303,6 @@ func CategoryHandler(w http.ResponseWriter, r *http.Request) {
 				posts = append(posts, post)
 			}
 
-			for post := range posts {
-				row, err := db.Query("SELECT * FROM users WHERE uuid = ?", uid)
-				if err != nil {
-					log.Fatal(err)
-				}
-				for row.Next() {
-					var user User
-					err = row.Scan(&user.Uuid, &user.Username, &user.Email, &user.Password, &user.Role, &user.Joined, &user.Description)
-					if err != nil {
-						log.Fatal(err)
-					}
-					posts[post].User = user
-				}
-			}
-
 			type c struct {
 				Name  string
 				Posts []Post
@@ -399,7 +384,7 @@ func WriteHandler(w http.ResponseWriter, r *http.Request) {
 
 				if !found {
 					uid = uuid.New().String()
-					_, err = db.Exec("INSERT INTO categories (uuid, name, link) VALUES (?, ?, ?)", uid, category, "/category?id="+uid)
+					_, err = db.Exec("INSERT INTO categories (uuid, name, link) VALUES (?, ?, ?)", uid, capitalize(category), "/category?id="+uid)
 					if err != nil {
 						log.Fatal(err)
 					}
@@ -682,13 +667,14 @@ func ProfileHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		if count > 0 {
-			row, err = db.Query("SELECT * FROM posts WHERE user = ?", user.Uuid)
+			row, err = db.Query("SELECT uuid, title, content, created, likes, dislikes, category FROM posts WHERE user = ?", user.Uuid)
 			if err != nil {
 				log.Fatal(err)
 			}
 			for row.Next() {
 				var post Post
-				err = row.Scan(&post.Uuid, &post.Title, &post.Content, &post.Created, &post.User, &post.Likes, &post.Dislikes, &post.Category)
+				post.User = user
+				err = row.Scan(&post.Uuid, &post.Title, &post.Content, &post.Created, &post.Likes, &post.Dislikes, &post.Category)
 				if err != nil {
 					log.Fatal(err)
 				}
@@ -709,13 +695,14 @@ func ProfileHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		if count > 0 {
-			row, err = db.Query("SELECT * FROM comments WHERE user = ?", user.Uuid)
+			row, err = db.Query("SELECT uuid, content, created, post, likes, dislikes FROM comments WHERE user = ?", user.Uuid)
 			if err != nil {
 				log.Fatal(err)
 			}
 			for row.Next() {
 				var comment Comment
-				err = row.Scan(&comment.Uuid, &comment.Content, &comment.Created, &comment.User, &comment.Post, &comment.Likes, &comment.Dislikes)
+				comment.User = user
+				err = row.Scan(&comment.Uuid, &comment.Content, &comment.Created, &comment.Post, &comment.Likes, &comment.Dislikes)
 				if err != nil {
 					log.Fatal(err)
 				}
@@ -857,6 +844,32 @@ func ProfileHandler(w http.ResponseWriter, r *http.Request) {
 					} else {
 						page.Error = "[Password] This is not your current password"
 					}
+				}
+			} else if r.FormValue("form") == "delete" {
+				password := r.FormValue("passwd")
+
+				var db_pass string
+				row, err := db.Query("SELECT password FROM users WHERE uuid = ?", cookie.Value)
+				if err != nil {
+					log.Fatal(err)
+				}
+
+				for row.Next() {
+					err = row.Scan(&db_pass)
+					if err != nil {
+						log.Fatal(err)
+					}
+				}
+
+				if CheckPasswordhash(password, db_pass) {
+					_, err = db.Exec("DELETE FROM users WHERE uuid = ?", cookie.Value)
+					if err != nil {
+						log.Fatal(err)
+					}
+					http.SetCookie(w, cookie)
+					http.Redirect(w, r, "/", http.StatusFound)
+				} else {
+					page.Error = "[Delete] This is not your current password"
 				}
 			}
 

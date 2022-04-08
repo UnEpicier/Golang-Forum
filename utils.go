@@ -1,6 +1,10 @@
 package forum
 
-import "golang.org/x/crypto/bcrypt"
+import (
+	"strings"
+
+	"golang.org/x/crypto/bcrypt"
+)
 
 func HashPassword(password string) (string, error) {
 	bytes, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
@@ -19,4 +23,15 @@ func contains(s []string, e string) bool {
 		}
 	}
 	return false
+}
+
+func capitalize(s string) string {
+	if s == "" {
+		return s
+	}
+	if s == strings.ToUpper(s) {
+		return s
+	}
+
+	return strings.ToUpper(s[:1]) + strings.ToLower(s[1:])
 }

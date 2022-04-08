@@ -86,3 +86,58 @@ body {
     height: 1px;
     background-color: #A05344;
 }
+
+.card {
+    display: flex;
+    flex-direction: column;
+    padding: 20px 40px;
+    width: 100%;
+    border-radius: 10px;
+    background-color: #bb6f60;
+    text-decoration: none;
+}
+
+.card:not(:last-child) {
+    margin-bottom: 30px;
+}
+
+.card-header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.col {
+    display: flex;
+    flex-direction: column;
+}
+
+.card-title {
+    font-size: 1.3rem;
+    color: #eee;
+}
+
+.card-author {
+    font-size: .9rem;
+    color: #ccc;
+}
+
+.info {
+	font-size: 1.2rem;
+	color: #E79E4F;
+}
+
+.date {
+	margin: 5px 0 10px;
+	font-size: .9rem;
+	color: #ccc;
+}
+
+.btn {
+    color : #ccc;
+}
+
+.btn:hover {
+    color: #eee;
+}
