@@ -288,7 +288,7 @@ func CategoryHandler(w http.ResponseWriter, r *http.Request) {
 
 			posts := []Post{}
 
-			row, err = db.Query("SELECT u.username FROM users as u INNER JOIN posts as p ON u.uuid = p.user WHERE p.uuid = ?", uuid)
+			row, err = db.Query("SELECT * FROM users as u INNER JOIN posts as p ON u.uuid = p.user WHERE p.uuid = ?", uuid)
 			if err != nil {
 				log.Fatal(err)
 			}
