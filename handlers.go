@@ -292,11 +292,13 @@ func CategoryHandler(w http.ResponseWriter, r *http.Request) {
 			if err != nil {
 				log.Fatal(err)
 			}
-			// var uid string
+			 var uid string
 			for row.Next() {
+
 				var post Post
-				// err = row.Scan(&post.User.Uuid, &post.User.Username, &post.User.Email, &post.User.Password, &post.User.Role, &post.User.Joined, &post.User.Description, &post.Title, &post.Content, &post.Created, &uid, &post.Likes, &post.Dislikes, &post.Category)
-				err = row.Scan(&post.User.Username)
+				fmt.Println("JE PASSE")
+				err = row.Scan(&post.User.Uuid, &post.User.Username, &post.User.Email, &post.User.Password, &post.User.Role, &post.User.Joined, &post.User.Description, &post.Title, &post.Content, &post.Created, &uid, &post.Likes, &post.Dislikes, &post.Category)
+				//err = row.Scan(&post.User.Username)
 				if err != nil {
 					log.Fatal(err)
 				}
