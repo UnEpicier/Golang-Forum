@@ -288,22 +288,18 @@ func CategoryHandler(w http.ResponseWriter, r *http.Request) {
 
 			posts := []Post{}
 
-			row, err = db.Query("SELECT * FROM users as u INNER JOIN posts as p ON u.uuid = p.user WHERE p.uuid = ?", uuid)
+			row, err = db.Query("SELECT * FROM users as u INNER JOIN posts as p ON u.uuid = p.user WHERE p.category = ? ORDER BY p.created DESC", uuid)
 			if err != nil {
 				log.Fatal(err)
 			}
-			 var uid string
 			for row.Next() {
-
+				var uid string
 				var post Post
-				fmt.Println("JE PASSE")
-				err = row.Scan(&post.User.Uuid, &post.User.Username, &post.User.Email, &post.User.Password, &post.User.Role, &post.User.Joined, &post.User.Description, &post.Title, &post.Content, &post.Created, &uid, &post.Likes, &post.Dislikes, &post.Category)
-				//err = row.Scan(&post.User.Username)
+				err = row.Scan(&post.User.Uuid, &post.User.Username, &post.User.Email, &post.User.Password, &post.User.Role, &post.User.Joined, &post.User.Description, &post.Uuid, &post.Title, &post.Content, &post.Created, &uid, &post.Likes, &post.Dislikes, &post.Category)
 				if err != nil {
 					log.Fatal(err)
 				}
 				posts = append(posts, post)
-				fmt.Println("wsh", post)
 			}
 
 			type c struct {
