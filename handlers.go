@@ -8,6 +8,7 @@ import (
 	"strings"
 	"text/template"
 	"time"
+	"sort"
 
 	"github.com/google/uuid"
 	_ "github.com/mattn/go-sqlite3"
@@ -86,15 +87,30 @@ func ForumHandler(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			log.Fatal(err)
 		}
+		
+		layout := "01-02-2006 15:04:05"
 		for row.Next() {
 			var category Category
-			err = row.Scan(&category.Uuid, &category.Name, &category.Link)
+			err = row.Scan(&category.Uuid, &category.Name, &category.Link, time.Parse(layout, &category.Created), &category.Pinned)
 			if err != nil {
 				log.Fatal(err)
 			}
 			categories = append(categories, category)
 		}
 		row.Close()
+
+		for index, category := range categories {
+			date, err := 
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			sort.Slice(categories, func(i, j int) bool {
+				return timeSlice[i].date.Before(timeSlice[j].date)
+			})
+		}
+
+
 		forum.Categories = categories
 		forum.Error = ""
 	} else {
@@ -383,13 +399,13 @@ func WriteHandler(w http.ResponseWriter, r *http.Request) {
 
 				if !found {
 					uid = uuid.New().String()
-					_, err = db.Exec("INSERT INTO categories (uuid, name, link) VALUES (?, ?, ?)", uid, capitalize(category), "/category?id="+uid)
+					_, err = db.Exec("INSERT INTO categories (uuid, name, link, created, pinned) VALUES (?, ?, ?, ?, 'false')", uid, capitalize(category), "/category?id="+uid, time.Now().Format("01-02-2006 15:04:05"))
 					if err != nil {
 						log.Fatal(err)
 					}
 				}
 
-				_, err = db.Exec("INSERT INTO posts (uuid, title, content, created, user, likes, dislikes, category) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", uuid.New().String(), title, content, time.Now().Format("02-01-2006"), cookie.Value, 0, 0, uid)
+				_, err = db.Exec("INSERT INTO posts (uuid, title, content, created, user, likes, dislikes, category) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", uuid.New().String(), title, content, time.Now().Format("01-02-2006"), cookie.Value, 0, 0, uid)
 				if err != nil {
 					log.Fatal(err)
 				}

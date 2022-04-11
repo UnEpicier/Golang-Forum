@@ -1,5 +1,7 @@
 package forum
 
+import "time"
+
 type Page struct {
 	Logged  bool
 	Error   string
@@ -16,9 +18,11 @@ type Forum struct {
 }
 
 type Category struct {
-	Uuid string
-	Name string
-	Link string
+	Uuid    string
+	Name    string
+	Link    string
+	Created time.Time
+	Pinned  string
 }
 
 type Post struct {
