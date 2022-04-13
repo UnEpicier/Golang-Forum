@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"sort"
 	"strings"
 	"text/template"
 	"time"
-	"sort"
 
 	"github.com/google/uuid"
 	_ "github.com/mattn/go-sqlite3"
@@ -87,29 +87,35 @@ func ForumHandler(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			log.Fatal(err)
 		}
-		
+
 		layout := "01-02-2006 15:04:05"
+		dates := []string{}
 		for row.Next() {
 			var category Category
-			err = row.Scan(&category.Uuid, &category.Name, &category.Link, time.Parse(layout, &category.Created), &category.Pinned)
+			var date string
+			err = row.Scan(&category.Uuid, &category.Name, &category.Link, &date, &category.Pinned)
 			if err != nil {
 				log.Fatal(err)
 			}
+			dates = append(dates, date)
 			categories = append(categories, category)
 		}
 		row.Close()
 
+		/* time.Parse(layout, &category.Created) */
+
 		for index, category := range categories {
-			date, err := 
+			date, err := time.Parse(layout, dates[index])
 			if err != nil {
 				log.Fatal(err)
 			}
 
-			sort.Slice(categories, func(i, j int) bool {
-				return timeSlice[i].date.Before(timeSlice[j].date)
-			})
+			category.Created = date
 		}
 
+		sort.Slice(categories, func(i, j int) bool {
+			return categories[i].Created.Before(categories[j].Created)
+		})
 
 		forum.Categories = categories
 		forum.Error = ""
