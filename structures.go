@@ -1,7 +1,5 @@
 package forum
 
-import "time"
-
 type Page struct {
 	Logged  bool
 	Error   string
@@ -18,32 +16,36 @@ type Forum struct {
 }
 
 type Category struct {
-	Uuid    string
-	Name    string
-	Link    string
-	Created time.Time
-	Pinned  string
+	ID           string
+	Name         string
+	CreationDate interface{} // string or time.Time
+	Pinned       int
+	LastUpdate   interface{} // string or time.Time
 }
 
 type Post struct {
-	Uuid     string
-	Title    string
-	Content  string
-	Created  string
-	User     User
-	Likes    int
-	Dislikes int
-	Category string
+	ID           int
+	Title        string
+	Content      string
+	CreationDate interface{} // string or time.Time
+	UserID       User
+	UpVotes      string
+	DownVotes    string
+	CategoryId   int
+	Pinned       int
+	LastUpdate   interface{} // string or time.Time
+	Category     Category
 }
 
 type Comment struct {
-	Uuid     string
-	Content  string
-	Created  string
-	User     User
-	Post     string
-	Likes    int
-	Dislikes int
+	ID           string
+	Content      string
+	CreationDate interface{}
+	UserID       User
+	PostID       Post
+	UpVotes      string
+	DownVotes    string
+	Pinned       int
 }
 
 /*
@@ -51,13 +53,15 @@ type Comment struct {
 */
 
 type User struct {
-	Uuid        string
-	Username    string
-	Email       string
-	Password    string
-	Role        string
-	Joined      string
-	Description string
-	Posts       []Post
-	Comments    []Comment
+	ID           int
+	Uuid         string
+	Username     string
+	Email        string
+	Password     string
+	Role         string
+	CreationDate interface{} // string or time.Time
+	Biography    string
+	LastSeen     interface{} // string or time.Time
+	Posts        []Post
+	Comments     []Comment
 }

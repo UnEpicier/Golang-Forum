@@ -6,14 +6,15 @@ body {
 }
 
 .container {
-    display: flex;
-    margin-bottom: 35px;
-    width: 95%;
-    max-width: 900px;
-    border: 1px solid #A05344;
-    border-radius: 10px;
-    background-color: #734046;
-    overflow: hidden;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	margin: 20px 0;
+	width: 100%;
+	max-height: 400px;
+	border: 1px solid #E79E4F;
+	border-radius: 10px;
+	overflow: hidden;
 }
 
 /* Tabs Menu */
@@ -88,13 +89,13 @@ body {
 }
 
 .card {
-    display: flex;
-    flex-direction: column;
-    padding: 20px 40px;
-    width: 100%;
-    border-radius: 10px;
-    background-color: #bb6f60;
-    text-decoration: none;
+	display: flex;
+	flex-direction: column;
+	padding: 20px 40px;
+	width: 90%;
+	border-radius: 10px;
+	background-color: #bb6f60;
+	text-decoration: none;
 }
 
 .card:not(:last-child) {
@@ -161,6 +162,8 @@ body {
 }
 
 .counter-signin {
+    margin-right: 0.5em;
+    margin-left: 0.5em;
     padding: 15px 20px;
     font-size: 25px;
     width: 16%;
@@ -170,3 +173,56 @@ body {
     background-color: transparent;
     color: white;
 }
+
+.signinTitle {
+    margin-top: 0.5em;
+    font-size: 3vh;
+    color: #E79E4F;
+}
+
+.nbrSignin {
+    display: flex;
+}
+
+.header {
+	width: 100%;
+	border-bottom: 1px solid #E79E4F;
+}
+
+.tab#profile .subtitle {
+	margin: 10px 0;
+	font-size: 1.5rem;
+	font-weight: 300;
+	text-align: center;
+	color: #E79E4F;
+}
+
+.tab#settings .subtitle {
+	align-self: flex-start;
+	margin-top: 30px;
+	margin-bottom: 15px;
+	font-size: 1.25rem;
+	color: #E79E4F;
+}
+
+.pp-subtitle {
+	font-size: 1rem;
+	font-weight: 300;
+	color: #ccc;
+	user-select: none;
+}
+
+.body {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	padding: 20px 10px;
+	width: 100%;
+	overflow-y: auto;
+}
+
+.empty {
+	font-size: 1.3rem;
+	color: #E79E4F;
+}
+

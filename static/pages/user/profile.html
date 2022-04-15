@@ -25,9 +25,9 @@
 					{{ end }}
 				</div>
 				<p class="email">{{ .Content.Email }}</p>
-				<p class="joined">Joined at: {{ .Content.Joined }}</p>
+				<p class="joined">Joined at: {{ .Content.CreationDate }}</p>
 				<p class="desc">
-					{{ .Content.Description}}
+					{{ .Content.Biography }}
 				</p>
 			</div>
 			<a href="/user/logout" class="btn logout">Logout</a>
@@ -44,9 +44,13 @@
 				<p class="empty">Any posts yet.</p>
 				{{ else }}
 				{{ range .Content.Posts }}
-				<a class="card" href="/post?id={{ .Uuid }}">
-					<p class="card-title">{{ .Title }}</p>
-					<p class="date">{{ .Created }}</p>
+				<a class="card" href="/post?id={{ .ID }}">
+					<div class="row between">
+						<p class="card-title">{{ .Title }}</p>
+						<p class="card-category">{{ .Category.Name }}</p>
+					</div>
+					<p class="date">{{ .CreationDate }}</p>
+					<p class="content">{{ .Content }}</p>
 				</a>
 				{{ end }}
 				{{ end }}
@@ -64,9 +68,12 @@
 				<p class="empty">Any comments yet.</p>
 				{{ else }}
 				{{ range .Content.Comments }}
-				<a class="card" href="/post?id={{ .Post }}">
-					<p class="card-title">{{ .Content }}</p>
-					<p class="date">{{ .Created }}</p>
+				<a class="card" href="/post?id={{ .PostID.ID }}">
+					<div class="row between">
+						<p class="card-category">{{ .Post.Title }}</p>
+						<p class="date">{{ .CreationDate }}</p>
+					</div>
+					<p class="content">{{ .Content }}</p>
 				</a>
 				{{ end }}
 				{{ end }}

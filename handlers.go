@@ -2,10 +2,8 @@ package forum
 
 import (
 	"database/sql"
-	"fmt"
 	"log"
 	"net/http"
-	"sort"
 	"strings"
 	"text/template"
 	"time"
@@ -69,7 +67,7 @@ func ForumHandler(w http.ResponseWriter, r *http.Request) {
 		log.Fatal(err)
 	}
 
-	row, err := db.Query("SELECT COUNT(*) FROM categories")
+	row, err := db.Query("SELECT COUNT(*) FROM category")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -83,39 +81,25 @@ func ForumHandler(w http.ResponseWriter, r *http.Request) {
 	row.Close()
 
 	if count > 0 {
-		row, err = db.Query("SELECT * FROM categories")
+		row, err = db.Query("SELECT * FROM category ORDER BY last_update DESC")
 		if err != nil {
 			log.Fatal(err)
 		}
 
-		layout := "01-02-2006 15:04:05"
-		dates := []string{}
 		for row.Next() {
 			var category Category
-			var date string
-			err = row.Scan(&category.Uuid, &category.Name, &category.Link, &date, &category.Pinned)
+			err = row.Scan(&category.ID, &category.Name, &category.CreationDate, &category.Pinned, &category.LastUpdate)
 			if err != nil {
 				log.Fatal(err)
 			}
-			dates = append(dates, date)
 			categories = append(categories, category)
 		}
 		row.Close()
 
-		/* time.Parse(layout, &category.Created) */
-
-		for index, category := range categories {
-			date, err := time.Parse(layout, dates[index])
-			if err != nil {
-				log.Fatal(err)
-			}
-
-			category.Created = date
+		for i := 0; i < len(categories); i++ {
+			categories[i].CreationDate = categories[i].CreationDate.(time.Time).Format("01/02/2006 15:04:05")
+			categories[i].LastUpdate = categories[i].LastUpdate.(time.Time).Format("01/02/2006 15:04:05")
 		}
-
-		sort.Slice(categories, func(i, j int) bool {
-			return categories[i].Created.Before(categories[j].Created)
-		})
 
 		forum.Categories = categories
 		forum.Error = ""
@@ -157,7 +141,7 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		uuid_list := []string{}
-		row, err := db.Query("SELECT uuid FROM posts")
+		row, err := db.Query("SELECT id FROM post")
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -173,44 +157,47 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 
 		if contains(uuid_list, uuid) {
 			var post Post
-			row, err = db.Query("SELECT * FROM posts WHERE uuid = ?", uuid)
+			row, err = db.Query("SELECT * FROM post WHERE id = ?", uuid)
 			if err != nil {
 				log.Fatal(err)
 			}
 			var uid string
 			for row.Next() {
-				err = row.Scan(&post.Uuid, &post.Title, &post.Content, &post.Created, &uid, &post.Likes, &post.Dislikes, &post.Category)
+				err = row.Scan(&post.ID, &post.Title, &post.Content, &post.CreationDate, &post.UserID, &post.UpVotes, &post.DownVotes, &post.CategoryId, &post.Pinned, &post.LastUpdate)
 				if err != nil {
 					log.Fatal(err)
 				}
+				post.CreationDate = post.CreationDate.(time.Time).Format("01/02/2006 15:04:05")
+				post.LastUpdate = post.LastUpdate.(time.Time).Format("01/02/2006 15:04:05")
 			}
 			row.Close()
 
-			row, err = db.Query("SELECT * FROM users WHERE uuid = ?", uid)
+			row, err = db.Query("SELECT * FROM user WHERE id = ?", uid)
 			if err != nil {
 				log.Fatal(err)
 			}
 			for row.Next() {
 				var user User
-				err = row.Scan(&user.Uuid, &user.Username, &user.Email, &user.Password, &user.Role, &user.Joined, &user.Description)
+				err = row.Scan(&user.ID, &user.Uuid, &user.Username, &user.Email, &user.Password, &user.Role, &user.CreationDate, &user.Biography, &user.LastSeen)
 				if err != nil {
 					log.Fatal(err)
 				}
-				user.Joined = strings.Replace(user.Joined, "-", "/", -1)
-				fmt.Println(user.Joined)
-				post.User = user
+				user.CreationDate = user.CreationDate.(time.Time).Format("01/02/2006 15:04:05")
+				user.LastSeen = user.LastSeen.(time.Time).Format("01/02/2006 15:04:05")
+
+				post.UserID = user
 			}
 			row.Close()
 
-			row, err = db.Query("SELECT * FROM comments WHERE post = ?", post.Uuid)
+			row, err = db.Query("SELECT * FROM comment WHERE post_id = ?", post.ID)
 			if err != nil {
 				log.Fatal(err)
 			}
 			var comments []Comment
 			for row.Next() {
 				var comment Comment
-				comment.User = User{}
-				err = row.Scan(&comment.Uuid, &comment.Content, &comment.Created, &uid, &comment.Post, &comment.Likes, &comment.Dislikes)
+				comment.UserID = User{}
+				err = row.Scan(&comment.ID, &comment.Content, &comment.CreationDate, &uid, &comment.PostID, &comment.UpVotes, &comment.DownVotes, &comment.Pinned)
 				if err != nil {
 					log.Fatal(err)
 				}
@@ -219,18 +206,21 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 			row.Close()
 
 			for comment := range comments {
-				row, err = db.Query("SELECT * FROM users WHERE uuid = ?", uid)
+				row, err = db.Query("SELECT * FROM user WHERE id = ?", uid)
 				if err != nil {
 					log.Fatal(err)
 				}
 				for row.Next() {
 					var user User
-					err = row.Scan(&user.Uuid, &user.Username, &user.Email, &user.Password, &user.Role, &user.Joined, &user.Description)
+					err = row.Scan(&user.ID, &user.Uuid, &user.Username, &user.Email, &user.Password, &user.Role, &user.CreationDate, &user.Biography, &user.LastSeen)
 					if err != nil {
 						log.Fatal(err)
 					}
-					user.Joined = strings.Replace(user.Joined, "-", "/", -1)
-					comments[comment].User = user
+
+					user.CreationDate = user.CreationDate.(time.Time).Format("01/02/2006 15:04:05")
+					user.LastSeen = user.LastSeen.(time.Time).Format("01/02/2006 15:04:05")
+
+					comments[comment].UserID = user
 				}
 				row.Close()
 			}
@@ -281,21 +271,21 @@ func CategoryHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		uuid_list := []string{}
-		row, err := db.Query("SELECT uuid FROM categories")
+		row, err := db.Query("SELECT id FROM category")
 		if err != nil {
 			log.Fatal(err)
 		}
 		for row.Next() {
-			var uuid string
-			err = row.Scan(&uuid)
+			var uid string
+			err = row.Scan(&uid)
 			if err != nil {
 				log.Fatal(err)
 			}
-			uuid_list = append(uuid_list, uuid)
+			uuid_list = append(uuid_list, uid)
 		}
 
 		if contains(uuid_list, uuid) {
-			row, err = db.Query("SELECT name FROM categories WHERE uuid = ?", uuid)
+			row, err = db.Query("SELECT name FROM category WHERE id = ?", uuid)
 			if err != nil {
 				log.Fatal(err)
 			}
@@ -310,17 +300,24 @@ func CategoryHandler(w http.ResponseWriter, r *http.Request) {
 
 			posts := []Post{}
 
-			row, err = db.Query("SELECT * FROM users as u INNER JOIN posts as p ON u.uuid = p.user WHERE p.category = ? ORDER BY p.created DESC", uuid)
+			row, err = db.Query("SELECT * FROM user as u INNER JOIN post as p ON u.id = p.user_id WHERE p.category_id = ? ORDER BY p.last_update DESC", uuid)
 			if err != nil {
 				log.Fatal(err)
 			}
 			for row.Next() {
 				var uid string
 				var post Post
-				err = row.Scan(&post.User.Uuid, &post.User.Username, &post.User.Email, &post.User.Password, &post.User.Role, &post.User.Joined, &post.User.Description, &post.Uuid, &post.Title, &post.Content, &post.Created, &uid, &post.Likes, &post.Dislikes, &post.Category)
+				err = row.Scan(&post.UserID.ID, &post.UserID.Uuid, &post.UserID.Username, &post.UserID.Email, &post.UserID.Password, &post.UserID.Role, &post.UserID.CreationDate, &post.UserID.Biography, &post.UserID.LastSeen, &post.ID, &post.Title, &post.Content, &post.CreationDate, &uid, &post.UpVotes, &post.DownVotes, &post.CategoryId, &post.Pinned, &post.LastUpdate)
 				if err != nil {
 					log.Fatal(err)
 				}
+
+				post.CreationDate = post.CreationDate.(time.Time).Format("01/02/2006 15:04:05")
+				post.LastUpdate = post.LastUpdate.(time.Time).Format("01/02/2006 15:04:05")
+
+				post.UserID.CreationDate = post.UserID.CreationDate.(time.Time).Format("01/02/2006 15:04:05")
+				post.UserID.LastSeen = post.UserID.LastSeen.(time.Time).Format("01/02/2006 15:04:05")
+
 				posts = append(posts, post)
 			}
 
@@ -330,16 +327,16 @@ func CategoryHandler(w http.ResponseWriter, r *http.Request) {
 			}
 
 			page.Content = c{Name: name, Posts: posts}
+
+			err := tplt.Execute(w, page)
+			if err != nil {
+				log.Fatal(err)
+			}
 		} else {
 			http.Redirect(w, r, "/forum", http.StatusSeeOther)
 		}
 	} else {
 		http.Redirect(w, r, "/forum", http.StatusSeeOther)
-	}
-
-	err := tplt.Execute(w, page)
-	if err != nil {
-		log.Fatal(err)
 	}
 }
 
@@ -360,7 +357,7 @@ func WriteHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		var categories []string
-		row, err := db.Query("SELECT name FROM categories")
+		row, err := db.Query("SELECT name FROM category")
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -384,7 +381,7 @@ func WriteHandler(w http.ResponseWriter, r *http.Request) {
 			if title == "" || content == "" || category == "" {
 				page.Error = "All fields are required"
 			} else {
-				row, err := db.Query("SELECT uuid, name FROM categories")
+				row, err := db.Query("SELECT id, name FROM category")
 				if err != nil {
 					log.Fatal(err)
 				}
@@ -404,16 +401,27 @@ func WriteHandler(w http.ResponseWriter, r *http.Request) {
 				row.Close()
 
 				if !found {
-					uid = uuid.New().String()
-					_, err = db.Exec("INSERT INTO categories (uuid, name, link, created, pinned) VALUES (?, ?, ?, ?, 'false')", uid, capitalize(category), "/category?id="+uid, time.Now().Format("01-02-2006 15:04:05"))
+					_, err = db.Exec("INSERT INTO category (name, creation_date, pinned, last_update) VALUES (?, ?, 0, ?)", capitalize(category), time.Now(), time.Now())
 					if err != nil {
 						log.Fatal(err)
 					}
 				}
 
-				_, err = db.Exec("INSERT INTO posts (uuid, title, content, created, user, likes, dislikes, category) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", uuid.New().String(), title, content, time.Now().Format("01-02-2006"), cookie.Value, 0, 0, uid)
+				var id string
+				row, err = db.Query("SELECT id FROM user WHERE uuid = ?", cookie.Value)
 				if err != nil {
 					log.Fatal(err)
+				}
+				for row.Next() {
+					err = row.Scan(&id)
+					if err != nil {
+						log.Fatal(err)
+					}
+				}
+
+				_, err = db.Exec("INSERT INTO post (title, content, creation_date, user_id, up_vote, down_vote, category_id, pinned, last_update) VALUES (?, ?, ?, ?, '{}', '{}', ?, 0, ?)", title, content, time.Now(), id, uid, time.Now())
+				if err != nil {
+					log.Fatal(err, " ligne 412")
 				}
 
 				db.Close()
@@ -450,7 +458,7 @@ func AdminHandler(w http.ResponseWriter, r *http.Request) {
 			log.Fatal(err)
 		}
 
-		row, err := db.Query("SELECT role FROM users WHERE uuid = ?", cookie.Value)
+		row, err := db.Query("SELECT role FROM user WHERE uuid = ?", cookie.Value)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -509,21 +517,27 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 			log.Fatal(err)
 		}
 
-		row, err := db.Query("SELECT `uuid`, `email`, `password` FROM users WHERE email = '" + email + "' LIMIT 1")
+		row, err := db.Query("SELECT email, password FROM user WHERE email = ? LIMIT 1", email)
 		if err != nil {
 			log.Fatal(err)
 		}
-		var db_uuid string
 		var db_email string
 		var db_password string
 		for row.Next() {
-			err = row.Scan(&db_uuid, &db_email, &db_password)
+			err = row.Scan(&db_email, &db_password)
 			if err != nil {
 				log.Fatal(err)
 			}
 		}
+		row.Close()
 
 		if db_email == email && CheckPasswordhash(password, db_password) {
+			db_uuid := uuid.New().String()
+
+			_, err = db.Exec("UPDATE user SET uuid = ? WHERE email = ?", db_uuid, email)
+			if err != nil {
+				log.Fatal(err)
+			}
 
 			cookie := http.Cookie{
 				Name:       "user",
@@ -540,9 +554,14 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 				Unparsed:   []string{},
 			}
 			if keepAlive == "on" {
-				cookie.Expires = time.Now().AddDate(5, 0, 0)
+				cookie.Expires = time.Now().AddDate(20, 0, 0)
 			}
 			http.SetCookie(w, &cookie)
+
+			_, err = db.Exec("UPDATE user SET last_seen = ? WHERE email = ?", time.Now(), db_email)
+			if err != nil {
+				log.Fatal(err)
+			}
 
 			http.Redirect(w, r, "/user/profile", http.StatusSeeOther)
 		} else {
@@ -576,15 +595,12 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 			log.Fatal(err)
 		}
 
-		id := uuid.New().String()
 		username := r.FormValue("username")
 		email := r.FormValue("email")
 		confemail := r.FormValue("confemail")
 		password := r.FormValue("passwd")
 		confpassword := r.FormValue("confpasswd")
-		joined := time.Now().Format("02-01-2006")
 
-		//In addition to the verification in JS, confirm that emails and passwords are the same
 		if email != confemail || password != confpassword {
 			http.Redirect(w, r, "/user/register", http.StatusSeeOther)
 			return
@@ -597,9 +613,8 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 
 		create := true
 
-		// Watch if the user isn't already registered
 		var count int
-		row, err := db.Query("SELECT COUNT(*) FROM users WHERE email = ?", email)
+		row, err := db.Query("SELECT COUNT(*) FROM user WHERE email = ?", email)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -611,7 +626,7 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 			create = false
 			page.Error = "Email is already used"
 		}
-		row, err = db.Query("SELECT COUNT(*) FROM users WHERE username = ?", username)
+		row, err = db.Query("SELECT COUNT(*) FROM user WHERE username = ?", username)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -624,13 +639,12 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 			page.Error = "Username is already used"
 		}
 
-		// The user is not registered, we create a new user
 		if create {
 			pass, err := HashPassword(password)
 			if err != nil {
 				log.Fatal(err)
 			}
-			_, err = db.Exec("INSERT INTO users (`uuid`, `username`, `email`, `password`, `role`, `joined`, `description`) VALUES (?, ?, ?, ?, \"Member\", ?, \"\")", id, username, email, pass, joined)
+			_, err = db.Exec("INSERT INTO user (`uuid`, `username`, `email`, `password`, `role`, `creation_date`, `biography`, `last_seen`) VALUES ('', ?, ?, ?, \"Member\", ?, \"\", ?)", username, email, pass, time.Now(), time.Now())
 			if err != nil {
 				log.Fatal(err)
 			}
@@ -669,77 +683,78 @@ func ProfileHandler(w http.ResponseWriter, r *http.Request) {
 			log.Fatal(err)
 		}
 
-		row, err := db.Query("SELECT * FROM users WHERE uuid = ? LIMIT 1", cookie.Value)
+		row, err := db.Query("SELECT COUNT(*) FROM user WHERE uuid = ?", cookie.Value)
 		if err != nil {
 			log.Fatal(err)
 		}
-
+		var count int
 		for row.Next() {
-			err = row.Scan(&user.Uuid, &user.Username, &user.Email, &user.Password, &user.Role, &user.Joined, &user.Description)
+			err = row.Scan(&count)
 			if err != nil {
 				log.Fatal(err)
 			}
 		}
 		row.Close()
-		user.Joined = strings.Replace(user.Joined, "-", "/", -1)
+
+		if count <= 0 {
+			http.Redirect(w, r, "/login", http.StatusSeeOther)
+		}
+
+		row, err = db.Query("SELECT * FROM user WHERE uuid = ? LIMIT 1", cookie.Value)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		for row.Next() {
+			err = row.Scan(&user.ID, &user.Uuid, &user.Username, &user.Email, &user.Password, &user.Role, &user.CreationDate, &user.Biography, &user.LastSeen)
+			if err != nil {
+				log.Fatal(err)
+			}
+		}
+		row.Close()
+
+		user.CreationDate = user.CreationDate.(time.Time).Format("02/01/2006 15:04:05")
+		user.LastSeen = user.LastSeen.(time.Time).Format("02/01/2006 15:04:05")
 
 		// Posts
-		var count int
-
-		row, err = db.Query("SELECT COUNT(*) FROM posts WHERE user = ?", user.Uuid)
+		row, err = db.Query("SELECT * FROM post AS p INNER JOIN category AS c ON p.category_id = c.id WHERE p.user_id = ? ORDER BY p.creation_date DESC", user.ID)
 		if err != nil {
 			log.Fatal(err)
 		}
 		for row.Next() {
-			err := row.Scan(&count)
+			var skip int
+			var post Post
+			post.UserID = User{}
+			err = row.Scan(&post.ID, &post.Title, &post.Content, &post.CreationDate, &skip, &post.UpVotes, &post.DownVotes, &post.CategoryId, &post.Pinned, &post.LastUpdate, &post.Category.ID, &post.Category.Name, &post.Category.CreationDate, &post.Category.Pinned, &post.Category.LastUpdate)
 			if err != nil {
 				log.Fatal(err)
 			}
-		}
 
-		if count > 0 {
-			row, err = db.Query("SELECT uuid, title, content, created, likes, dislikes, category FROM posts WHERE user = ?", user.Uuid)
-			if err != nil {
-				log.Fatal(err)
-			}
-			for row.Next() {
-				var post Post
-				post.User = user
-				err = row.Scan(&post.Uuid, &post.Title, &post.Content, &post.Created, &post.Likes, &post.Dislikes, &post.Category)
-				if err != nil {
-					log.Fatal(err)
-				}
-				user.Posts = append(user.Posts, post)
-			}
+			post.CreationDate = post.CreationDate.(time.Time).Format("02/01/2006 15:04:05")
+			post.LastUpdate = post.LastUpdate.(time.Time).Format("02/01/2006 15:04:05")
+
+			user.Posts = append(user.Posts, post)
 		}
+		row.Close()
 
 		// Comments
-		row, err = db.Query("SELECT COUNT(*) FROM comments WHERE user = ?", user.Uuid)
+		row, err = db.Query("SELECT * FROM comment AS c INNER JOIN post AS p ON c.post_id = p.id ORDER BY c.creation_date DESC")
 		if err != nil {
 			log.Fatal(err)
 		}
 		for row.Next() {
-			err := row.Scan(&count)
+			var skip int
+			var comment Comment
+			err = row.Scan(&comment.ID, &comment.Content, &comment.CreationDate, &skip, &skip, &comment.UpVotes, &comment.DownVotes, &comment.Pinned, &comment.PostID.ID, &comment.PostID.Title, &comment.PostID.Content, &comment.PostID.CreationDate, &skip, &comment.PostID.UpVotes, &comment.PostID.DownVotes, &comment.PostID.CategoryId, &comment.PostID.Pinned, &comment.PostID.LastUpdate)
 			if err != nil {
 				log.Fatal(err)
 			}
-		}
 
-		if count > 0 {
-			row, err = db.Query("SELECT uuid, content, created, post, likes, dislikes FROM comments WHERE user = ?", user.Uuid)
-			if err != nil {
-				log.Fatal(err)
-			}
-			for row.Next() {
-				var comment Comment
-				comment.User = user
-				err = row.Scan(&comment.Uuid, &comment.Content, &comment.Created, &comment.Post, &comment.Likes, &comment.Dislikes)
-				if err != nil {
-					log.Fatal(err)
-				}
-				user.Comments = append(user.Comments, comment)
-			}
+			comment.CreationDate = comment.CreationDate.(time.Time).Format("02/01/2006 15:04:05")
+
+			user.Comments = append(user.Comments, comment)
 		}
+		row.Close()
 
 		/*
 			Settings
@@ -756,7 +771,7 @@ func ProfileHandler(w http.ResponseWriter, r *http.Request) {
 				password := r.FormValue("passwd")
 
 				var count int
-				row, err := db.Query("SELECT COUNT(*) FROM users WHERE uuid = ? AND username = ?", cookie.Value, current)
+				row, err := db.Query("SELECT COUNT(*) FROM user WHERE uuid = ? AND username = ?", cookie.Value, current)
 				if err != nil {
 					log.Fatal(err)
 				}
@@ -767,11 +782,12 @@ func ProfileHandler(w http.ResponseWriter, r *http.Request) {
 						log.Fatal(err)
 					}
 				}
+				row.Close()
 
 				if count > 0 {
 					var db_pass string
 
-					row, err = db.Query("SELECT password FROM users WHERE uuid = ? AND username = ?", cookie.Value, current)
+					row, err = db.Query("SELECT password FROM user WHERE uuid = ? AND username = ?", cookie.Value, current)
 					if err != nil {
 						log.Fatal(err)
 					}
@@ -781,9 +797,10 @@ func ProfileHandler(w http.ResponseWriter, r *http.Request) {
 							log.Fatal(err)
 						}
 					}
+					row.Close()
 
 					if CheckPasswordhash(password, db_pass) {
-						_, err = db.Exec("UPDATE users SET username = ? WHERE uuid = ?", new, cookie.Value)
+						_, err = db.Exec("UPDATE user SET username = ? WHERE uuid = ?", new, cookie.Value)
 						if err != nil {
 							log.Fatal(err)
 						}
@@ -803,7 +820,7 @@ func ProfileHandler(w http.ResponseWriter, r *http.Request) {
 					page.Error = "[Email] Emails don't match"
 				} else {
 					var count int
-					row, err := db.Query("SELECT COUNT(*) FROM users WHERE uuid = ? AND email = ?", cookie.Value, current)
+					row, err := db.Query("SELECT COUNT(*) FROM user WHERE uuid = ? AND email = ?", cookie.Value, current)
 					if err != nil {
 						log.Fatal(err)
 					}
@@ -814,11 +831,12 @@ func ProfileHandler(w http.ResponseWriter, r *http.Request) {
 							log.Fatal(err)
 						}
 					}
+					row.Close()
 
 					if count > 0 {
 						var db_pass string
 
-						row, err = db.Query("SELECT password FROM users WHERE uuid = ? AND email = ?", cookie.Value, current)
+						row, err = db.Query("SELECT password FROM user WHERE uuid = ? AND email = ?", cookie.Value, current)
 						if err != nil {
 							log.Fatal(err)
 						}
@@ -828,9 +846,10 @@ func ProfileHandler(w http.ResponseWriter, r *http.Request) {
 								log.Fatal(err)
 							}
 						}
+						row.Close()
 
 						if CheckPasswordhash(password, db_pass) {
-							_, err = db.Exec("UPDATE users SET email = ? WHERE uuid = ?", new, cookie.Value)
+							_, err = db.Exec("UPDATE user SET email = ? WHERE uuid = ?", new, cookie.Value)
 							if err != nil {
 								log.Fatal(err)
 							}
@@ -850,7 +869,7 @@ func ProfileHandler(w http.ResponseWriter, r *http.Request) {
 					page.Error = "[Password] Passwords don't match"
 				} else {
 					var db_pass string
-					row, err := db.Query("SELECT password FROM users WHERE uuid = ?", cookie.Value)
+					row, err := db.Query("SELECT password FROM user WHERE uuid = ?", cookie.Value)
 					if err != nil {
 						log.Fatal(err)
 					}
@@ -861,6 +880,7 @@ func ProfileHandler(w http.ResponseWriter, r *http.Request) {
 							log.Fatal(err)
 						}
 					}
+					row.Close()
 
 					if CheckPasswordhash(current, db_pass) {
 						hash, err := HashPassword(new)
@@ -868,7 +888,7 @@ func ProfileHandler(w http.ResponseWriter, r *http.Request) {
 							log.Fatal(err)
 						}
 
-						_, err = db.Exec("UPDATE users SET password = ? WHERE uuid = ?", hash, cookie.Value)
+						_, err = db.Exec("UPDATE user SET password = ? WHERE uuid = ?", hash, cookie.Value)
 						if err != nil {
 							log.Fatal(err)
 						}
@@ -880,7 +900,7 @@ func ProfileHandler(w http.ResponseWriter, r *http.Request) {
 				password := r.FormValue("passwd")
 
 				var db_pass string
-				row, err := db.Query("SELECT password FROM users WHERE uuid = ?", cookie.Value)
+				row, err := db.Query("SELECT password FROM user WHERE uuid = ?", cookie.Value)
 				if err != nil {
 					log.Fatal(err)
 				}
@@ -891,19 +911,21 @@ func ProfileHandler(w http.ResponseWriter, r *http.Request) {
 						log.Fatal(err)
 					}
 				}
+				row.Close()
 
 				if CheckPasswordhash(password, db_pass) {
-					_, err = db.Exec("DELETE FROM users WHERE uuid = ?", cookie.Value)
+					_, err = db.Exec("DELETE FROM user WHERE uuid = ?", cookie.Value)
 					if err != nil {
 						log.Fatal(err)
 					}
-					cookie := http.Cookie{
+
+					user := http.Cookie{
 						Name:    "user",
 						Value:   "",
 						Path:    "/",
 						Expires: time.Unix(0, 0),
 					}
-					http.SetCookie(w, &cookie)
+					http.SetCookie(w, &user)
 					http.Redirect(w, r, "/", http.StatusFound)
 				} else {
 					page.Error = "[Delete] This is not your current password"
@@ -926,12 +948,27 @@ func ProfileHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func LogoutHandler(w http.ResponseWriter, r *http.Request) {
-	cookie := http.Cookie{
-		Name:    "user",
-		Value:   "",
-		Path:    "/",
-		Expires: time.Unix(0, 0),
+	user, _ := r.Cookie("user")
+	if user != nil {
+		db, err := sql.Open("sqlite3", "./forum.db")
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		_, err = db.Exec("UPDATE user SET uuid = '' WHERE uuid = ?", user.Value)
+		if err != nil {
+			log.Fatal(err)
+		}
+		db.Close()
+
+		cookie := http.Cookie{
+			Name:    "user",
+			Value:   "",
+			Path:    "/",
+			Expires: time.Unix(0, 0),
+		}
+		http.SetCookie(w, &cookie)
 	}
-	http.SetCookie(w, &cookie)
-	http.Redirect(w, r, "/user/login", http.StatusSeeOther)
+
+	http.Redirect(w, r, "/", http.StatusSeeOther)
 }

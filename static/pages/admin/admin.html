@@ -13,12 +13,15 @@
     <div class="tabs">
         <span class="tab-btn active" onclick="toggleTab('stats');">Stats</span>
         <span class="tab-btn" onclick="toggleTab('users');">Users</span>
-        <span class="tab-btn" onclick="toggleTab('categories');">Categories</span>
+        <span class="tab-btn" onclick="toggleTab('reports');">Reports</span>
     </div>
 
     <!-- Stats -->
     <div class="tab" id="stats">
-        <p class='counter-signin'>80</p>
+        <div class="nbrSignin">
+            <h1 class="signinTitle">Number of sign-in : </h1>
+            <p class='counter-signin'>80</p>
+        </div>
     </div>
 
     <!-- User -->
@@ -36,14 +39,34 @@
                         <i class="fa-solid fa-trash-can"></i>
                     </div>
                 </div>
-
-
-                <!-- Categories -->
-                <div class="tab hidden" id="categories">
-                    <span>cat</span>
-                </div>
             </div>
+        </a>
+    </div>
 
-            <script src="/js/user/profile.js"></script>
 
-            {{ end }}
+
+    <!-- Categories -->
+    <div class="tab hidden" id="reports">
+        <div class="container">
+			<div class="header">
+				<p class="subtitle">Comments</p>
+			</div>
+
+			<div class="body">
+				{{ $length := len .Content.Comments }}
+				{{ if eq $length 0 }}
+				<p class="empty">Any comments yet.</p>
+				{{ else }}
+				{{ range .Content.Comments }}
+				<a class="card" href="/post?id={{ .PostID.ID }}">
+					<p class="card-title">{{ .Content }}</p>
+					<p class="date">{{ .CreationDate }}</p>
+				</a>
+				{{ end }}
+				{{ end }}
+			</div>
+		</div>
+            
+    <script src="/js/user/profile.js"></script>
+
+    {{ end }}
