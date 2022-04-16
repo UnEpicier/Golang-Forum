@@ -53,19 +53,14 @@
 			</div>
 
 			<div class="body">
-				{{ $length := len .Content.Comments }}
-				{{ if eq $length 0 }}
 				<p class="empty">Any comments yet.</p>
-				{{ else }}
-				{{ range .Content.Comments }}
-				<a class="card" href="/post?id={{ .PostID.ID }}">
-					<p class="card-title">{{ .Content }}</p>
-					<p class="date">{{ .CreationDate }}</p>
+				<a class="card">
+					<p class="card-title">Fuck Html and Css</p>
+					<p class="date">XX-XX-XXXX</p>
 				</a>
-				{{ end }}
-				{{ end }}
 			</div>
 		</div>
+    </div>
             
     <script src="/js/user/profile.js"></script>
 

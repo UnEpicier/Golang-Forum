@@ -26,11 +26,12 @@
 				</div>
 				<p class="email">{{ .Content.Email }}</p>
 				<p class="joined">Joined at: {{ .Content.CreationDate }}</p>
-				<p class="desc">
-					{{ .Content.Biography }}
-				</p>
 			</div>
 			<a href="/user/logout" class="btn logout">Logout</a>
+		</div>
+		<div style="position: relative;">
+			<textarea class="desc" onfocusout="sendBio();">{{ if eq .Content.Biography "" }}No biography{{ else }}{{ .Content.Biography }}{{ end }}</textarea>
+			<i class="fa-solid fa-pen pen"></i>
 		</div>
 
 		<div class="container">

@@ -96,8 +96,6 @@ body {
 	justify-content: space-between;
 }
 
-.col {}
-
 .logout {
 	width: max-content !important;
 	height: max-content;
@@ -155,9 +153,38 @@ body {
 }
 
 .desc {
+	position: relative;
+	padding: 10px;
+	border-radius: 7px;
+	width: 100%;
+	border: none;
+	background-color: transparent;
 	font-size: 1.2rem;
 	font-weight: 300;
 	color: #ddd;
+	cursor: text;
+	outline: none;
+	resize: vertical;
+	transition: background-color .3s ease;
+}
+
+.desc:hover,
+.desc:focus,
+.desc:active {
+	background-color: rgb(187, 111, 96, .5);
+}
+
+.desc .empty {
+	font-size: 1.2rem;
+}
+
+.pen {
+	z-index: 1;
+	position: absolute;
+	top: 10px;
+	right: 10px;
+	color: #eaac69;
+	cursor: pointer;
 }
 
 /* POST */
