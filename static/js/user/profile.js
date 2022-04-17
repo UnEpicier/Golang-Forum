@@ -49,3 +49,47 @@ const hideDeletePopup = () => {
 	document.getElementById('delete-popup').classList.add('hidden')
 	document.body.style.overflow = "auto"
 }
+
+const autoGrow = () => {
+	const element = event.target
+	element.style.height = "5px"
+	element.style.height = (element.scrollHeight) + "px"
+}
+
+const sendBio = () => {
+	event.preventDefault()
+
+	const bio = event.target.value
+
+	const form = document.createElement('form')
+	form.method = "POST"
+	form.classList.add('hidden')
+
+	const input = document.createElement('input')
+	input.type = "hidden"
+	input.name = "bio"
+	input.value = bio
+
+	form.appendChild(input)
+
+	const f = document.createElement('input')
+	f.type = "hidden"
+	f.name = "form"
+	f.value = "biography"
+
+	form.appendChild(f)
+
+	document.body.appendChild(form)
+
+	form.submit()
+
+	document.body.removeChild(form)
+}
+
+
+
+/*
+On page ready
+*/
+document.getElementById('bio').style.height = "5px"
+document.getElementById('bio').style.height = (document.getElementById('bio').scrollHeight) + "px"

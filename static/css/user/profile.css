@@ -164,8 +164,13 @@ body {
 	color: #ddd;
 	cursor: text;
 	outline: none;
-	resize: vertical;
+	resize: none;
+	overflow: hidden;
 	transition: background-color .3s ease;
+}
+
+.desc::placeholder {
+	color: #ddd;
 }
 
 .desc:hover,

@@ -764,8 +764,16 @@ func ProfileHandler(w http.ResponseWriter, r *http.Request) {
 				log.Fatal(err)
 			}
 
-			/* Username */
-			if r.FormValue("form") == "username" {
+			if r.FormValue("form") == "biography" {
+				biography := r.FormValue("bio")
+
+				_, err := db.Exec("UPDATE user SET biography = ? WHERE uuid = ?", biography, cookie.Value)
+				if err != nil {
+					log.Fatal(err)
+				}
+				http.Redirect(w, r, "/user/profile", http.StatusFound)
+
+			} else if r.FormValue("form") == "username" {
 				current := r.FormValue("username")
 				new := r.FormValue("newusername")
 				password := r.FormValue("passwd")
@@ -804,6 +812,7 @@ func ProfileHandler(w http.ResponseWriter, r *http.Request) {
 						if err != nil {
 							log.Fatal(err)
 						}
+						http.Redirect(w, r, "/user/profile", http.StatusFound)
 					} else {
 						page.Error = "[Username] Wrong password"
 					}
@@ -853,6 +862,7 @@ func ProfileHandler(w http.ResponseWriter, r *http.Request) {
 							if err != nil {
 								log.Fatal(err)
 							}
+							http.Redirect(w, r, "/user/profile", http.StatusFound)
 						} else {
 							page.Error = "[Email] Wrong password"
 						}
@@ -892,6 +902,7 @@ func ProfileHandler(w http.ResponseWriter, r *http.Request) {
 						if err != nil {
 							log.Fatal(err)
 						}
+						http.Redirect(w, r, "/user/profile", http.StatusFound)
 					} else {
 						page.Error = "[Password] This is not your current password"
 					}
