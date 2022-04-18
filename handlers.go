@@ -119,138 +119,6 @@ func ForumHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func PostHandler(w http.ResponseWriter, r *http.Request) {
-	files := []string{"./static/pages/post.html", "./static/layout/base.html"}
-	tplt := template.Must(template.ParseFiles(files...))
-
-	var page Page
-	page.Logged = false
-	page.Error = ""
-
-	cookie, _ := r.Cookie("user")
-
-	if cookie != nil {
-		page.Logged = true
-	}
-
-	if r.URL.Query().Has("id") {
-		uuid := r.URL.Query().Get("id")
-
-		db, err := sql.Open("sqlite3", "./forum.db")
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		uuid_list := []string{}
-		row, err := db.Query("SELECT id FROM post")
-		if err != nil {
-			log.Fatal(err)
-		}
-		for row.Next() {
-			var uuid string
-			err = row.Scan(&uuid)
-			if err != nil {
-				log.Fatal(err)
-			}
-			uuid_list = append(uuid_list, uuid)
-		}
-		row.Close()
-
-		if contains(uuid_list, uuid) {
-			var post Post
-			row, err = db.Query("SELECT * FROM post WHERE id = ?", uuid)
-			if err != nil {
-				log.Fatal(err)
-			}
-			var uid string
-			for row.Next() {
-				err = row.Scan(&post.ID, &post.Title, &post.Content, &post.CreationDate, &post.UserID, &post.UpVotes, &post.DownVotes, &post.CategoryId, &post.Pinned, &post.LastUpdate)
-				if err != nil {
-					log.Fatal(err)
-				}
-				post.CreationDate = post.CreationDate.(time.Time).Format("01/02/2006 15:04:05")
-				post.LastUpdate = post.LastUpdate.(time.Time).Format("01/02/2006 15:04:05")
-			}
-			row.Close()
-
-			row, err = db.Query("SELECT * FROM user WHERE id = ?", uid)
-			if err != nil {
-				log.Fatal(err)
-			}
-			for row.Next() {
-				var user User
-				err = row.Scan(&user.ID, &user.Uuid, &user.Username, &user.Email, &user.Password, &user.Role, &user.CreationDate, &user.Biography, &user.LastSeen)
-				if err != nil {
-					log.Fatal(err)
-				}
-				user.CreationDate = user.CreationDate.(time.Time).Format("01/02/2006 15:04:05")
-				user.LastSeen = user.LastSeen.(time.Time).Format("01/02/2006 15:04:05")
-
-				post.UserID = user
-			}
-			row.Close()
-
-			row, err = db.Query("SELECT * FROM comment WHERE post_id = ?", post.ID)
-			if err != nil {
-				log.Fatal(err)
-			}
-			var comments []Comment
-			for row.Next() {
-				var comment Comment
-				comment.UserID = User{}
-				err = row.Scan(&comment.ID, &comment.Content, &comment.CreationDate, &uid, &comment.PostID, &comment.UpVotes, &comment.DownVotes, &comment.Pinned)
-				if err != nil {
-					log.Fatal(err)
-				}
-				comments = append(comments, comment)
-			}
-			row.Close()
-
-			for comment := range comments {
-				row, err = db.Query("SELECT * FROM user WHERE id = ?", uid)
-				if err != nil {
-					log.Fatal(err)
-				}
-				for row.Next() {
-					var user User
-					err = row.Scan(&user.ID, &user.Uuid, &user.Username, &user.Email, &user.Password, &user.Role, &user.CreationDate, &user.Biography, &user.LastSeen)
-					if err != nil {
-						log.Fatal(err)
-					}
-
-					user.CreationDate = user.CreationDate.(time.Time).Format("01/02/2006 15:04:05")
-					user.LastSeen = user.LastSeen.(time.Time).Format("01/02/2006 15:04:05")
-
-					comments[comment].UserID = user
-				}
-				row.Close()
-			}
-
-			type c struct {
-				Post     Post
-				Comments []Comment
-			}
-
-			var content c
-			content.Post = post
-			content.Comments = comments
-			page.Content = content
-
-			db.Close()
-
-			err = tplt.Execute(w, page)
-			if err != nil {
-				log.Fatal(err)
-			}
-
-		} else {
-			http.Redirect(w, r, "/forum", http.StatusSeeOther)
-		}
-	} else {
-		http.Redirect(w, r, "/forum", http.StatusSeeOther)
-	}
-}
-
 func CategoryHandler(w http.ResponseWriter, r *http.Request) {
 	files := []string{"./static/pages/category.html", "./static/layout/base.html"}
 	tplt := template.Must(template.ParseFiles(files...))
@@ -308,7 +176,7 @@ func CategoryHandler(w http.ResponseWriter, r *http.Request) {
 			for row.Next() {
 				var uid string
 				var post Post
-				err = row.Scan(&post.UserID.ID, &post.UserID.Uuid, &post.UserID.Username, &post.UserID.Email, &post.UserID.Password, &post.UserID.Role, &post.UserID.CreationDate, &post.UserID.Biography, &post.UserID.LastSeen, &post.ID, &post.Title, &post.Content, &post.CreationDate, &uid, &post.UpVotes, &post.DownVotes, &post.CategoryId, &post.Pinned, &post.LastUpdate)
+				err = row.Scan(&post.User.ID, &post.User.Uuid, &post.User.Username, &post.User.Email, &post.User.Password, &post.User.Role, &post.User.CreationDate, &post.User.Biography, &post.User.LastSeen, &post.ID, &post.Title, &post.Content, &post.CreationDate, &uid, &post.UpVotes, &post.DownVotes, &post.CategoryId, &post.Pinned, &post.LastUpdate)
 				if err != nil {
 					log.Fatal(err)
 				}
@@ -316,8 +184,8 @@ func CategoryHandler(w http.ResponseWriter, r *http.Request) {
 				post.CreationDate = post.CreationDate.(time.Time).Format("01/02/2006 15:04:05")
 				post.LastUpdate = post.LastUpdate.(time.Time).Format("01/02/2006 15:04:05")
 
-				post.UserID.CreationDate = post.UserID.CreationDate.(time.Time).Format("01/02/2006 15:04:05")
-				post.UserID.LastSeen = post.UserID.LastSeen.(time.Time).Format("01/02/2006 15:04:05")
+				post.User.CreationDate = post.User.CreationDate.(time.Time).Format("01/02/2006 15:04:05")
+				post.User.LastSeen = post.User.LastSeen.(time.Time).Format("01/02/2006 15:04:05")
 
 				posts = append(posts, post)
 			}
@@ -333,6 +201,126 @@ func CategoryHandler(w http.ResponseWriter, r *http.Request) {
 			if err != nil {
 				log.Fatal(err)
 			}
+		} else {
+			http.Redirect(w, r, "/forum", http.StatusSeeOther)
+		}
+	} else {
+		http.Redirect(w, r, "/forum", http.StatusSeeOther)
+	}
+}
+
+func PostHandler(w http.ResponseWriter, r *http.Request) {
+	files := []string{"./static/pages/post.html", "./static/layout/base.html"}
+	tplt := template.Must(template.ParseFiles(files...))
+
+	var page Page
+	page.Logged = false
+	page.Error = ""
+
+	cookie, _ := r.Cookie("user")
+
+	if cookie != nil {
+		page.Logged = true
+	}
+
+	if r.URL.Query().Has("id") {
+		uuid := r.URL.Query().Get("id")
+
+		db, err := sql.Open("sqlite3", "./forum.db")
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		uuid_list := []string{}
+		row, err := db.Query("SELECT id FROM post")
+		if err != nil {
+			log.Fatal(err)
+		}
+		for row.Next() {
+			var uid string
+			err = row.Scan(&uid)
+			if err != nil {
+				log.Fatal(err)
+			}
+			uuid_list = append(uuid_list, uid)
+		}
+		row.Close()
+
+		if contains(uuid_list, uuid) {
+			var post Post
+			row, err = db.Query("SELECT * FROM user AS u INNER JOIN post AS p ON u.id = p.user_id WHERE p.id = ?", uuid)
+			if err != nil {
+				log.Fatal(err)
+			}
+			var skip string
+			for row.Next() {
+				err = row.Scan(&post.User.ID, &post.User.Uuid, &post.User.Username, &post.User.Email, &post.User.Password, &post.User.Role, &post.User.CreationDate, &post.User.Biography, &post.User.LastSeen, &post.ID, &post.Title, &post.Content, &post.CreationDate, &skip, &post.UpVotes, &post.DownVotes, &post.CategoryId, &post.Pinned, &post.LastUpdate)
+				if err != nil {
+					log.Fatal(err)
+				}
+
+				post.User.CreationDate = post.User.CreationDate.(time.Time).Format("01/02/2006 15:04:05")
+				post.User.LastSeen = post.User.LastSeen.(time.Time).Format("01/02/2006 15:04:05")
+
+				post.CreationDate = post.CreationDate.(time.Time).Format("01/02/2006 15:04:05")
+				post.LastUpdate = post.LastUpdate.(time.Time).Format("01/02/2006 15:04:05")
+			}
+			row.Close()
+
+			row, err = db.Query("SELECT * FROM comment WHERE post_id = ?", post.ID)
+			if err != nil {
+				log.Fatal(err)
+			}
+			var comments []Comment
+			var uid string
+			for row.Next() {
+				var comment Comment
+				comment.User = User{}
+				err = row.Scan(&comment.ID, &comment.Content, &comment.CreationDate, &uid, &comment.PostID, &comment.UpVotes, &comment.DownVotes, &comment.Pinned)
+				if err != nil {
+					log.Fatal(err)
+				}
+				comments = append(comments, comment)
+			}
+			row.Close()
+
+			for comment := range comments {
+				row, err = db.Query("SELECT * FROM user WHERE id = ?", uid)
+				if err != nil {
+					log.Fatal(err)
+				}
+				for row.Next() {
+					var user User
+					err = row.Scan(&user.ID, &user.Uuid, &user.Username, &user.Email, &user.Password, &user.Role, &user.CreationDate, &user.Biography, &user.LastSeen)
+					if err != nil {
+						log.Fatal(err)
+					}
+
+					user.CreationDate = user.CreationDate.(time.Time).Format("01/02/2006 15:04:05")
+					user.LastSeen = user.LastSeen.(time.Time).Format("01/02/2006 15:04:05")
+
+					comments[comment].User = user
+				}
+				row.Close()
+			}
+
+			type c struct {
+				Post     Post
+				Comments []Comment
+			}
+
+			var content c
+			content.Post = post
+			content.Comments = comments
+			page.Content = content
+
+			db.Close()
+
+			err = tplt.Execute(w, page)
+			if err != nil {
+				log.Fatal(err)
+			}
+
 		} else {
 			http.Redirect(w, r, "/forum", http.StatusSeeOther)
 		}
@@ -661,6 +649,8 @@ func AdminHandler(w http.ResponseWriter, r *http.Request) {
 			if err != nil {
 				log.Fatal(err)
 			}
+			//User
+
 		} else {
 			http.Redirect(w, r, "/", http.StatusSeeOther)
 		}
@@ -669,6 +659,7 @@ func AdminHandler(w http.ResponseWriter, r *http.Request) {
 	} else {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 	}
+
 }
 
 /*
@@ -909,7 +900,7 @@ func ProfileHandler(w http.ResponseWriter, r *http.Request) {
 		for row.Next() {
 			var skip int
 			var post Post
-			post.UserID = User{}
+			post.User = User{}
 			err = row.Scan(&post.ID, &post.Title, &post.Content, &post.CreationDate, &skip, &post.UpVotes, &post.DownVotes, &post.CategoryId, &post.Pinned, &post.LastUpdate, &post.Category.ID, &post.Category.Name, &post.Category.CreationDate, &post.Category.Pinned, &post.Category.LastUpdate)
 			if err != nil {
 				log.Fatal(err)

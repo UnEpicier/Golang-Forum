@@ -22,11 +22,20 @@ body {
 }
 
 .title {
-	color: #E79E4F;
 	font-size: 1.6em;
-	text-decoration: underline;
-	line-height: 1.9em;
-	padding-bottom: .3em;
+	color: #E79E4F;
+}
+
+.info {
+	font-size: 1rem;
+	color: #E79E4F;
+}
+
+.content {
+	margin: 0 10px;
+	padding-top: 10px;
+	font-size: 1.1rem;
+	color: #eaac69;
 }
 
 .comment {
@@ -39,19 +48,7 @@ body {
 	margin-bottom: 30px;
 }
 
-.info {
-	font-size: 1.2rem;
-	color: #E79E4F;
-}
-
 .infocmt {
-	font-size: 1.1rem;
-	color: #eaac69;
-}
-
-.content {
-	margin: 0 10px;
-	padding-top: 10px;
 	font-size: 1.1rem;
 	color: #eaac69;
 }
@@ -86,5 +83,65 @@ body {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
+	padding: 20px;
 	width: 100%;
+	border-radius: 10px;
+	background-color: #593747;
+}
+
+.comment-form>p {
+	margin-bottom: 20px;
+	color: #fff;
+}
+
+.comment-form>textarea {
+	position: relative;
+	margin-bottom: 20px;
+	padding: 10px;
+	border-radius: 7px;
+	width: 100%;
+	border: none;
+	background-color: rgb(187, 111, 96, .5);
+	font-size: 1.2rem;
+	font-weight: 300;
+	color: #ddd;
+	cursor: text;
+	outline: none;
+	resize: none;
+	overflow: hidden;
+	transition: background-color .3s ease;
+}
+
+.comment-form>textarea::placeholder {
+	color: #ddd;
+}
+
+.comment-form>textarea .empty {
+	font-size: 1.2rem;
+}
+
+.comment-form>button[type="submit"] {
+	align-self: flex-end;
+	padding: 15px;
+	border: 0;
+	border-radius: 5px;
+	background: #E79E4F;
+	font-size: 14px;
+	text-transform: uppercase;
+	text-decoration: none;
+	color: #321F28;
+	outline: 0;
+	transition: background-color .3s ease;
+	cursor: pointer;
+}
+
+.comment-form>button[type="submit"]:hover {
+	background-color: #eaac69;
+}
+
+.row {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	align-items: center;
 }

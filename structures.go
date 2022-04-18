@@ -28,7 +28,7 @@ type Post struct {
 	Title        string
 	Content      string
 	CreationDate interface{} // string or time.Time
-	UserID       User
+	User         User
 	UpVotes      string
 	DownVotes    string
 	CategoryId   int
@@ -41,7 +41,7 @@ type Comment struct {
 	ID           string
 	Content      string
 	CreationDate interface{}
-	UserID       User
+	User         User
 	PostID       Post
 	UpVotes      string
 	DownVotes    string

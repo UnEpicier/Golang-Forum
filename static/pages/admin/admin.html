@@ -74,28 +74,69 @@
 
 	<!-- User -->
 	<div class="tab hidden" id="users">
-		<a class="card" href="/post?id= Uuid ">
-			<!-- ADD HREF -->
+		<div class="tab-header">
+			<div class="search-group">
+				<input type="text" class="search-input" id="searchbar" placeholder="Search...">
+				<button class="search-btn" onclick="search()">
+					<i class="fa fa-search"></i>
+				</button>
+			</div>
+		</div>
+		<div class="card">
 			<div class="card-header">
-				<div class="col">
-					<p class="card-title">Salope</p>
-					<div class="date"> XX-XX-XXXX</div>
-					<div class="btn-edit">
-						<i class="fa-solid fa-pen"></i>
+				<div class="row">
+					<div class="col">
+						<div class="username">
+							<p class="name">Username</p>
+							<p class="role" id="Admin">Admin</p>
+						</div>
+						<p class="email">Email</p>
 					</div>
-					<div class="btn-delete">
-						<i class="fa-solid fa-trash-can"></i>
+					<div class="col">
+						<p class="date">Creation Date</p>
+						<p class="date">Last Seen</p>
 					</div>
 				</div>
+				<p class="bio">Biography</p>
 			</div>
-		</a>
+			<div class="action">
+				<a href="/admin/profile?id=1" class="nav-btn primary">Edit</a>
+				<a href="/admin/delete?id=9999" class="nav-btn primary">Delete</a>
+				<a href="/admin/posts?id=1" class="nav-btn primary">View posts</a>
+				<a href="/admin/comments?id=1" class="nav-btn primary">View comments</a>
+			</div>
+		</div>
 	</div>
 
-
-
-	<!-- Categories -->
+	<!-- Reports -->
 	<div class="tab hidden" id="reports">
-		<div class="container">
+		<div class="list">
+			<div class="header">
+				<p class="subtitle">Users</p>
+			</div>
+
+			<div class="body">
+				<p class="empty">Any comments yet.</p>
+				<div class="card">
+					<p class="card-title">Fuck Html and Css</p>
+					<p class="date">XX-XX-XXXX</p>
+				</div>
+			</div>
+		</div>
+		<div class="list">
+			<div class="header">
+				<p class="subtitle">Posts</p>
+			</div>
+
+			<div class="body">
+				<p class="empty">Any comments yet.</p>
+				<a class="card">
+					<p class="card-title">Fuck Html and Css</p>
+					<p class="date">XX-XX-XXXX</p>
+				</a>
+			</div>
+		</div>
+		<div class="list">
 			<div class="header">
 				<p class="subtitle">Comments</p>
 			</div>
