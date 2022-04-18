@@ -119,32 +119,30 @@ const catChart = new Chart(
  */
 
 const catActHTML = document.getElementsByClassName("data-catactivities");
-let catAct_labels = [];
-let catAct_values = [];
+let cat_Actdataset = [];
 
 for (let i = 0; i < catActHTML.length; i++) {
-	catAct_labels.push(catActHTML[i].children[0].innerText);
-	catAct_values.push(catActHTML[i].children[1].innerText);
+	const data = [];
+	catActHTML[i].children[1].innerText
+		.replace('[', '')
+		.replace(']', '')
+		.split(' ').forEach(function (item) {
+			data.push(parseInt(item));
+		});
+
+	cat_Actdataset.push({
+		label: catActHTML[i].children[0].innerText,
+		data: data,
+		backgroundColor: borderColors[i],
+		borderColor: borderColors[i],
+		borderWidth: borderWidth,
+		hoverOffset: hoverOffset
+	});
 }
 
 const catAct_data = {
 	labels: months,
-	datasets: [{
-		label: 'Posts',
-		data: [0, 20, 40, 5, 60, 55, 30, 20, 23, 10, 8, 3],
-		backgroundColor: borderColors[0],
-		borderColor: borderColors[0],
-		borderWidth: borderWidth,
-		hoverOffset: hoverOffset
-	},
-	{
-		label: 'Posts',
-		data: [10, 40, 2, 77, 4, 30, 10, 50, 30, 44, 66],
-		backgroundColor: borderColors[1],
-		borderColor: borderColors[1],
-		borderWidth: borderWidth,
-		hoverOffset: hoverOffset
-	}],
+	datasets: cat_Actdataset,
 };
 const catAct_config = {
 	type: 'line',

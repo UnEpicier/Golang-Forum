@@ -7,7 +7,7 @@ body {
 
 .container {
 	display: flex;
-	margin-bottom: 35px;
+	margin-bottom: 50px;
 	width: 95%;
 	max-width: 1200px;
 	border: 1px solid #A05344;
@@ -114,6 +114,67 @@ body {
 	font-size: 1.4rem;
 	text-align: center;
 	color: #E79E4F;
+}
+
+.stat-row {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	width: 100%;
+}
+
+.stat-col {
+	display: flex;
+	flex-direction: column;
+	width: 50%;
+	height: 100%;
+}
+
+.stat-col:first-child {
+	border-right: 1px solid #E79E4F;
+}
+
+.col-title {
+	padding-bottom: 10px;
+	width: 100%;
+	border-bottom: 1px solid #E79E4F;
+	font-size: 1.2rem;
+	font-weight: 300;
+	text-align: center;
+	color: #E79E4F;
+}
+
+.grid-row {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: nowrap;
+}
+
+.grid-col {
+	display: flex;
+	flex-direction: column;
+	width: 50%;
+}
+
+.grid-col:first-child {
+	border-right: 1px solid #E79E4F;
+}
+
+.grid-col:last-child {
+	text-align: right;
+}
+
+.col-value {
+	padding: 5px;
+	width: 100%;
+	font-size: 1rem;
+	font-weight: 300;
+	color: #fff;
+}
+
+.col-value:not(:last-child) {
+	border-bottom: 1px solid #e79e4fa7;
 }
 
 /*

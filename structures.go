@@ -78,6 +78,8 @@ type Stats struct {
 	Categories    []AD_Categories
 	CatActivities []AD_CatActivities
 	Inscriptions  []AD_Inscription
+	Users         AD_Users
+	Forum         AD_Forum
 }
 
 type AD_Categories struct {
@@ -86,10 +88,24 @@ type AD_Categories struct {
 }
 
 type AD_CatActivities struct {
-	Name string
+	Name     string
+	Activity [12]int
 }
 
 type AD_Inscription struct {
 	Month string
 	Count int
+}
+
+type AD_Users struct {
+	Total   int
+	Admins  int
+	Mods    int
+	Members int
+}
+
+type AD_Forum struct {
+	Categories int
+	Posts      int
+	Comments   int
 }

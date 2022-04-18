@@ -19,16 +19,56 @@
 	<!-- Stats -->
 	<div class="tab" id="stats">
 		<div class="stat">
+			<span class="stat-title" style="margin-bottom: 10px;">Globals</span>
+			<div class="stat-row">
+				<div class="stat-col">
+					<p class="col-title">Users</p>
+					<div class="grid-row">
+						<div class="grid-col">
+							<p class="col-value">Total</p>
+							<p class="col-value">Admins</p>
+							<p class="col-value">Mods</p>
+							<p class="col-value">Members</p>
+						</div>
+						<div class="grid-col">
+							<p class="col-value">{{ .Content.Stats.Users.Total }}</p>
+							<p class="col-value">{{ .Content.Stats.Users.Admins }}</p>
+							<p class="col-value">{{ .Content.Stats.Users.Mods }}</p>
+							<p class="col-value">{{ .Content.Stats.Users.Members }}</p>
+						</div>
+					</div>
+				</div>
+				<div class="stat-col">
+					<p class="col-title">Forum</p>
+					<div class="grid-row">
+						<div class="grid-col">
+							<p class="col-value">Categories</p>
+							<p class="col-value">Posts</p>
+							<p class="col-value">Comments</p>
+							<p class="col-value">&nbsp;</p>
+						</div>
+						<div class="grid-col">
+							<p class="col-value">{{ .Content.Stats.Forum.Categories }}</p>
+							<p class="col-value">{{ .Content.Stats.Forum.Posts }}</p>
+							<p class="col-value">{{ .Content.Stats.Forum.Comments }}</p>
+							<p class="col-value">&nbsp;</p>
+						</div>
+					</div>
+
+				</div>
+			</div>
+		</div>
+		<div class="stat">
+			<span class="stat-title">Users Inscription</span>
+			<canvas id="inscrChart"></canvas>
+		</div>
+		<div class="stat">
 			<span class="stat-title">Categories</span>
 			<canvas id="categoriesChart"></canvas>
 		</div>
 		<div class="stat">
 			<span class="stat-title">Categories Activity</span>
 			<canvas id="catActChart"></canvas>
-		</div>
-		<div class="stat">
-			<span class="stat-title">Users Inscription</span>
-			<canvas id="inscrChart"></canvas>
 		</div>
 	</div>
 
@@ -81,14 +121,14 @@
 		</div>
 		{{ end }}
 	</div>
-	<!-- <div>
+	<div>
 		{{ range .Content.Stats.CatActivities }}
 		<div class="data-catactivities">
 			<p>{{ .Name }}</p>
-			<p>{{ .Count }}</p>
+			<p>{{ .Activity }}</p>
 		</div>
 		{{ end }}
-	</div> -->
+	</div>
 	<div>
 		{{ range .Content.Stats.Inscriptions }}
 		<div class="data-inscription">

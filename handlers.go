@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"log"
 	"net/http"
+	"strconv"
 	"strings"
 	"text/template"
 	"time"
@@ -479,6 +480,43 @@ func AdminHandler(w http.ResponseWriter, r *http.Request) {
 			*/
 			stats := Stats{}
 
+			// Globals
+			forum := AD_Forum{}
+			row, err = db.Query("SELECT COUNT(*) FROM category")
+			if err != nil {
+				log.Fatal(err)
+			}
+			for row.Next() {
+				err = row.Scan(&forum.Categories)
+				if err != nil {
+					log.Fatal(err)
+				}
+			}
+			row.Close()
+			row, err = db.Query("SELECT COUNT(*) FROM post")
+			if err != nil {
+				log.Fatal(err)
+			}
+			for row.Next() {
+				err = row.Scan(&forum.Posts)
+				if err != nil {
+					log.Fatal(err)
+				}
+			}
+			row.Close()
+			row, err = db.Query("SELECT COUNT(*) FROM comment")
+			if err != nil {
+				log.Fatal(err)
+			}
+			for row.Next() {
+				err = row.Scan(&forum.Comments)
+				if err != nil {
+					log.Fatal(err)
+				}
+			}
+			row.Close()
+			stats.Forum = forum
+
 			// Categories
 			CAT_ids := []int{}
 
@@ -513,24 +551,94 @@ func AdminHandler(w http.ResponseWriter, r *http.Request) {
 			}
 
 			// Categries activities per month
-			/* for i := 0; i < len(CAT_ids); i++ {
-				row, err = db.Query("SELECT COUNT(*) FROM post WHERE category_id = ? AND creation_date > ?", CAT_ids[i], time.Now().AddDate(0, -1, 0))
+			sum_catAct := []AD_CatActivities{}
+			for i := 0; i < len(CAT_ids); i++ {
+				catAct := AD_CatActivities{}
+				row, err = db.Query("SELECT name FROM category WHERE id = ?", CAT_ids[i])
 				if err != nil {
 					log.Fatal(err)
 				}
 				for row.Next() {
-					err = row.Scan(&stats.Categories[i].Activity)
+					err = row.Scan(&catAct.Name)
 					if err != nil {
 						log.Fatal(err)
 					}
 				}
 				row.Close()
-			} */
+
+				for j := 1; j <= 12; j++ {
+					m := strconv.Itoa(j)
+					if j < 10 {
+						m = "0" + m
+					}
+					row, err = db.Query("SELECT COUNT(*) FROM post WHERE category_id = ? AND strftime('%m', creation_date) = ?", CAT_ids[i], m)
+					if err != nil {
+						log.Fatal(err)
+					}
+					for row.Next() {
+						err = row.Scan(&catAct.Activity[j-1])
+						if err != nil {
+							log.Fatal(err)
+						}
+					}
+					row.Close()
+				}
+				sum_catAct = append(sum_catAct, catAct)
+			}
+			stats.CatActivities = sum_catAct
+
+			// Users
+			users := AD_Users{}
+			row, err = db.Query("SELECT COUNT(*) FROM user")
+			if err != nil {
+				log.Fatal(err)
+			}
+			for row.Next() {
+				err = row.Scan(&users.Total)
+				if err != nil {
+					log.Fatal(err)
+				}
+			}
+			row.Close()
+			row, err = db.Query("SELECT COUNT(*) FROM user WHERE role = 'Admin'")
+			if err != nil {
+				log.Fatal(err)
+			}
+			for row.Next() {
+				err = row.Scan(&users.Admins)
+				if err != nil {
+					log.Fatal(err)
+				}
+			}
+			row.Close()
+			row, err = db.Query("SELECT COUNT(*) FROM user WHERE role = 'Mod'")
+			if err != nil {
+				log.Fatal(err)
+			}
+			for row.Next() {
+				err = row.Scan(&users.Mods)
+				if err != nil {
+					log.Fatal(err)
+				}
+			}
+			row.Close()
+			row, err = db.Query("SELECT COUNT(*) FROM user WHERE role = 'Member'")
+			if err != nil {
+				log.Fatal(err)
+			}
+			for row.Next() {
+				err = row.Scan(&users.Members)
+				if err != nil {
+					log.Fatal(err)
+				}
+			}
+			row.Close()
+			stats.Users = users
 
 			// Users inscriptions
 			var ui_month int
 			var ui_count int
-			row, err = db.Query("SELECT COUNT(*) AS count, strftime('%m', creation_date) as month FROM user GROUP BY month")
+			row, err = db.Query("SELECT COUNT(*) AS count, strftime('%m', creation_date) as month FROM user WHERE strftime('%Y', creation_date) = strftime('%Y', date()) GROUP BY month")
 			if err != nil {
 				log.Fatal(err)
 			}
