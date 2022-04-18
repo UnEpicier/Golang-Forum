@@ -470,8 +470,85 @@ func AdminHandler(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 		row.Close()
-		if role == "Admin" {
 
+		if role == "Admin" {
+			admin := Admin{}
+
+			/*
+				STATS
+			*/
+			stats := Stats{}
+
+			// Categories
+			CAT_ids := []int{}
+
+			row, err = db.Query("SELECT id, name FROM category")
+			if err != nil {
+				log.Fatal(err)
+			}
+			for row.Next() {
+				var id int
+				c := AD_Categories{}
+				err = row.Scan(&id, &c.Name)
+				if err != nil {
+					log.Fatal(err)
+				}
+				CAT_ids = append(CAT_ids, id)
+				stats.Categories = append(stats.Categories, c)
+			}
+			row.Close()
+
+			for i := 0; i < len(CAT_ids); i++ {
+				row, err = db.Query("SELECT COUNT(*) FROM post WHERE category_id = ?", CAT_ids[i])
+				if err != nil {
+					log.Fatal(err)
+				}
+				for row.Next() {
+					err = row.Scan(&stats.Categories[i].Count)
+					if err != nil {
+						log.Fatal(err)
+					}
+				}
+				row.Close()
+			}
+
+			// Categries activities per month
+			/* for i := 0; i < len(CAT_ids); i++ {
+				row, err = db.Query("SELECT COUNT(*) FROM post WHERE category_id = ? AND creation_date > ?", CAT_ids[i], time.Now().AddDate(0, -1, 0))
+				if err != nil {
+					log.Fatal(err)
+				}
+				for row.Next() {
+					err = row.Scan(&stats.Categories[i].Activity)
+					if err != nil {
+						log.Fatal(err)
+					}
+				}
+				row.Close()
+			} */
+
+			// Users inscriptions
+			var ui_month int
+			var ui_count int
+			row, err = db.Query("SELECT COUNT(*) AS count, strftime('%m', creation_date) as month FROM user GROUP BY month")
+			if err != nil {
+				log.Fatal(err)
+			}
+			for row.Next() {
+				err = row.Scan(&ui_count, &ui_month)
+				if err != nil {
+					log.Fatal(err)
+				}
+				inscr := AD_Inscription{}
+				inscr.Month = time.Month(ui_month).String()
+				inscr.Count = ui_count
+				stats.Inscriptions = append(stats.Inscriptions, inscr)
+			}
+			row.Close()
+
+			admin.Stats = stats
+
+			page.Content = admin
 			err := tplt.Execute(w, page)
 			if err != nil {
 				log.Fatal(err)

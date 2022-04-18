@@ -65,3 +65,31 @@ type User struct {
 	Posts        []Post
 	Comments     []Comment
 }
+
+/*
+	ADMIN
+*/
+
+type Admin struct {
+	Stats Stats
+}
+
+type Stats struct {
+	Categories    []AD_Categories
+	CatActivities []AD_CatActivities
+	Inscriptions  []AD_Inscription
+}
+
+type AD_Categories struct {
+	Name  string
+	Count int
+}
+
+type AD_CatActivities struct {
+	Name string
+}
+
+type AD_Inscription struct {
+	Month string
+	Count int
+}

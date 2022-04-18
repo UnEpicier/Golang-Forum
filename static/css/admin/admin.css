@@ -1,66 +1,65 @@
 body {
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    padding-top: 100px;
+	display: flex;
+	justify-content: center;
+	align-items: flex-start;
+	padding-top: 100px;
 }
 
 .container {
 	display: flex;
-	flex-direction: column;
-	align-items: center;
-	margin: 20px 0;
-	width: 100%;
-	max-height: 400px;
-	border: 1px solid #E79E4F;
+	margin-bottom: 35px;
+	width: 95%;
+	max-width: 1200px;
+	border: 1px solid #A05344;
 	border-radius: 10px;
+	background-color: #734046;
 	overflow: hidden;
 }
 
 /* Tabs Menu */
 
 .tabs {
-    display: flex;
-    flex-direction: column;
-    width: 200px;
-    border-right: 1px solid #af6617;
+	display: flex;
+	flex-direction: column;
+	width: 200px;
+	border-right: 1px solid #af6617;
 }
 
 .tab-btn {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    height: 60px;
-    border: none;
-    border-bottom: 1px solid #af6617;
-    background-color: transparent;
-    font-size: 1.3rem;
-    font-weight: 300;
-    color: #af6617;
-    cursor: pointer;
-    transition: background-color .3s ease, color .3s ease;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width: 100%;
+	height: 60px;
+	border: none;
+	border-bottom: 1px solid #af6617;
+	background-color: transparent;
+	font-size: 1.3rem;
+	font-weight: 300;
+	color: #af6617;
+	cursor: pointer;
+	transition: background-color .3s ease, color .3s ease;
 }
 
 .tab-btn:not(.active):hover {
-    background-color: #82484f;
-    color: #e18726;
+	background-color: #82484f;
+	color: #e18726;
 }
 
 .tab-btn.active {
-    background-color: #925159;
-    color: #E79E4F;
+	background-color: #925159;
+	color: #E79E4F;
 }
 
 @media screen and (max-width: 768px) {
-    .profile {
-        flex-direction: column;
-    }
+	.profile {
+		flex-direction: column;
+	}
 
-    .tabs {
-        width: 100%;
-        border-right: none;
-    }
+	.tabs {
+		width: 100%;
+		border-right: none;
+	}
 }
 
 
@@ -69,24 +68,61 @@ body {
 	TABS
 */
 .hidden {
-    display: none !important;
+	display: none !important;
 }
 
 .tab {
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-    padding: 20px 40px;
-    height: 100%;
+	display: flex;
+	flex-direction: column;
+	padding: 20px 40px;
+	width: 100%;
+	height: 100%;
 }
 
 .sep {
-    display: block;
-    margin: 20px 0;
-    width: 100%;
-    height: 1px;
-    background-color: #A05344;
+	display: block;
+	margin: 20px 0;
+	width: 100%;
+	height: 1px;
+	background-color: #A05344;
 }
+
+/*
+	STATS
+*/
+
+#stats {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+	justify-content: center;
+}
+
+.stat {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	margin: 10px;
+	padding: 20px;
+	width: 400px;
+	height: max-content;
+	border-radius: 20px;
+	background-color: #A05344;
+}
+
+.stat-title {
+	font-size: 1.4rem;
+	text-align: center;
+	color: #E79E4F;
+}
+
+/*
+	USERS
+*/
+
+/*
+	REPORTS
+*/
 
 .card {
 	display: flex;
@@ -99,89 +135,89 @@ body {
 }
 
 .card:not(:last-child) {
-    margin-bottom: 30px;
+	margin-bottom: 30px;
 }
 
 .card-header {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: space-between;
 }
 
 .col {
-    width: 100%;
-    height: 50px;
-    display: flex;
-    flex-direction: column;
+	width: 100%;
+	height: 50px;
+	display: flex;
+	flex-direction: column;
 }
 
 .card-title {
-    font-size: 1.3rem;
-    color: #eee;
+	font-size: 1.3rem;
+	color: #eee;
 }
 
 .card-author {
-    font-size: .9rem;
-    color: #ccc;
+	font-size: .9rem;
+	color: #ccc;
 }
 
 .info {
-    font-size: 1.2rem;
-    color: #E79E4F;
+	font-size: 1.2rem;
+	color: #E79E4F;
 }
 
 .date {
-    margin: 5px 0 10px;
-    font-size: .9rem;
-    color: #ccc;
+	margin: 5px 0 10px;
+	font-size: .9rem;
+	color: #ccc;
 }
 
 .btn-edit {
-    font-size: 1.5em;
-    margin-bottom: 10px;
-    margin-top: -60px;
-    color: #ccc;
-    display: flex;
-    justify-content: end;
+	font-size: 1.5em;
+	margin-bottom: 10px;
+	margin-top: -60px;
+	color: #ccc;
+	display: flex;
+	justify-content: end;
 }
 
 .btn-delete {
-    font-size: 1.5em;
-    color: #ccc;
-    display: flex;
-    justify-content: end;
+	font-size: 1.5em;
+	color: #ccc;
+	display: flex;
+	justify-content: end;
 }
 
 .btn-edit:hover {
-    color: #eee;
+	color: #eee;
 }
 
 .btn-delete:hover {
-    color: #eee;
+	color: #eee;
 }
 
 .counter-signin {
-    margin-right: 0.5em;
-    margin-left: 0.5em;
-    padding: 15px 20px;
-    font-size: 25px;
-    width: 16%;
-    border-style: solid;
-    border: 5px solid #af6617;
-    border-radius: 12px;
-    background-color: transparent;
-    color: white;
+	margin-right: 0.5em;
+	margin-left: 0.5em;
+	padding: 15px 20px;
+	font-size: 25px;
+	width: 16%;
+	border-style: solid;
+	border: 5px solid #af6617;
+	border-radius: 12px;
+	background-color: transparent;
+	color: white;
 }
 
 .signinTitle {
-    margin-top: 0.5em;
-    font-size: 3vh;
-    color: #E79E4F;
+	margin-top: 0.5em;
+	font-size: 3vh;
+	color: #E79E4F;
 }
 
 .nbrSignin {
-    display: flex;
+	display: flex;
 }
 
 .header {
@@ -225,4 +261,3 @@ body {
 	font-size: 1.3rem;
 	color: #E79E4F;
 }
-

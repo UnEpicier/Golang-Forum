@@ -10,44 +10,52 @@
 {{ define "body" }}
 
 <div class="container">
-    <div class="tabs">
-        <span class="tab-btn active" onclick="toggleTab('stats');">Stats</span>
-        <span class="tab-btn" onclick="toggleTab('users');">Users</span>
-        <span class="tab-btn" onclick="toggleTab('reports');">Reports</span>
-    </div>
+	<div class="tabs">
+		<span class="tab-btn active" onclick="toggleTab('stats');">Stats</span>
+		<span class="tab-btn" onclick="toggleTab('users');">Users</span>
+		<span class="tab-btn" onclick="toggleTab('reports');">Reports</span>
+	</div>
 
-    <!-- Stats -->
-    <div class="tab" id="stats">
-        <div class="nbrSignin">
-            <h1 class="signinTitle">Number of sign-in : </h1>
-            <p class='counter-signin'>80</p>
-        </div>
-    </div>
+	<!-- Stats -->
+	<div class="tab" id="stats">
+		<div class="stat">
+			<span class="stat-title">Categories</span>
+			<canvas id="categoriesChart"></canvas>
+		</div>
+		<div class="stat">
+			<span class="stat-title">Categories Activity</span>
+			<canvas id="catActChart"></canvas>
+		</div>
+		<div class="stat">
+			<span class="stat-title">Users Inscription</span>
+			<canvas id="inscrChart"></canvas>
+		</div>
+	</div>
 
-    <!-- User -->
-    <div class="tab hidden" id="users">
-        <a class="card" href="/post?id= Uuid ">
-            <!-- ADD HREF -->
-            <div class="card-header">
-                <div class="col">
-                    <p class="card-title">Salope</p>
-                    <div class="date"> XX-XX-XXXX</div>
-                    <div class="btn-edit">
-                        <i class="fa-solid fa-pen"></i>
-                    </div>
-                    <div class="btn-delete">
-                        <i class="fa-solid fa-trash-can"></i>
-                    </div>
-                </div>
-            </div>
-        </a>
-    </div>
+	<!-- User -->
+	<div class="tab hidden" id="users">
+		<a class="card" href="/post?id= Uuid ">
+			<!-- ADD HREF -->
+			<div class="card-header">
+				<div class="col">
+					<p class="card-title">Salope</p>
+					<div class="date"> XX-XX-XXXX</div>
+					<div class="btn-edit">
+						<i class="fa-solid fa-pen"></i>
+					</div>
+					<div class="btn-delete">
+						<i class="fa-solid fa-trash-can"></i>
+					</div>
+				</div>
+			</div>
+		</a>
+	</div>
 
 
 
-    <!-- Categories -->
-    <div class="tab hidden" id="reports">
-        <div class="container">
+	<!-- Categories -->
+	<div class="tab hidden" id="reports">
+		<div class="container">
 			<div class="header">
 				<p class="subtitle">Comments</p>
 			</div>
@@ -60,8 +68,39 @@
 				</a>
 			</div>
 		</div>
-    </div>
-            
-    <script src="/js/user/profile.js"></script>
+	</div>
+</div>
 
-    {{ end }}
+<!-- DATA -->
+<div id="data" class="hidden">
+	<div>
+		{{ range .Content.Stats.Categories }}
+		<div class="data-category">
+			<p>{{ .Name }}</p>
+			<p>{{ .Count }}</p>
+		</div>
+		{{ end }}
+	</div>
+	<!-- <div>
+		{{ range .Content.Stats.CatActivities }}
+		<div class="data-catactivities">
+			<p>{{ .Name }}</p>
+			<p>{{ .Count }}</p>
+		</div>
+		{{ end }}
+	</div> -->
+	<div>
+		{{ range .Content.Stats.Inscriptions }}
+		<div class="data-inscription">
+			<p>{{ .Month }}</p>
+			<p>{{ .Count }}</p>
+		</div>
+		{{ end }}
+	</div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/chart.min.js"></script>
+<script src="/js/user/profile.js"></script>
+<script src="/js/admin.js"></script>
+
+{{ end }}
