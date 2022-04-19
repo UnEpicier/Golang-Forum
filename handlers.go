@@ -154,14 +154,14 @@ func CategoryHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		if contains(uuid_list, uuid) {
-			row, err = db.Query("SELECT name FROM category WHERE id = ?", uuid)
+			row, err = db.Query("SELECT * FROM category WHERE id = ?", uuid)
 			if err != nil {
 				log.Fatal(err)
 			}
 
-			var name string
+			var cat Category
 			for row.Next() {
-				err = row.Scan(&name)
+				err = row.Scan(&cat.ID, &cat.Name, &cat.CreationDate, &cat.Pinned, &cat.LastUpdate)
 				if err != nil {
 					log.Fatal(err)
 				}
@@ -176,7 +176,7 @@ func CategoryHandler(w http.ResponseWriter, r *http.Request) {
 			for row.Next() {
 				var uid string
 				var post Post
-				err = row.Scan(&post.User.ID, &post.User.Uuid, &post.User.Username, &post.User.Email, &post.User.Password, &post.User.Role, &post.User.CreationDate, &post.User.Biography, &post.User.LastSeen, &post.ID, &post.Title, &post.Content, &post.CreationDate, &uid, &post.UpVotes, &post.DownVotes, &post.CategoryId, &post.Pinned, &post.LastUpdate)
+				err = row.Scan(&post.User.ID, &post.User.Uuid, &post.User.Username, &post.User.Email, &post.User.Password, &post.User.Role, &post.User.CreationDate, &post.User.Biography, &post.User.LastSeen, &post.ID, &post.Title, &post.Content, &post.CreationDate, &uid, &post.CategoryId, &post.Pinned, &post.LastUpdate)
 				if err != nil {
 					log.Fatal(err)
 				}
@@ -190,12 +190,50 @@ func CategoryHandler(w http.ResponseWriter, r *http.Request) {
 				posts = append(posts, post)
 			}
 
-			type c struct {
-				Name  string
-				Posts []Post
+			for i := 0; i < len(posts); i++ {
+				row, err = db.Query("SELECT COUNT(*) FROM vote WHERE post_id = ? AND type = 'like'", posts[i].ID)
+				if err != nil {
+					log.Fatal(err)
+				}
+				for row.Next() {
+					err = row.Scan(&posts[i].Likes)
+					if err != nil {
+						log.Fatal(err)
+					}
+				}
+				row.Close()
+
+				row, err = db.Query("SELECT COUNT(*) FROM vote WHERE post_id = ? AND type = 'dislikes'", posts[i].ID)
+				if err != nil {
+					log.Fatal(err)
+				}
+				for row.Next() {
+					err = row.Scan(&posts[i].Dislikes)
+					if err != nil {
+						log.Fatal(err)
+					}
+				}
+				row.Close()
+
+				row, err = db.Query("SELECT COUNT(*) FROM comment WHERE post_id = ?", posts[i].ID)
+				if err != nil {
+					log.Fatal(err)
+				}
+				for row.Next() {
+					err = row.Scan(&posts[i].CommentNB)
+					if err != nil {
+						log.Fatal(err)
+					}
+				}
+				row.Close()
 			}
 
-			page.Content = c{Name: name, Posts: posts}
+			type c struct {
+				Category Category
+				Posts    []Post
+			}
+
+			page.Content = c{Category: cat, Posts: posts}
 
 			err := tplt.Execute(w, page)
 			if err != nil {
@@ -254,7 +292,7 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 			}
 			var skip string
 			for row.Next() {
-				err = row.Scan(&post.User.ID, &post.User.Uuid, &post.User.Username, &post.User.Email, &post.User.Password, &post.User.Role, &post.User.CreationDate, &post.User.Biography, &post.User.LastSeen, &post.ID, &post.Title, &post.Content, &post.CreationDate, &skip, &post.UpVotes, &post.DownVotes, &post.CategoryId, &post.Pinned, &post.LastUpdate)
+				err = row.Scan(&post.User.ID, &post.User.Uuid, &post.User.Username, &post.User.Email, &post.User.Password, &post.User.Role, &post.User.CreationDate, &post.User.Biography, &post.User.LastSeen, &post.ID, &post.Title, &post.Content, &post.CreationDate, &skip, &post.CategoryId, &post.Pinned, &post.LastUpdate)
 				if err != nil {
 					log.Fatal(err)
 				}
@@ -267,7 +305,31 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 			}
 			row.Close()
 
-			row, err = db.Query("SELECT * FROM comment WHERE post_id = ?", post.ID)
+			row, err = db.Query("SELECT COUNT(*) FROM vote WHERE post_id = ? AND type = 'like'", post.ID)
+			if err != nil {
+				log.Fatal(err)
+			}
+			for row.Next() {
+				err = row.Scan(&post.Likes)
+				if err != nil {
+					log.Fatal(err)
+				}
+			}
+			row.Close()
+
+			row, err = db.Query("SELECT COUNT(*) FROM vote WHERE post_id = ? AND type = 'dislikes'", post.ID)
+			if err != nil {
+				log.Fatal(err)
+			}
+			for row.Next() {
+				err = row.Scan(&post.Dislikes)
+				if err != nil {
+					log.Fatal(err)
+				}
+			}
+			row.Close()
+
+			row, err = db.Query("SELECT * FROM comment AS c INNER JOIN user AS u ON c.user_id = u.id WHERE post_id = ?", post.ID)
 			if err != nil {
 				log.Fatal(err)
 			}
@@ -276,30 +338,41 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 			for row.Next() {
 				var comment Comment
 				comment.User = User{}
-				err = row.Scan(&comment.ID, &comment.Content, &comment.CreationDate, &uid, &comment.PostID, &comment.UpVotes, &comment.DownVotes, &comment.Pinned)
+				err = row.Scan(&comment.ID, &comment.Content, &comment.CreationDate, &uid, &skip, &comment.Pinned, &comment.User.ID, &comment.User.Uuid, &comment.User.Username, &comment.User.Email, &comment.User.Password, &comment.User.Role, &comment.User.CreationDate, &comment.User.Biography, &comment.User.LastSeen)
 				if err != nil {
 					log.Fatal(err)
 				}
+
+				comment.CreationDate = comment.CreationDate.(time.Time).Format("01/02/2006 15:04:05")
+				comment.User.CreationDate = comment.User.CreationDate.(time.Time).Format("01/02/2006 15:04:05")
+				comment.User.LastSeen = comment.User.LastSeen.(time.Time).Format("01/02/2006 15:04:05")
+
 				comments = append(comments, comment)
 			}
 			row.Close()
 
-			for comment := range comments {
-				row, err = db.Query("SELECT * FROM user WHERE id = ?", uid)
+			for i := range comments {
+				row, err = db.Query("SELECT COUNT(*) FROM vote WHERE comment_id = ? AND type = 'like'", comments[i].ID)
 				if err != nil {
 					log.Fatal(err)
 				}
 				for row.Next() {
-					var user User
-					err = row.Scan(&user.ID, &user.Uuid, &user.Username, &user.Email, &user.Password, &user.Role, &user.CreationDate, &user.Biography, &user.LastSeen)
+					err = row.Scan(&comments[i].Likes)
 					if err != nil {
 						log.Fatal(err)
 					}
+				}
+				row.Close()
 
-					user.CreationDate = user.CreationDate.(time.Time).Format("01/02/2006 15:04:05")
-					user.LastSeen = user.LastSeen.(time.Time).Format("01/02/2006 15:04:05")
-
-					comments[comment].User = user
+				row, err = db.Query("SELECT COUNT(*) FROM vote WHERE comment_id = ? AND type = 'dislikes'", comments[i].ID)
+				if err != nil {
+					log.Fatal(err)
+				}
+				for row.Next() {
+					err = row.Scan(&comments[i].Dislikes)
+					if err != nil {
+						log.Fatal(err)
+					}
 				}
 				row.Close()
 			}
@@ -340,88 +413,233 @@ func WriteHandler(w http.ResponseWriter, r *http.Request) {
 	if cookie != nil {
 		page.Logged = true
 
-		db, err := sql.Open("sqlite3", "./forum.db")
-		if err != nil {
-			log.Fatal(err)
-		}
+		if r.URL.Query().Has("action") {
+			action := r.URL.Query().Get("action")
 
-		var categories []string
-		row, err := db.Query("SELECT name FROM category")
-		if err != nil {
-			log.Fatal(err)
-		}
-		for row.Next() {
-			var name string
-			err = row.Scan(&name)
-			if err != nil {
-				log.Fatal(err)
-			}
-			categories = append(categories, name)
-		}
-		page.Content = strings.Join(categories, "/")
+			if action == "create" || action == "edit" {
+				write := Write{"", action, Post{}}
 
-		if r.Method == "POST" {
-			r.ParseForm()
-			category := r.FormValue("category")
-			title := r.FormValue("title")
-			content := strings.Replace(r.FormValue("content"), "\r\n", "<br>", -1)
-			var uid string
-
-			if title == "" || content == "" || category == "" {
-				page.Error = "All fields are required"
-			} else {
-				row, err := db.Query("SELECT id, name FROM category")
+				db, err := sql.Open("sqlite3", "./forum.db")
 				if err != nil {
 					log.Fatal(err)
 				}
-				var categoryName string
-				found := false
-				for row.Next() {
-					err = row.Scan(&uid, &categoryName)
-					if err != nil {
-						log.Fatal(err)
-					}
-					if strings.EqualFold(categoryName, category) {
-						category = categoryName
-						found = true
-						break
-					}
-				}
-				row.Close()
 
-				if !found {
-					_, err = db.Exec("INSERT INTO category (name, creation_date, pinned, last_update) VALUES (?, ?, 0, ?)", capitalize(category), time.Now(), time.Now())
-					if err != nil {
-						log.Fatal(err)
-					}
-				}
-
-				var id string
-				row, err = db.Query("SELECT id FROM user WHERE uuid = ?", cookie.Value)
+				row, err := db.Query("SELECT name FROM category")
 				if err != nil {
 					log.Fatal(err)
 				}
+				var categories []string
 				for row.Next() {
-					err = row.Scan(&id)
+					var cat string
+					err = row.Scan(&cat)
 					if err != nil {
 						log.Fatal(err)
 					}
+					categories = append(categories, cat)
 				}
 
-				_, err = db.Exec("INSERT INTO post (title, content, creation_date, user_id, up_vote, down_vote, category_id, pinned, last_update) VALUES (?, ?, ?, ?, '{}', '{}', ?, 0, ?)", title, content, time.Now(), id, uid, time.Now())
-				if err != nil {
-					log.Fatal(err, " ligne 412")
+				write.Categories = strings.Join(categories, "/")
+
+				if action == "edit" {
+					if r.URL.Query().Has("id") {
+						postID := r.URL.Query().Get("id")
+
+						row, err := db.Query("SELECT id FROM user WHERE uuid = ?", cookie.Value)
+						if err != nil {
+							log.Fatal(err)
+						}
+						var userID int
+						for row.Next() {
+							err = row.Scan(&userID)
+							if err != nil {
+								log.Fatal(err)
+							}
+						}
+						row.Close()
+
+						row, err = db.Query("SELECT COUNT(*) FROM post WHERE id = ? AND user_id = ?", postID, userID)
+						if err != nil {
+							log.Fatal(err)
+						}
+						var count int
+						for row.Next() {
+							err = row.Scan(&count)
+							if err != nil {
+								log.Fatal(err)
+							}
+						}
+						row.Close()
+
+						if count > 0 {
+							if r.Method == "POST" {
+								err = r.ParseForm()
+								if err != nil {
+									log.Fatal(err)
+								}
+								category := r.FormValue("category")
+								title := r.FormValue("title")
+								content := r.FormValue("content")
+								content = strings.Replace(content, "\r\n", "<br/>", -1)
+
+								row, err = db.Query("SELECT id FROM category WHERE name = ?", category)
+								if err != nil {
+									log.Fatal(err)
+								}
+								var catID int
+								for row.Next() {
+									err = row.Scan(&catID)
+									if err != nil {
+										log.Fatal(err)
+									}
+								}
+								row.Close()
+
+								_, err := db.Exec("UPDATE post SET title = ?, content = ?, category_id = ?, last_update = ? WHERE id = ?", title, content, catID, time.Now(), postID)
+								if err != nil {
+									log.Fatal(err)
+								}
+
+								_, err = db.Exec("UPDATE category SET last_update = ? WHERE category_id = ?", time.Now(), catID)
+								if err != nil {
+									log.Fatal(err)
+								}
+
+								http.Redirect(w, r, "/post?id="+postID, http.StatusFound)
+							}
+
+							row, err = db.Query("SELECT * FROM post AS p INNER JOIN category AS c ON p.category_id = c.id WHERE p.id = ? AND p.user_id = ?", postID, userID)
+							if err != nil {
+								log.Fatal(err)
+							}
+							var post Post
+							for row.Next() {
+								var skip interface{}
+								err = row.Scan(&post.ID, &post.Title, &post.Content, &post.CreationDate, &skip, &post.CategoryId, &post.Pinned, &post.LastUpdate, &post.Category.ID, &post.Category.Name, &post.Category.CreationDate, &post.Category.Pinned, &post.Category.LastUpdate)
+								if err != nil {
+									log.Fatal(err)
+								}
+								post.CreationDate = post.CreationDate.(time.Time).Format("2006/01/02 15:04:05")
+								post.LastUpdate = post.LastUpdate.(time.Time).Format("2006/01/02 15:04:05")
+
+								post.Category.CreationDate = post.Category.CreationDate.(time.Time).Format("2006/01/02 15:04:05")
+								post.Category.LastUpdate = post.Category.LastUpdate.(time.Time).Format("2006/01/02 15:04:05")
+							}
+							row.Close()
+							write.Post = post
+						} else {
+							http.Redirect(w, r, "/forum", http.StatusFound)
+						}
+					} else {
+						http.Redirect(w, r, "/forum", http.StatusFound)
+					}
+				} else if action == "create" {
+					if r.URL.Query().Has("category-id") {
+						row, err := db.Query("SELECT COUNT(*) FROM category WHERE id = ?", r.URL.Query().Get("category-id"))
+						if err != nil {
+							log.Fatal(err)
+						}
+						var count int
+						for row.Next() {
+							err = row.Scan(&count)
+							if err != nil {
+								log.Fatal(err)
+							}
+						}
+						row.Close()
+
+						if count > 0 {
+							catID := r.URL.Query().Get("category-id")
+
+							row, err = db.Query("SELECT name FROM category WHERE id = ?", catID)
+							if err != nil {
+								log.Fatal(err)
+							}
+							var catName string
+							for row.Next() {
+								err = row.Scan(&catName)
+								if err != nil {
+									log.Fatal(err)
+								}
+							}
+							row.Close()
+							write.Post.Category.Name = catName
+						}
+					}
+
+					if r.Method == "POST" {
+						err := r.ParseForm()
+						if err != nil {
+							log.Fatal(err)
+						}
+						category := r.FormValue("category")
+						title := r.FormValue("title")
+						content := r.FormValue("content")
+						content = strings.Replace(content, "\r\n", "<br/>", -1)
+
+						row, err := db.Query("SELECT id FROM user WHERE uuid = ?", cookie.Value)
+						if err != nil {
+							log.Fatal(err)
+						}
+						var userID int
+						for row.Next() {
+							err = row.Scan(&userID)
+							if err != nil {
+								log.Fatal(err)
+							}
+						}
+						row.Close()
+
+						row, err = db.Query("SELECT id FROM category WHERE name = ?", category)
+						if err != nil {
+							log.Fatal(err)
+						}
+						var catID int
+						for row.Next() {
+							err = row.Scan(&catID)
+							if err != nil {
+								log.Fatal(err)
+							}
+						}
+						row.Close()
+
+						acTime := time.Now()
+						_, err = db.Exec("INSERT INTO post (title, content, creation_date, user_id, category_id, pinned, last_update) VALUES (?, ?, ?, ?, ?, 0, ?)", title, content, acTime, userID, catID, acTime)
+						if err != nil {
+							log.Fatal(err)
+						}
+
+						_, err = db.Exec("UPDATE category SET last_update = ? WHERE id = ?", acTime, catID)
+						if err != nil {
+							log.Fatal(err)
+						}
+
+						row, err = db.Query("SELECT id FROM post WHERE user_id = ? AND title = ? AND content = ? AND creation_date = ? AND category_id = ?", userID, title, content, acTime, catID)
+						if err != nil {
+							log.Fatal(err)
+						}
+						var pid int
+						for row.Next() {
+							err = row.Scan(&pid)
+							if err != nil {
+								log.Fatal(err)
+							}
+						}
+						http.Redirect(w, r, "/post?id="+strconv.Itoa(pid), http.StatusFound)
+					}
 				}
 
 				db.Close()
+				page.Content = write
 
-				http.Redirect(w, r, "/forum", http.StatusSeeOther)
+				err = tplt.Execute(w, page)
+				if err != nil {
+					log.Fatal(err)
+				}
+			} else {
+				http.Redirect(w, r, "/forum", http.StatusFound)
 			}
-		}
-
-		err = tplt.Execute(w, page)
-		if err != nil {
-			log.Fatal(err)
+		} else {
+			http.Redirect(w, r, "/forum", http.StatusFound)
 		}
 	} else {
 		http.Redirect(w, r, "/forum", http.StatusSeeOther)
@@ -644,13 +862,103 @@ func AdminHandler(w http.ResponseWriter, r *http.Request) {
 
 			admin.Stats = stats
 
+			/* USERS TAB */
+			row, err = db.Query("SELECT * FROM user")
+			if err != nil {
+				log.Fatal(err)
+			}
+			for row.Next() {
+				user := User{}
+				err = row.Scan(&user.ID, &user.Uuid, &user.Username, &user.Email, &user.Password, &user.Role, &user.CreationDate, &user.Biography, &user.LastSeen)
+				if err != nil {
+					log.Fatal(err)
+				}
+				user.CreationDate = user.CreationDate.(time.Time).Format("2006/01/02 15:04:05")
+				user.LastSeen = user.LastSeen.(time.Time).Format("2006/01/02 15:04:05")
+
+				admin.Users = append(admin.Users, user)
+			}
+			row.Close()
+
+			/* REPORTS TAB */
+			reports := []Report{}
+
+			row, err = db.Query("SELECT * FROM report")
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			uids := []interface{}{}
+			pids := []interface{}{}
+			cids := []interface{}{}
+			for row.Next() {
+				report := Report{}
+				var userID interface{}
+				var postID interface{}
+				var commentID interface{}
+				err = row.Scan(&report.ID, &report.Type, &report.Reason, &report.CreationDate, &userID, &postID, &commentID)
+				if err != nil {
+					log.Fatal(err)
+				}
+				report.CreationDate = report.CreationDate.(time.Time).Format("2006/01/02 15:04:05")
+
+				uids = append(uids, userID)
+				pids = append(pids, postID)
+				cids = append(cids, commentID)
+				reports = append(reports, report)
+			}
+			row.Close()
+
+			for i := 0; i < len(reports); i++ {
+				var skip interface{}
+				if reports[i].Type == "user" {
+					row, err = db.Query("SELECT * FROM user WHERE id = ?", uids[i])
+					if err != nil {
+						log.Fatal(err)
+					}
+					for row.Next() {
+						err = row.Scan(&reports[i].User.ID, &reports[i].User.Uuid, &reports[i].User.Username, &reports[i].User.Email, &reports[i].User.Password, &reports[i].User.Role, &reports[i].User.CreationDate, &reports[i].User.Biography, &reports[i].User.LastSeen)
+						if err != nil {
+							log.Fatal(err)
+						}
+					}
+					row.Close()
+					admin.Reports.Users = append(admin.Reports.Users, reports[i])
+				} else if reports[i].Type == "post" {
+					row, err = db.Query("SELECT * FROM post AS p INNER JOIN user AS u ON p.user_id = u.id WHERE p.id = ?", pids[i])
+					if err != nil {
+						log.Fatal(err)
+					}
+					for row.Next() {
+						err = row.Scan(&reports[i].Post.ID, &reports[i].Post.Title, &reports[i].Post.Content, &reports[i].Post.CreationDate, &skip, &reports[i].Post.CategoryId, &reports[i].Post.Pinned, &reports[i].Post.LastUpdate, &reports[i].User.ID, &reports[i].User.Uuid, &reports[i].User.Username, &reports[i].User.Email, &reports[i].User.Password, &reports[i].User.Role, &reports[i].User.CreationDate, &reports[i].User.Biography, &reports[i].User.LastSeen)
+						if err != nil {
+							log.Fatal(err)
+						}
+					}
+					row.Close()
+					admin.Reports.Posts = append(admin.Reports.Posts, reports[i])
+				} else if reports[i].Type == "comment" {
+					row, err = db.Query("SELECT * FROM comment AS c INNER JOIN post AS p ON c.post_id = p.id INNER JOIN user AS u ON c.user_id = u.id WHERE c.id = ?", cids[i])
+					if err != nil {
+						log.Fatal(err)
+					}
+					for row.Next() {
+						err = row.Scan(&reports[i].Comment.ID, &reports[i].Comment.Content, &reports[i].Comment.CreationDate, &skip, &skip, &reports[i].Comment.Pinned, &reports[i].Post.ID, &reports[i].Post.Title, &reports[i].Post.Content, &reports[i].Post.CreationDate, &skip, &reports[i].Post.CategoryId, &reports[i].Post.Pinned, &reports[i].Post.LastUpdate, &reports[i].User.ID, &reports[i].User.Uuid, &reports[i].User.Username, &reports[i].User.Email, &reports[i].User.Password, &reports[i].User.Role, &reports[i].User.CreationDate, &reports[i].User.Biography, &reports[i].User.LastSeen)
+						if err != nil {
+							log.Fatal(err)
+						}
+					}
+					row.Close()
+
+					admin.Reports.Comments = append(admin.Reports.Comments, reports[i])
+				}
+			}
+
 			page.Content = admin
 			err := tplt.Execute(w, page)
 			if err != nil {
 				log.Fatal(err)
 			}
-			//User
-
 		} else {
 			http.Redirect(w, r, "/", http.StatusSeeOther)
 		}
@@ -659,7 +967,95 @@ func AdminHandler(w http.ResponseWriter, r *http.Request) {
 	} else {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 	}
+}
 
+func AdminDeleteHandler(w http.ResponseWriter, r *http.Request) {
+	cookie, _ := r.Cookie("user")
+	if cookie != nil {
+		userID := cookie.Value
+
+		if r.URL.Query().Has("id") && r.URL.Query().Has("type") {
+			reqID := r.URL.Query().Get("id")
+			reqType := r.URL.Query().Get("type")
+
+			db, err := sql.Open("sqlite3", "./forum.db")
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			row, err := db.Query("SELECT role FROM user WHERE uuid = ?", userID)
+			if err != nil {
+				log.Fatal(err)
+			}
+			var role string
+			for row.Next() {
+				err = row.Scan(&role)
+				if err != nil {
+					log.Fatal(err)
+				}
+			}
+			row.Close()
+
+			if role == "Admin" {
+
+				if reqType == "user" {
+					row, err = db.Query("SELECT COUNT(*) FROM user WHERE id = ?", reqID)
+					if err != nil {
+						log.Fatal(err)
+					}
+					var count int
+					for row.Next() {
+						err = row.Scan(&count)
+						if err != nil {
+							log.Fatal(err)
+						}
+					}
+
+					if count > 0 {
+						_, err = db.Exec("DELETE FROM user WHERE id = ?", reqID)
+						if err != nil {
+							log.Fatal(err)
+						}
+
+						http.Redirect(w, r, "/", http.StatusOK)
+					} else {
+						http.Redirect(w, r, "/", http.StatusFound)
+					}
+				} else if reqType == "report" {
+					row, err = db.Query("SELECT COUNT(*) FROM report WHERE id = ?", reqID)
+					if err != nil {
+						log.Fatal(err)
+					}
+					var count int
+					for row.Next() {
+						err = row.Scan(&count)
+						if err != nil {
+							log.Fatal(err)
+						}
+					}
+
+					if count > 0 {
+						_, err = db.Exec("DELETE FROM report WHERE id = ?", reqID)
+						if err != nil {
+							log.Fatal(err)
+						}
+						http.Redirect(w, r, "/", http.StatusOK)
+					} else {
+						http.Redirect(w, r, "/", http.StatusFound)
+					}
+				}
+
+			} else {
+				http.Redirect(w, r, "/", http.StatusFound)
+			}
+
+			db.Close()
+		} else {
+			http.Redirect(w, r, "/", http.StatusFound)
+		}
+	} else {
+		http.Redirect(w, r, "/", http.StatusFound)
+	}
 }
 
 /*
@@ -901,7 +1297,7 @@ func ProfileHandler(w http.ResponseWriter, r *http.Request) {
 			var skip int
 			var post Post
 			post.User = User{}
-			err = row.Scan(&post.ID, &post.Title, &post.Content, &post.CreationDate, &skip, &post.UpVotes, &post.DownVotes, &post.CategoryId, &post.Pinned, &post.LastUpdate, &post.Category.ID, &post.Category.Name, &post.Category.CreationDate, &post.Category.Pinned, &post.Category.LastUpdate)
+			err = row.Scan(&post.ID, &post.Title, &post.Content, &post.CreationDate, &skip, &post.CategoryId, &post.Pinned, &post.LastUpdate, &post.Category.ID, &post.Category.Name, &post.Category.CreationDate, &post.Category.Pinned, &post.Category.LastUpdate)
 			if err != nil {
 				log.Fatal(err)
 			}
@@ -921,7 +1317,7 @@ func ProfileHandler(w http.ResponseWriter, r *http.Request) {
 		for row.Next() {
 			var skip int
 			var comment Comment
-			err = row.Scan(&comment.ID, &comment.Content, &comment.CreationDate, &skip, &skip, &comment.UpVotes, &comment.DownVotes, &comment.Pinned, &comment.PostID.ID, &comment.PostID.Title, &comment.PostID.Content, &comment.PostID.CreationDate, &skip, &comment.PostID.UpVotes, &comment.PostID.DownVotes, &comment.PostID.CategoryId, &comment.PostID.Pinned, &comment.PostID.LastUpdate)
+			err = row.Scan(&comment.ID, &comment.Content, &comment.CreationDate, &skip, &skip, &comment.Pinned, &comment.PostID.ID, &comment.PostID.Title, &comment.PostID.Content, &comment.PostID.CreationDate, &skip, &comment.PostID.CategoryId, &comment.PostID.Pinned, &comment.PostID.LastUpdate)
 			if err != nil {
 				log.Fatal(err)
 			}

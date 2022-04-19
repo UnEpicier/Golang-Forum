@@ -79,18 +79,32 @@ body {
 }
 
 .card-author {
-	font-size: .9rem;
+	font-size: 1.1rem;
 	color: #ccc;
 }
 
-.sep {
-	margin: 10px 0;
-	width: 100%;
-	height: 1px;
-	background-color: #aaa;
+.row {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
 }
 
-.overview {
+.comments {
+	text-align: right;
+	color: #eee;
+}
+
+.votes {
+	display: flex;
+	flex-direction: row;
 	font-size: 1rem;
 	color: #eee;
+}
+
+.votes>*:nth-child(2n+1) {
+	margin-right: 3px;
+}
+
+.votes>*:nth-child(2n):not(:last-child) {
+	margin-right: 10px;
 }

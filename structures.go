@@ -29,11 +29,12 @@ type Post struct {
 	Content      string
 	CreationDate interface{} // string or time.Time
 	User         User
-	UpVotes      string
-	DownVotes    string
 	CategoryId   int
 	Pinned       int
 	LastUpdate   interface{} // string or time.Time
+	Likes        int
+	Dislikes     int
+	CommentNB    int
 	Category     Category
 }
 
@@ -43,9 +44,15 @@ type Comment struct {
 	CreationDate interface{}
 	User         User
 	PostID       Post
-	UpVotes      string
-	DownVotes    string
 	Pinned       int
+	Likes        int
+	Dislikes     int
+}
+
+type Write struct {
+	Categories string
+	Action     string
+	Post       Post
 }
 
 /*
@@ -71,7 +78,9 @@ type User struct {
 */
 
 type Admin struct {
-	Stats Stats
+	Stats   Stats
+	Users   []User
+	Reports Reports
 }
 
 type Stats struct {
@@ -108,4 +117,23 @@ type AD_Forum struct {
 	Categories int
 	Posts      int
 	Comments   int
+}
+
+/*
+	REPORTS
+*/
+type Reports struct {
+	Users    []Report
+	Posts    []Report
+	Comments []Report
+}
+
+type Report struct {
+	ID           int
+	Type         string
+	Reason       string
+	CreationDate interface{}
+	User         User
+	Post         Post
+	Comment      Comment
 }

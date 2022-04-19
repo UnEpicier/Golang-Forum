@@ -205,9 +205,29 @@ const inscrChart = new Chart(
 	inscr_config
 )
 
-
-
-
-
 /* WHEN LOADED, REMOVE DATA DIV */
 document.getElementById('data').remove();
+
+
+/*
+ USER TAB
+ */
+function search() {
+	const query = event.target.value;
+	const users = document.getElementsByClassName("card-user");
+
+	if (query != "") {
+		for (let i = 0; i < users.length; i++) {
+			const username = users[i].children[0].children[0].children[0].children[0].innerText;
+			if (username.toLowerCase().startsWith(query.toLowerCase())) {
+				users[i].style.display = "block";
+			} else {
+				users[i].style.display = "none";
+			}
+		}
+	} else {
+		for (let i = 0; i < users.length; i++) {
+			users[i].style.display = "block";
+		}
+	}
+}

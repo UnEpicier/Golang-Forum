@@ -11,7 +11,7 @@
 <h1 class="title">Categories</h1>
 
 {{ if .Logged }}
-<a href="/write" class="write">Create a new post</a>
+<a href="/write?action=create" class="write">Create a new post</a>
 {{ end }}
 
 {{ if (eq .Content.Error "") }}

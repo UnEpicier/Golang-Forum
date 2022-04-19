@@ -64,13 +64,25 @@ body {
 	color: #E79E4F;
 }
 
+.like,
 .likecmt {
-	color: #ecb478;
+	display: flex;
+	align-items: center;
+	margin-top: 10px;
 }
 
-.like> :first-child,
-.likecmt> :first-child {
-	margin: 5px 10px 0;
+.likecmt>*:nth-child(2n+1),
+.like>*:nth-child(2n+1) {
+	margin-right: 5px;
+}
+
+.likecmt>*:nth-child(2n),
+.like>*:nth-child(2n) {
+	margin-right: 10px;
+}
+
+.likecmt {
+	color: #ecb478;
 }
 
 

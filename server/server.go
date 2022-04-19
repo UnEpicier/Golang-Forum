@@ -26,6 +26,7 @@ func main() {
 
 	// Admin
 	http.HandleFunc("/admin", forum.AdminHandler)
+	http.HandleFunc("/admin/delete", forum.AdminDeleteHandler)
 
 	// User
 	http.HandleFunc("/user/login", forum.LoginHandler)

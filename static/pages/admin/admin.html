@@ -76,35 +76,38 @@
 	<div class="tab hidden" id="users">
 		<div class="tab-header">
 			<div class="search-group">
-				<input type="text" class="search-input" id="searchbar" placeholder="Search...">
-				<button class="search-btn" onclick="search()">
+				<input type="text" class="search-input" id="searchbar" placeholder="Search by username"
+					oninput="search()">
+				<button class="search-btn">
 					<i class="fa fa-search"></i>
 				</button>
 			</div>
 		</div>
-		<div class="card">
-			<div class="card-header">
-				<div class="row">
+		<div class="users">
+			{{ range $user := .Content.Users }}
+			<div class="card card-user">
+				<div class="card-header">
 					<div class="col">
 						<div class="username">
-							<p class="name">Username</p>
-							<p class="role" id="Admin">Admin</p>
+							<p class="name">{{ .Username }}</p>
+							<p class="role" id="{{ .Role }}">{{ .Role }}</p>
 						</div>
-						<p class="email">Email</p>
+						<p class="email">{{ .Email }}</p>
+						<p class="date">Creation Date:<br />{{ .CreationDate }}</p>
+						<p class="date">Last Seen:<br />{{ .LastSeen }}</p>
 					</div>
-					<div class="col">
-						<p class="date">Creation Date</p>
-						<p class="date">Last Seen</p>
-					</div>
+					<p class="bio">{{ .Biography }}</p>
 				</div>
-				<p class="bio">Biography</p>
+				<div class="action">
+					{{ if ne .Role "Admin" }}
+					<a href="/admin/profile?id={{ .ID }}" class="nav-btn primary">Edit</a>
+					<a href="/admin/delete?id={{ .ID }}&type=user" class="nav-btn primary">Delete</a>
+					{{ end }}
+					<a href="/admin/posts?id={{ .ID }}" class="nav-btn primary">View posts</a>
+					<a href="/admin/comments?id={{ .ID }}" class="nav-btn primary">View comments</a>
+				</div>
 			</div>
-			<div class="action">
-				<a href="/admin/profile?id=1" class="nav-btn primary">Edit</a>
-				<a href="/admin/delete?id=9999" class="nav-btn primary">Delete</a>
-				<a href="/admin/posts?id=1" class="nav-btn primary">View posts</a>
-				<a href="/admin/comments?id=1" class="nav-btn primary">View comments</a>
-			</div>
+			{{ end }}
 		</div>
 	</div>
 
@@ -112,41 +115,90 @@
 	<div class="tab hidden" id="reports">
 		<div class="list">
 			<div class="header">
-				<p class="subtitle">Users</p>
+				<p class="title">Users</p>
 			</div>
 
 			<div class="body">
-				<p class="empty">Any comments yet.</p>
+				{{ $length := len .Content.Reports.Users }}
+				{{ if eq $length 0 }}
+				<p class="empty">Any users reported.</p>
+				{{ else }}
+				{{ range $report := .Content.Reports.Users }}
 				<div class="card">
-					<p class="card-title">Fuck Html and Css</p>
-					<p class="date">XX-XX-XXXX</p>
+					<div class="card-header">
+						<div class="username">
+							<p class="card-title">{{ .User.Username }}</p>
+							{{ if ne .User.Role "Member" }}
+							<p class="role" id="{{ .User.Role }}">{{ .User.Role }}</p>
+							{{ end }}
+						</div>
+						<p class="date">Creation date: {{ .User.CreationDate }}</p>
+						<p class="date">Last seen: {{ .User.LastSeen }}</p>
+					</div>
+					<div class="card-body">
+						{{ .Reason }}
+					</div>
 				</div>
+				{{ end }}
+				{{ end }}
 			</div>
 		</div>
 		<div class="list">
 			<div class="header">
-				<p class="subtitle">Posts</p>
+				<p class="title">Posts</p>
 			</div>
 
 			<div class="body">
-				<p class="empty">Any comments yet.</p>
-				<a class="card">
-					<p class="card-title">Fuck Html and Css</p>
-					<p class="date">XX-XX-XXXX</p>
-				</a>
+				{{ $length := len .Content.Reports.Posts }}
+				{{ if eq $length 0 }}
+				<p class="empty">Any posts reported.</p>
+				{{ else }}
+				{{ range $report := .Content.Reports.Posts }}
+				<div class="card">
+					<div class="card-header">
+						<p class="card-title">{{ .Post.Title }}</p>
+						<div class="username">
+							<p class="name">{{ .User.Username }}</p>
+							{{ if ne .User.Role "Member" }}
+							<p class="role" id="{{ .User.Role }}">{{ .User.Role }}</p>
+							{{ end }}
+						</div>
+					</div>
+					<div class="card-body">
+						{{ .Reason }}
+					</div>
+				</div>
+				{{ end }}
+				{{ end }}
 			</div>
 		</div>
 		<div class="list">
 			<div class="header">
-				<p class="subtitle">Comments</p>
+				<p class="title">Comments</p>
 			</div>
 
 			<div class="body">
-				<p class="empty">Any comments yet.</p>
-				<a class="card">
-					<p class="card-title">Fuck Html and Css</p>
-					<p class="date">XX-XX-XXXX</p>
-				</a>
+				{{ $length := len .Content.Reports.Comments }}
+				{{ if eq $length 0 }}
+				<p class="empty">Any comments reported.</p>
+				{{ else }}
+				{{ range $report := .Content.Reports.Comments }}
+				<div class="card">
+					<div class="card-header">
+						<p class="card-title">{{ .Post.Title }}</p>
+						<div class="username">
+							<p class="name">{{ .User.Username }}</p>
+							{{ if ne .User.Role "Member" }}
+							<p class="role" id="{{ .User.Role }}">{{ .User.Role }}</p>
+							{{ end }}
+						</div>
+					</div>
+					<div class="card-body">
+						{{ .Reason }}
+					</div>
+				</div>
+				{{ end }}
+				{{ end }}
 			</div>
 		</div>
 	</div>

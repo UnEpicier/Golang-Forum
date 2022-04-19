@@ -2,17 +2,17 @@
 
 {{ define "header" }}
 
-<title>{{.Content.Name}} | Forum</title>
+<title>{{.Content.Category.Name}} | Forum</title>
 <link rel="stylesheet" href="/css/category.css">
 
 {{ end }}
 
 {{ define "body" }}
 
-<h1 class="title">{{.Content.Name}}</h1>
+<h1 class="title">{{.Content.Category.Name}}</h1>
 
 {{ if .Logged }}
-<a href="/write" class="write">Create a new post</a>
+<a href="/write?action=create&category-id={{ .Content.Category.ID }}" class="write">Create a new post</a>
 {{ end }}
 
 <div class="body">
@@ -32,8 +32,15 @@
 				<p class="card-author">{{ .User.Username }}</p>
 			</div>
 		</div>
-		<div class="sep"></div>
-		<p class="overview">{{ .Content }}</p>
+		<div class="row">
+			<div class="votes">
+				<i class="fa-solid fa-heart"></i>
+				<p>{{ .Likes }}</p>
+				<i class="fa-solid fa-heart-crack"></i>
+				<p>{{ .Dislikes }}</p>
+			</div>
+			<p class="comments">Comments: {{ .CommentNB }}</p>
+		</div>
 	</a>
 	{{ end }}
 	{{ end }}

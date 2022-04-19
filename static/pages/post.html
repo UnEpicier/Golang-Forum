@@ -12,7 +12,12 @@
 	<div class="topic">
 		<div class="title">{{.Content.Post.Title}}</div>
 		<div class="info">Posted by {{.Content.Post.User.Username}} on {{.Content.Post.CreationDate}}</div>
-		<div class="like"><i class="fa-solid fa-heart"></i><i class="fa-solid fa-heart-crack"></i></div>
+		<div class="like">
+			<i class="fa-solid fa-heart"></i>
+			<p>{{ .Content.Post.Likes }}</p>
+			<i class="fa-solid fa-heart-crack"></i>
+			<p>{{ .Content.Post.Dislikes }}</p>
+		</div>
 		<div class="content">{{.Content.Post.Content}}</div>
 	</div>
 	{{ $len := len .Content.Comments }}
@@ -20,7 +25,10 @@
 	{{ range $i, $comment := .Content.Comments }}
 	<div class="comment">
 		<p class="infocmt">Posted by {{ .User.Username }} on {{ .CreationDate }}</p>
-		<p class="likecmt"><i class="fa-solid fa-heart"></i><i class="fa-solid fa-heart-crack"></i></p>
+		<p class="likecmt">
+			<i class="fa-solid fa-heart"></i>{{ .Likes }}
+			<i class="fa-solid fa-heart-crack"></i>{{.Dislikes }}
+		</p>
 		<p class="cmtcontent">{{ .Content }}</p>
 	</div>
 	{{ end }}

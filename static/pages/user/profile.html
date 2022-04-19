@@ -47,12 +47,17 @@
 				{{ else }}
 				{{ range .Content.Posts }}
 				<a class="card" href="/post?id={{ .ID }}">
-					<div class="row between">
+					<div class="col">
 						<p class="card-title">{{ .Title }}</p>
-						<p class="card-category">{{ .Category.Name }}</p>
+						<p class="date">{{ .CreationDate }}</p>
+						<p class="content">{{ .Content }}</p>
 					</div>
-					<p class="date">{{ .CreationDate }}</p>
-					<p class="content">{{ .Content }}</p>
+					<div class="col">
+						<p class="card-category">{{ .Category.Name }}</p>
+						<p>Test</p>
+						<!-- <i class="fa-solid fa-trash-can card-icon"></i>
+						<i class="fa-solid fa-pen card-icon"></i> -->
+					</div>
 				</a>
 				{{ end }}
 				{{ end }}
@@ -72,7 +77,7 @@
 				{{ range .Content.Comments }}
 				<a class="card" href="/post?id={{ .PostID.ID }}">
 					<div class="row between">
-						<p class="card-category">{{ .Post.Title }}</p>
+						<p class="card-category">{{ .PostID.Title }}</p>
 						<p class="date">{{ .CreationDate }}</p>
 					</div>
 					<p class="content">{{ .Content }}</p>

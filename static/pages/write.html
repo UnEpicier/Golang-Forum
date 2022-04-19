@@ -12,17 +12,31 @@
 <h1 class="title">Write a new post</h1>
 <form class="container" method="POST">
 	<div class="inputWSuggests">
-		<input type="text" class="input" name="category" id="category-input" placeholder="Category" oninput="suggests()"
-			required />
+		{{ if ne .Content.Post.Category.Name "" }}
+		<input type="text" class="input" id="category-input" value="{{ .Content.Post.Category.Name }}"
+			placeholder="Category" oninput="suggests()" autocomplete="off" required />
+		{{ else }}
+		<input type="text" class="input" name="category" id="category-input" placeholder="Category" autocomplete="off"
+			oninput="suggests()" required />
+		{{ end }}
 		<div class="suggests" id="category-suggests">
 		</div>
 	</div>
 	<div class="sep"></div>
+	{{ if eq .Content.Action "edit" }}
+	<input type="text" class="input" name="title" placeholder="Title" value="{{ .Content.Post.Title }}" requied />
+	{{ else }}
 	<input type="text" class="input" name="title" placeholder="Title" requied />
-	<textarea name="content" class="input" cols="30" rows="10" placeholder="Your content..." requied></textarea>
+	{{ end }}
+	<textarea name="content" class="input" cols="30" rows="10" placeholder="Your content..."
+		requied>{{ if eq .Content.Action "edit" }}{{ .Content.Post.Content }}{{ end }}</textarea>
 	<button type="submit" class="btn">Post</button>
 </form>
-<span class="hidden" id="pr-categories">{{.Content}}</span>
+
+<div class="data">
+	<span class="hidden" id="pr-categories">{{.Content.Categories}}</span>
+</div>
+
 <script src="/js/write.js"></script>
 
 {{ end }}
