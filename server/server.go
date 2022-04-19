@@ -32,6 +32,7 @@ func main() {
 	http.HandleFunc("/user/login", forum.LoginHandler)
 	http.HandleFunc("/user/register", forum.RegisterHandler)
 	http.HandleFunc("/user/profile", forum.ProfileHandler)
+	http.HandleFunc("/delete", forum.DeleteHandler)
 	http.HandleFunc("/user/logout", forum.LogoutHandler)
 
 	// Start the server

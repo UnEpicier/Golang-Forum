@@ -134,7 +134,6 @@ body {
 	align-items: center;
 	margin-left: 10px;
 	padding: 3px 5px;
-	height: 100%;
 	border-radius: 3px;
 	color: #fff;
 	user-select: none;
@@ -244,7 +243,7 @@ body {
 
 .card {
 	display: flex;
-	flex-direction: row;
+	flex-direction: column;
 	padding: 20px 40px;
 	width: 90%;
 	border-radius: 10px;
@@ -266,6 +265,22 @@ body {
 	color: #eee;
 }
 
+.row {
+	display: flex;
+	flex-direction: row;
+}
+
+.action-btn {
+	align-self: flex-end;
+	margin: 5px 0;
+	width: max-content;
+	border: none;
+	background-color: transparent;
+	font-size: 1.1rem;
+	color: #eee;
+	cursor: pointer;
+}
+
 .date {
 	margin: 5px 0 10px;
 	font-size: .9rem;
@@ -275,6 +290,19 @@ body {
 .content {
 	font-size: 1rem;
 	color: #eee;
+}
+
+.card-btn {
+	align-self: center;
+	margin-top: 20px;
+	width: 100%;
+	background-color: #b25d4c;
+	color: #fff;
+	transition: background-color .3s ease;
+}
+
+.card-btn:hover {
+	background-color: #b66656;
 }
 
 

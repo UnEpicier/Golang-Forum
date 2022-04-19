@@ -12,6 +12,7 @@ type Page struct {
 // Categories
 type Forum struct {
 	Categories []Category
+	Role       string
 	Error      string
 }
 

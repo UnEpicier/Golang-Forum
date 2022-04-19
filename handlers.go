@@ -68,7 +68,18 @@ func ForumHandler(w http.ResponseWriter, r *http.Request) {
 		log.Fatal(err)
 	}
 
-	row, err := db.Query("SELECT COUNT(*) FROM category")
+	row, err := db.Query("SELECT role FROM user WHERE uuid = ?", cookie.Value)
+	if err != nil {
+		log.Fatal(err)
+	}
+	for row.Next() {
+		err = row.Scan(&forum.Role)
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
+
+	row, err = db.Query("SELECT COUNT(*) FROM category")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -285,6 +296,33 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 		row.Close()
 
 		if contains(uuid_list, uuid) {
+			if r.Method == "POST" {
+				content := r.FormValue("content")
+				content = strings.Replace(content, "\r\n", "<br/>", -1)
+
+				row, err = db.Query("SELECT id FROM user WHERE uuid = ?", cookie.Value)
+				if err != nil {
+					log.Fatal(err)
+				}
+				var userID int
+				for row.Next() {
+					err = row.Scan(&userID)
+					if err != nil {
+						log.Fatal(err)
+					}
+				}
+
+				_, err = db.Exec("INSERT INTO comment (content, creation_date, user_id, post_id) VALUES (?, ?, ?, ?)", content, time.Now(), userID, uuid)
+				if err != nil {
+					log.Fatal(err)
+				}
+
+				_, err = db.Exec("UPDATE post SET last_update = ? WHERE id = ?", time.Now(), uuid)
+				if err != nil {
+					log.Fatal(err)
+				}
+			}
+
 			var post Post
 			row, err = db.Query("SELECT * FROM user AS u INNER JOIN post AS p ON u.id = p.user_id WHERE p.id = ?", uuid)
 			if err != nil {
@@ -1527,6 +1565,39 @@ func ProfileHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	} else {
 		http.Redirect(w, r, "/user/login", http.StatusSeeOther)
+	}
+}
+
+func DeleteHandler(w http.ResponseWriter, r *http.Request) {
+	cookie, _ := r.Cookie("user")
+	if cookie != nil {
+		db, err := sql.Open("sqlite3", "./forum.db")
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		if r.URL.Query().Has("type") {
+			if r.URL.Query().Get("type") == "post" {
+				_, err = db.Exec("DELETE FROM post WHERE id = ?", r.URL.Query().Get("id"))
+				if err != nil {
+					log.Fatal(err)
+				}
+				_, err = db.Exec("DELETE FROM comment WHERE post_id = ?", r.URL.Query().Get("id"))
+				if err != nil {
+					log.Fatal(err)
+				}
+			} else if r.URL.Query().Get("type") == "comment" {
+				_, err = db.Exec("DELETE FROM comment WHERE id = ?", r.URL.Query().Get("id"))
+				if err != nil {
+					log.Fatal(err)
+				}
+			}
+		}
+
+		db.Close()
+		http.Redirect(w, r, "/user/profile", http.StatusFound)
+	} else {
+		http.Redirect(w, r, "/user/profile", http.StatusSeeOther)
 	}
 }
 

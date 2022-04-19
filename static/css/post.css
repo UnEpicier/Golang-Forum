@@ -64,6 +64,10 @@ body {
 	color: #E79E4F;
 }
 
+.likecmt {
+	color: #ecb478;
+}
+
 .like,
 .likecmt {
 	display: flex;
@@ -81,13 +85,8 @@ body {
 	margin-right: 10px;
 }
 
-.likecmt {
-	color: #ecb478;
-}
-
-
-.like>*,
-.likecmt>* {
+.like>i,
+.likecmt>i {
 	cursor: pointer;
 }
 

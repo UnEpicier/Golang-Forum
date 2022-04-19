@@ -11,9 +11,12 @@
 
 <h1 class="title">{{.Content.Category.Name}}</h1>
 
-{{ if .Logged }}
-<a href="/write?action=create&category-id={{ .Content.Category.ID }}" class="write">Create a new post</a>
-{{ end }}
+<div class="row">
+	<a href="/forum" class="write">Back</a>
+	{{ if .Logged }}
+	<a href="/write?action=create&category-id={{ .Content.Category.ID }}" class="write">Create a new post</a>
+	{{ end }}
+</div>
 
 <div class="body">
 	{{ $length := len .Content.Posts }}

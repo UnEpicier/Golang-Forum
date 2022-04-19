@@ -25,17 +25,18 @@
 	{{ range $i, $comment := .Content.Comments }}
 	<div class="comment">
 		<p class="infocmt">Posted by {{ .User.Username }} on {{ .CreationDate }}</p>
-		<p class="likecmt">
-			<i class="fa-solid fa-heart"></i>{{ .Likes }}
-			<i class="fa-solid fa-heart-crack"></i>{{.Dislikes }}
-		</p>
+		<div class="likecmt">
+			<i class="fa-solid fa-heart"></i>
+			<p>{{ .Likes }}</p>
+			<i class="fa-solid fa-heart-crack"></i>
+			<p>{{.Dislikes }}</p>
+		</div>
 		<p class="cmtcontent">{{ .Content }}</p>
 	</div>
 	{{ end }}
 	{{ end }}
 	{{ if .Logged }}
 	<form method="POST" class="comment-form">
-		<input type="hidden" name="post_id" value="{{.Content.Post.ID}}">
 		<textarea name="content" id="comment-textarea" placeholder="Write a comment..." oninput="autoGrow()"></textarea>
 		<button type="submit">Comment</button>
 	</form>

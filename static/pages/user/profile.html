@@ -46,19 +46,25 @@
 				<p class="empty">Any posts yet.</p>
 				{{ else }}
 				{{ range .Content.Posts }}
-				<a class="card" href="/post?id={{ .ID }}">
-					<div class="col">
-						<p class="card-title">{{ .Title }}</p>
-						<p class="date">{{ .CreationDate }}</p>
-						<p class="content">{{ .Content }}</p>
+				<div class="card">
+					<div class="row">
+						<div class="col">
+							<p class="card-title">{{ .Title }}</p>
+							<p class="date">{{ .CreationDate }}</p>
+							<p class="content">{{ .Content }}</p>
+						</div>
+						<div class="col">
+							<p class="card-category">{{ .Category.Name }}</p>
+							<a class="action-btn" href="/delete?type=post&id={{ .ID }}">
+								<i class="fa-solid fa-trash-can card-icon"></i>
+							</a>
+							<a class="action-btn" href="/write?action=edit&id={{ .ID }}">
+								<i class="fa-solid fa-pen card-icon"></i>
+							</a>
+						</div>
 					</div>
-					<div class="col">
-						<p class="card-category">{{ .Category.Name }}</p>
-						<p>Test</p>
-						<!-- <i class="fa-solid fa-trash-can card-icon"></i>
-						<i class="fa-solid fa-pen card-icon"></i> -->
-					</div>
-				</a>
+					<a href="/post?id={{ .ID }}" class="card-btn nav-btn">View post</a>
+				</div>
 				{{ end }}
 				{{ end }}
 			</div>
@@ -75,13 +81,24 @@
 				<p class="empty">Any comments yet.</p>
 				{{ else }}
 				{{ range .Content.Comments }}
-				<a class="card" href="/post?id={{ .PostID.ID }}">
-					<div class="row between">
-						<p class="card-category">{{ .PostID.Title }}</p>
-						<p class="date">{{ .CreationDate }}</p>
+				<div class="card">
+					<div class="row">
+						<div class="col">
+							<p class="card-category">Post: {{ .PostID.Title }}</p>
+							<p class="content">{{ .Content }}</p>
+						</div>
+						<div class="col">
+							<p class="date">{{ .CreationDate }}</p>
+							<a class="action-btn" href="/delete?type=comment&id={{ .ID }}">
+								<i class="fa-solid fa-trash-can card-icon"></i>
+							</a>
+							<a class="action-btn" href="/post?id={{ .PostID.ID }}">
+								<i class="fa-solid fa-pen card-icon"></i>
+							</a>
+						</div>
 					</div>
-					<p class="content">{{ .Content }}</p>
-				</a>
+					<a href="/post?id={{ .PostID.ID }}#comment-{{ .ID }}" class="card-btn nav-btn">View post</a>
+				</div>
 				{{ end }}
 				{{ end }}
 			</div>
