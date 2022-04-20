@@ -11,10 +11,12 @@
 <h1 class="title">Categories</h1>
 
 {{ if .Logged }}
-{{ if eq .Content.Role "Admin" }}
-<a href="/write?action=create" class="write">Create a category</a>
-{{ end }}
-<a href="/write?action=create" class="write">Create a new post</a>
+<div class="row">
+	{{ if eq .Content.Role "Admin" }}
+	<a href="/write?action=create" class="write">Create a category</a>
+	{{ end }}
+	<a href="/write?action=create" class="write">Create a new post</a>
+</div>
 {{ end }}
 
 {{ if (eq .Content.Error "") }}

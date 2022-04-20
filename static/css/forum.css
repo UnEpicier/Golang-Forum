@@ -14,7 +14,7 @@ body {
 
 .write {
 	display: block;
-	margin-bottom: 20px;
+	margin: 0 10px 20px;
 	padding: 15px 30px;
 	border-radius: 10px;
 	background-color: #E79E4F;
@@ -60,4 +60,9 @@ body {
 .error {
 	font-size: 1.5rem;
 	color: #FD5D5D;
+}
+
+.row {
+	display: flex;
+	flex-direction: row;
 }
