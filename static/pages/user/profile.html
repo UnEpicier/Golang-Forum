@@ -19,12 +19,23 @@
 		<div class="infos">
 			<div class="col">
 				<div class="row">
-					<p class="username">{{ .Content.Username }}</p>
-					{{ if ne .Content.Role "Member" }}
-					<span class="role" id="{{ .Content.Role }}">{{ .Content.Role }}</span>
-					{{ end }}
+					<div class="pic">
+						<img src="{{ .Content.ProfilePic }}" class="profilepic">
+						<div class="inputGroup">
+							<input type="file" name="pic" accept="image/*">
+							<i class="fa-solid fa-user-pen pic-icon"></i>
+						</div>
+					</div>
+					<div class="col">
+						<div class="row">
+							<p class="username">{{ .Content.Username }}</p>
+							{{ if ne .Content.Role "Member" }}
+							<span class="role" id="{{ .Content.Role }}">{{ .Content.Role }}</span>
+							{{ end }}
+						</div>
+						<p class="email">{{ .Content.Email }}</p>
+					</div>
 				</div>
-				<p class="email">{{ .Content.Email }}</p>
 				<p class="joined">Joined at: {{ .Content.CreationDate }}</p>
 			</div>
 			<a href="/user/logout" class="btn logout">Logout</a>

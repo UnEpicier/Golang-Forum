@@ -187,7 +187,7 @@ func CategoryHandler(w http.ResponseWriter, r *http.Request) {
 			for row.Next() {
 				var uid string
 				var post Post
-				err = row.Scan(&post.User.ID, &post.User.Uuid, &post.User.Username, &post.User.Email, &post.User.Password, &post.User.Role, &post.User.CreationDate, &post.User.Biography, &post.User.LastSeen, &post.ID, &post.Title, &post.Content, &post.CreationDate, &uid, &post.CategoryId, &post.Pinned, &post.LastUpdate)
+				err = row.Scan(&post.User.ID, &post.User.Uuid, &post.User.ProfilePic, &post.User.Username, &post.User.Email, &post.User.Password, &post.User.Role, &post.User.CreationDate, &post.User.Biography, &post.User.LastSeen, &post.ID, &post.Title, &post.Content, &post.CreationDate, &uid, &post.CategoryId, &post.Pinned, &post.LastUpdate)
 				if err != nil {
 					log.Fatal(err)
 				}
@@ -330,7 +330,7 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 			}
 			var skip string
 			for row.Next() {
-				err = row.Scan(&post.User.ID, &post.User.Uuid, &post.User.Username, &post.User.Email, &post.User.Password, &post.User.Role, &post.User.CreationDate, &post.User.Biography, &post.User.LastSeen, &post.ID, &post.Title, &post.Content, &post.CreationDate, &skip, &post.CategoryId, &post.Pinned, &post.LastUpdate)
+				err = row.Scan(&post.User.ID, &post.User.Uuid, &post.User.ProfilePic, &post.User.Username, &post.User.Email, &post.User.Password, &post.User.Role, &post.User.CreationDate, &post.User.Biography, &post.User.LastSeen, &post.ID, &post.Title, &post.Content, &post.CreationDate, &skip, &post.CategoryId, &post.Pinned, &post.LastUpdate)
 				if err != nil {
 					log.Fatal(err)
 				}
@@ -376,7 +376,7 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 			for row.Next() {
 				var comment Comment
 				comment.User = User{}
-				err = row.Scan(&comment.ID, &comment.Content, &comment.CreationDate, &uid, &skip, &comment.Pinned, &comment.User.ID, &comment.User.Uuid, &comment.User.Username, &comment.User.Email, &comment.User.Password, &comment.User.Role, &comment.User.CreationDate, &comment.User.Biography, &comment.User.LastSeen)
+				err = row.Scan(&comment.ID, &comment.Content, &comment.CreationDate, &uid, &skip, &comment.Pinned, &comment.User.ID, &comment.User.Uuid, &comment.User.ProfilePic, &comment.User.Username, &comment.User.Email, &comment.User.Password, &comment.User.Role, &comment.User.CreationDate, &comment.User.Biography, &comment.User.LastSeen)
 				if err != nil {
 					log.Fatal(err)
 				}
@@ -1316,7 +1316,7 @@ func ProfileHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		for row.Next() {
-			err = row.Scan(&user.ID, &user.Uuid, &user.Username, &user.Email, &user.Password, &user.Role, &user.CreationDate, &user.Biography, &user.LastSeen)
+			err = row.Scan(&user.ID, &user.Uuid, &user.ProfilePic, &user.Username, &user.Email, &user.Password, &user.Role, &user.CreationDate, &user.Biography, &user.LastSeen)
 			if err != nil {
 				log.Fatal(err)
 			}

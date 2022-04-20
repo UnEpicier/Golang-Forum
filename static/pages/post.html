@@ -11,7 +11,16 @@
 <div class="container">
 	<div class="topic">
 		<div class="title">{{.Content.Post.Title}}</div>
-		<div class="info">Posted by {{.Content.Post.User.Username}} on {{.Content.Post.CreationDate}}</div>
+		<div class="info">
+			<div class="user">
+				<img src="{{ .Content.Post.User.ProfilePic }}" class="profilepic">
+				<p>{{.Content.Post.User.Username}}</p>
+				{{ if ne .Content.Post.User.Role "Member" }}
+				<span class="role" id="{{ .Content.Post.User.Role }}">{{ .Content.Post.User.Role }}</span>
+				{{ end }}
+			</div>
+			{{.Content.Post.CreationDate}}
+		</div>
 		<div class="like">
 			<i class="fa-solid fa-heart"></i>
 			<p>{{ .Content.Post.Likes }}</p>
@@ -24,7 +33,16 @@
 	{{ if gt $len 0 }}
 	{{ range $i, $comment := .Content.Comments }}
 	<div class="comment">
-		<p class="infocmt">Posted by {{ .User.Username }} on {{ .CreationDate }}</p>
+		<div class="infocmt">
+			<div class="user">
+				<img src="{{ .User.ProfilePic }}" class="profilepic">
+				<p>{{ .User.Username }}</p>
+				{{ if ne .User.Role "Member" }}
+				<span class="role" id="{{ .User.Role }}">{{ .User.Role }}</span>
+				{{ end }}
+			</div>
+			{{ .CreationDate }}
+		</div>
 		<div class="likecmt">
 			<i class="fa-solid fa-heart"></i>
 			<p>{{ .Likes }}</p>

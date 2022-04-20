@@ -63,6 +63,7 @@ type Write struct {
 type User struct {
 	ID           int
 	Uuid         string
+	ProfilePic   string
 	Username     string
 	Email        string
 	Password     string

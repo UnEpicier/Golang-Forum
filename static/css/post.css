@@ -9,6 +9,7 @@ body {
 	padding: 30px;
 	width: 95%;
 	max-width: 800px;
+	height: max-content;
 	border-radius: 10px;
 	border: 1px solid #A05344;
 	background: #734046;
@@ -27,8 +28,51 @@ body {
 }
 
 .info {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	align-items: center;
+	margin: 10px 0;
 	font-size: 1rem;
 	color: #E79E4F;
+}
+
+.user {
+	margin-bottom: 5px;
+	display: flex;
+	align-items: center;
+}
+
+.profilepic {
+	margin-right: 10px;
+	width: 30px;
+	height: 30px;
+	border-radius: 50%;
+}
+
+.user>p {
+	line-height: 1.5rem;
+}
+
+.role {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	margin-left: 5px;
+	padding: 3px 5px;
+	border-radius: 3px;
+	font-size: .8rem;
+	color: #fff;
+	user-select: none;
+}
+
+.role#Admin {
+	background-color: #FD5D5D;
+}
+
+.role#Mod {
+	background-color: #FFB72B;
 }
 
 .content {
@@ -49,6 +93,11 @@ body {
 }
 
 .infocmt {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	align-items: center;
 	font-size: 1.1rem;
 	color: #eaac69;
 }
@@ -155,4 +204,15 @@ body {
 	flex-direction: row;
 	justify-content: space-between;
 	align-items: center;
+}
+
+@media screen and (max-width: 768px) {
+	.container {
+		padding: 10px;
+	}
+
+	.content,
+	.cmtcontent {
+		margin: 0;
+	}
 }

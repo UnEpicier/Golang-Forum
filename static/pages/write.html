@@ -13,11 +13,11 @@
 <form class="container" method="POST">
 	<div class="inputWSuggests">
 		{{ if ne .Content.Post.Category.Name "" }}
-		<input type="text" class="input" id="category-input" value="{{ .Content.Post.Category.Name }}"
+		<input type="text" class="input" id="category-input" name="category" value="{{ .Content.Post.Category.Name }}"
 			placeholder="Category" oninput="suggests()" autocomplete="off" required />
 		{{ else }}
-		<input type="text" class="input" name="category" id="category-input" placeholder="Category" autocomplete="off"
-			oninput="suggests()" required />
+		<input type="text" class="input" name="category" id="category-input" name="category" placeholder="Category"
+			autocomplete="off" oninput="suggests()" required />
 		{{ end }}
 		<div class="suggests" id="category-suggests">
 		</div>

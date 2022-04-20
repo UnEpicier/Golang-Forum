@@ -72,14 +72,51 @@ body {
 	color: #eee;
 }
 
-.date {
+.user {
 	margin: 5px 0 10px;
-	font-size: .9rem;
-	color: #ccc;
+}
+
+.user.row {
+	align-items: center;
+}
+
+.profilepic {
+	width: 35px;
+	height: 35px;
+	border-radius: 50%;
+}
+
+.profilepic+.row {
+	margin-left: 10px;
 }
 
 .card-author {
 	font-size: 1.1rem;
+	line-height: 1.5rem;
+	color: #ccc;
+}
+
+.role {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	margin-left: 5px;
+	padding: 3px 5px;
+	border-radius: 3px;
+	color: #fff;
+	user-select: none;
+}
+
+.role#Admin {
+	background-color: #FD5D5D;
+}
+
+.role#Mod {
+	background-color: #FFB72B;
+}
+
+.date {
+	font-size: .9rem;
 	color: #ccc;
 }
 

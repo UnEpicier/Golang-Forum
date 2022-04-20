@@ -29,10 +29,18 @@
 		<div class="card-header">
 			<div class="col">
 				<p class="card-title">{{ .Title }}</p>
-				<p class="date">{{ .CreationDate }}</p>
+				<div class="user row">
+					<img src="{{ .User.ProfilePic }}" class="profilepic">
+					<div class="row">
+						<p class="card-author">{{ .User.Username }}</p>
+						{{ if ne .User.Role "Member" }}
+						<span class="role" id="{{ .User.Role }}">{{.User.Role}}</span>
+						{{ end }}
+					</div>
+				</div>
 			</div>
 			<div class="col">
-				<p class="card-author">{{ .User.Username }}</p>
+				<p class="date">{{ .CreationDate }}</p>
 			</div>
 		</div>
 		<div class="row">
