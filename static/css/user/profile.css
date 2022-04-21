@@ -155,7 +155,7 @@ body {
 	align-items: center;
 	width: 100%;
 	height: 100%;
-	background-color: rgba(127, 127, 127, 0.5);
+	background-color: rgba(0, 0, 0, 0.5);
 }
 
 .pic:hover>.inputGroup {
@@ -256,7 +256,7 @@ body {
 	cursor: pointer;
 }
 
-@media screen and (max-width: 992px) {
+@media screen and (max-width: 768px) {
 	.infos {
 		flex-direction: column-reverse;
 	}
