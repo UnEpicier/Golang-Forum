@@ -1,9 +1,13 @@
 package forum
 
 import (
+	"bytes"
 	"database/sql"
+	"io"
 	"log"
 	"net/http"
+	"os"
+	"path/filepath"
 	"strconv"
 	"strings"
 	"text/template"
@@ -321,6 +325,7 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 				if err != nil {
 					log.Fatal(err)
 				}
+				http.Redirect(w, r, "/post?id="+uuid, http.StatusFound)
 			}
 
 			var post Post
@@ -907,7 +912,7 @@ func AdminHandler(w http.ResponseWriter, r *http.Request) {
 			}
 			for row.Next() {
 				user := User{}
-				err = row.Scan(&user.ID, &user.Uuid, &user.Username, &user.Email, &user.Password, &user.Role, &user.CreationDate, &user.Biography, &user.LastSeen)
+				err = row.Scan(&user.ID, &user.Uuid, &user.ProfilePic, &user.Username, &user.Email, &user.Password, &user.Role, &user.CreationDate, &user.Biography, &user.LastSeen)
 				if err != nil {
 					log.Fatal(err)
 				}
@@ -1307,7 +1312,7 @@ func ProfileHandler(w http.ResponseWriter, r *http.Request) {
 		row.Close()
 
 		if count <= 0 {
-			http.Redirect(w, r, "/login", http.StatusSeeOther)
+			http.Redirect(w, r, "/user/login", http.StatusSeeOther)
 		}
 
 		row, err = db.Query("SELECT * FROM user WHERE uuid = ? LIMIT 1", cookie.Value)
@@ -1348,7 +1353,7 @@ func ProfileHandler(w http.ResponseWriter, r *http.Request) {
 		row.Close()
 
 		// Comments
-		row, err = db.Query("SELECT * FROM comment AS c INNER JOIN post AS p ON c.post_id = p.id ORDER BY c.creation_date DESC")
+		row, err = db.Query("SELECT * FROM comment AS c INNER JOIN post AS p ON c.post_id = p.id WHERE c.user_id = ? ORDER BY c.creation_date DESC", user.ID)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -1366,80 +1371,72 @@ func ProfileHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		row.Close()
 
-		/*
-			Settings
-		*/
 		if r.Method == "POST" {
-			if err := r.ParseForm(); err != nil {
-				log.Fatal(err)
-			}
 
-			if r.FormValue("form") == "biography" {
-				biography := r.FormValue("bio")
+			if r.FormValue("form") == "profilepic" {
+				r.ParseMultipartForm(32 << 20)
 
-				_, err := db.Exec("UPDATE user SET biography = ? WHERE uuid = ?", biography, cookie.Value)
+				file, header, err := r.FormFile("pic")
 				if err != nil {
 					log.Fatal(err)
 				}
-				http.Redirect(w, r, "/user/profile", http.StatusFound)
+				defer file.Close()
 
-			} else if r.FormValue("form") == "username" {
-				current := r.FormValue("username")
-				new := r.FormValue("newusername")
-				password := r.FormValue("passwd")
-
-				var count int
-				row, err := db.Query("SELECT COUNT(*) FROM user WHERE uuid = ? AND username = ?", cookie.Value, current)
-				if err != nil {
+				buf := bytes.NewBuffer(nil)
+				if _, err := io.Copy(buf, file); err != nil {
 					log.Fatal(err)
 				}
 
+				row, err = db.Query("SELECT id FROM user WHERE uuid = ?", cookie.Value)
+				if err != nil {
+					log.Fatal(err)
+				}
+				var id int
 				for row.Next() {
-					err = row.Scan(&count)
+					err = row.Scan(&id)
 					if err != nil {
 						log.Fatal(err)
 					}
 				}
 				row.Close()
 
-				if count > 0 {
-					var db_pass string
+				matches, err := filepath.Glob("./static/assets/profile/" + strconv.Itoa(id) + ".*")
+				if err != nil {
+					log.Fatal(err)
+				}
 
-					row, err = db.Query("SELECT password FROM user WHERE uuid = ? AND username = ?", cookie.Value, current)
+				if len(matches) > 0 {
+					os.Remove(matches[0])
+				}
+
+				err = os.WriteFile("./static/assets/profile/"+strconv.Itoa(id)+filepath.Ext(header.Filename), buf.Bytes(), 0666)
+				if err != nil {
+					log.Fatal(err)
+				}
+
+				_, err = db.Exec("UPDATE user SET profile_pic = ? WHERE uuid = ?", "/assets/profile/"+strconv.Itoa(id)+filepath.Ext(header.Filename), cookie.Value)
+				if err != nil {
+					log.Fatal(err)
+				}
+				http.Redirect(w, r, "/user/profile", http.StatusFound)
+
+			} else {
+				if r.FormValue("form") == "biography" {
+					biography := r.FormValue("bio")
+
+					_, err := db.Exec("UPDATE user SET biography = ? WHERE uuid = ?", biography, cookie.Value)
 					if err != nil {
 						log.Fatal(err)
 					}
-					for row.Next() {
-						err = row.Scan(&db_pass)
-						if err != nil {
-							log.Fatal(err)
-						}
-					}
-					row.Close()
+					http.Redirect(w, r, "/user/profile", http.StatusFound)
 
-					if CheckPasswordhash(password, db_pass) {
-						_, err = db.Exec("UPDATE user SET username = ? WHERE uuid = ?", new, cookie.Value)
-						if err != nil {
-							log.Fatal(err)
-						}
-						http.Redirect(w, r, "/user/profile", http.StatusFound)
-					} else {
-						page.Error = "[Username] Wrong password"
-					}
-				} else {
-					page.Error = "[Username] This is not your current username"
-				}
-			} else if r.FormValue("form") == "email" {
-				current := r.FormValue("oldemail")
-				new := r.FormValue("newemail")
-				confemail := r.FormValue("confemail")
-				password := r.FormValue("passwd")
+				} else if r.FormValue("form") == "username" {
+					current := r.FormValue("username")
+					new := r.FormValue("newusername")
+					password := r.FormValue("passwd")
 
-				if new != confemail {
-					page.Error = "[Email] Emails don't match"
-				} else {
 					var count int
-					row, err := db.Query("SELECT COUNT(*) FROM user WHERE uuid = ? AND email = ?", cookie.Value, current)
+					row, err := db.Query("SELECT COUNT(*) FROM user WHERE uuid = ? AND username = ?", cookie.Value, current)
 					if err != nil {
 						log.Fatal(err)
 					}
@@ -1455,7 +1452,7 @@ func ProfileHandler(w http.ResponseWriter, r *http.Request) {
 					if count > 0 {
 						var db_pass string
 
-						row, err = db.Query("SELECT password FROM user WHERE uuid = ? AND email = ?", cookie.Value, current)
+						row, err = db.Query("SELECT password FROM user WHERE uuid = ? AND username = ?", cookie.Value, current)
 						if err != nil {
 							log.Fatal(err)
 						}
@@ -1468,26 +1465,108 @@ func ProfileHandler(w http.ResponseWriter, r *http.Request) {
 						row.Close()
 
 						if CheckPasswordhash(password, db_pass) {
-							_, err = db.Exec("UPDATE user SET email = ? WHERE uuid = ?", new, cookie.Value)
+							_, err = db.Exec("UPDATE user SET username = ? WHERE uuid = ?", new, cookie.Value)
 							if err != nil {
 								log.Fatal(err)
 							}
 							http.Redirect(w, r, "/user/profile", http.StatusFound)
 						} else {
-							page.Error = "[Email] Wrong password"
+							page.Error = "[Username] Wrong password"
 						}
 					} else {
-						page.Error = "[Email] This is not your current mail address"
+						page.Error = "[Username] This is not your current username"
 					}
-				}
-			} else if r.FormValue("form") == "password" {
-				current := r.FormValue("oldpswd")
-				new := r.FormValue("newpswd")
-				conf := r.FormValue("confpswd")
+				} else if r.FormValue("form") == "email" {
+					current := r.FormValue("oldemail")
+					new := r.FormValue("newemail")
+					confemail := r.FormValue("confemail")
+					password := r.FormValue("passwd")
 
-				if new != conf {
-					page.Error = "[Password] Passwords don't match"
-				} else {
+					if new != confemail {
+						page.Error = "[Email] Emails don't match"
+					} else {
+						var count int
+						row, err := db.Query("SELECT COUNT(*) FROM user WHERE uuid = ? AND email = ?", cookie.Value, current)
+						if err != nil {
+							log.Fatal(err)
+						}
+
+						for row.Next() {
+							err = row.Scan(&count)
+							if err != nil {
+								log.Fatal(err)
+							}
+						}
+						row.Close()
+
+						if count > 0 {
+							var db_pass string
+
+							row, err = db.Query("SELECT password FROM user WHERE uuid = ? AND email = ?", cookie.Value, current)
+							if err != nil {
+								log.Fatal(err)
+							}
+							for row.Next() {
+								err = row.Scan(&db_pass)
+								if err != nil {
+									log.Fatal(err)
+								}
+							}
+							row.Close()
+
+							if CheckPasswordhash(password, db_pass) {
+								_, err = db.Exec("UPDATE user SET email = ? WHERE uuid = ?", new, cookie.Value)
+								if err != nil {
+									log.Fatal(err)
+								}
+								http.Redirect(w, r, "/user/profile", http.StatusFound)
+							} else {
+								page.Error = "[Email] Wrong password"
+							}
+						} else {
+							page.Error = "[Email] This is not your current mail address"
+						}
+					}
+				} else if r.FormValue("form") == "password" {
+					current := r.FormValue("oldpswd")
+					new := r.FormValue("newpswd")
+					conf := r.FormValue("confpswd")
+
+					if new != conf {
+						page.Error = "[Password] Passwords don't match"
+					} else {
+						var db_pass string
+						row, err := db.Query("SELECT password FROM user WHERE uuid = ?", cookie.Value)
+						if err != nil {
+							log.Fatal(err)
+						}
+
+						for row.Next() {
+							err = row.Scan(&db_pass)
+							if err != nil {
+								log.Fatal(err)
+							}
+						}
+						row.Close()
+
+						if CheckPasswordhash(current, db_pass) {
+							hash, err := HashPassword(new)
+							if err != nil {
+								log.Fatal(err)
+							}
+
+							_, err = db.Exec("UPDATE user SET password = ? WHERE uuid = ?", hash, cookie.Value)
+							if err != nil {
+								log.Fatal(err)
+							}
+							http.Redirect(w, r, "/user/profile", http.StatusFound)
+						} else {
+							page.Error = "[Password] This is not your current password"
+						}
+					}
+				} else if r.FormValue("form") == "delete" {
+					password := r.FormValue("passwd")
+
 					var db_pass string
 					row, err := db.Query("SELECT password FROM user WHERE uuid = ?", cookie.Value)
 					if err != nil {
@@ -1502,54 +1581,23 @@ func ProfileHandler(w http.ResponseWriter, r *http.Request) {
 					}
 					row.Close()
 
-					if CheckPasswordhash(current, db_pass) {
-						hash, err := HashPassword(new)
+					if CheckPasswordhash(password, db_pass) {
+						_, err = db.Exec("DELETE FROM user WHERE uuid = ?", cookie.Value)
 						if err != nil {
 							log.Fatal(err)
 						}
 
-						_, err = db.Exec("UPDATE user SET password = ? WHERE uuid = ?", hash, cookie.Value)
-						if err != nil {
-							log.Fatal(err)
+						user := http.Cookie{
+							Name:    "user",
+							Value:   "",
+							Path:    "/",
+							Expires: time.Unix(0, 0),
 						}
-						http.Redirect(w, r, "/user/profile", http.StatusFound)
+						http.SetCookie(w, &user)
+						http.Redirect(w, r, "/", http.StatusFound)
 					} else {
-						page.Error = "[Password] This is not your current password"
+						page.Error = "[Delete] This is not your current password"
 					}
-				}
-			} else if r.FormValue("form") == "delete" {
-				password := r.FormValue("passwd")
-
-				var db_pass string
-				row, err := db.Query("SELECT password FROM user WHERE uuid = ?", cookie.Value)
-				if err != nil {
-					log.Fatal(err)
-				}
-
-				for row.Next() {
-					err = row.Scan(&db_pass)
-					if err != nil {
-						log.Fatal(err)
-					}
-				}
-				row.Close()
-
-				if CheckPasswordhash(password, db_pass) {
-					_, err = db.Exec("DELETE FROM user WHERE uuid = ?", cookie.Value)
-					if err != nil {
-						log.Fatal(err)
-					}
-
-					user := http.Cookie{
-						Name:    "user",
-						Value:   "",
-						Path:    "/",
-						Expires: time.Unix(0, 0),
-					}
-					http.SetCookie(w, &user)
-					http.Redirect(w, r, "/", http.StatusFound)
-				} else {
-					page.Error = "[Delete] This is not your current password"
 				}
 			}
 

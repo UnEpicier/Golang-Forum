@@ -21,10 +21,11 @@
 				<div class="row">
 					<div class="pic">
 						<img src="{{ .Content.ProfilePic }}" class="profilepic">
-						<div class="inputGroup">
-							<input type="file" name="pic" accept="image/*">
+						<form class="inputGroup" method="POST" enctype="multipart/form-data">
+							<input type="file" oninput="sendPic()" name="pic" accept="image/png, image/jpeg, image/gif">
+							<input type="hidden" name="form" value="profilepic">
 							<i class="fa-solid fa-user-pen pic-icon"></i>
-						</div>
+						</form>
 					</div>
 					<div class="col">
 						<div class="row">

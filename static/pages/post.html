@@ -21,12 +21,12 @@
 			</div>
 			{{.Content.Post.CreationDate}}
 		</div>
-		<div class="like">
+		<form method="POST" class="like">
 			<i class="fa-solid fa-heart"></i>
 			<p>{{ .Content.Post.Likes }}</p>
 			<i class="fa-solid fa-heart-crack"></i>
 			<p>{{ .Content.Post.Dislikes }}</p>
-		</div>
+		</form>
 		<div class="content">{{.Content.Post.Content}}</div>
 	</div>
 	{{ $len := len .Content.Comments }}
@@ -44,8 +44,10 @@
 			{{ .CreationDate }}
 		</div>
 		<div class="likecmt">
+			<input type="radio" id="like" name="vote" value="like" checked>
 			<i class="fa-solid fa-heart"></i>
 			<p>{{ .Likes }}</p>
+			<input type="radio" id="dislike" name="vote" value="dislike" checked>
 			<i class="fa-solid fa-heart-crack"></i>
 			<p>{{.Dislikes }}</p>
 		</div>

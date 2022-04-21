@@ -86,10 +86,14 @@ const sendBio = () => {
 	document.body.removeChild(form)
 }
 
-
-
 /*
 On page ready
 */
 document.getElementById('bio').style.height = "5px"
 document.getElementById('bio').style.height = (document.getElementById('bio').scrollHeight) + "px"
+
+const sendPic = () => {
+	event.preventDefault()
+
+	const pic = event.target.parentElement.submit()
+}
