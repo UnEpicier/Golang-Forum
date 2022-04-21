@@ -1,1 +1,3 @@
 forum.db
+static/assets/profile/*
+!static/assets/profile/default.png
