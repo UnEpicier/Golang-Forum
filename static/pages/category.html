@@ -20,13 +20,27 @@
 
 <div class="body">
 	<div class="positionfilters">
-		<select class="filters" id="created" name="created">
-			<option value="Lasted">Lasted post</option>
+		<select class="filters" id="filter" onchange="applyFilters()">
+			{{ if eq .Content.Filter "Latest" }}
+			<option value="Latest" selected>Latest post</option>
+			{{ else }}
+			<option value="Latest">Latest post</option>
+			{{ end }}
+			{{ if eq .Content.Filter "Oldest" }}
+			<option value="Oldest" selected>Oldest post</option>
+			{{ else }}
 			<option value="Oldest">Oldest post</option>
-		</select>
-		<select class="filters" id="liked" name="liked">
+			{{ end }}
+			{{ if eq .Content.Filter "Most" }}
+			<option value="Most" selected>Most liked post</option>
+			{{ else }}
 			<option value="Most">Most liked post</option>
-			<option value="Few">Few liked post</option>
+			{{ end }}
+			{{ if eq .Content.Filter "Least" }}
+			<option value="Least" selected>Least liked post</option>
+			{{ else }}
+			<option value="Least">Least liked post</option>
+			{{ end }}
 		</select>
 	</div>
 	{{ $length := len .Content.Posts }}
@@ -66,5 +80,6 @@
 	{{ end }}
 	{{ end }}
 </div>
+<script src="/js/category.js"></script>
 
 {{ end }}

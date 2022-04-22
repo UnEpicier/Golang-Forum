@@ -26,15 +26,29 @@
 			<input type="hidden" name="form" value="like">
 			<input type="hidden" name="type" value="post">
 			<input type="hidden" name="id" value="{{ .Content.Post.ID }}">
+			{{ if eq .Content.Post.Vote "like"}}
+			<input type="radio" id="like{{ .Content.Post.ID }}" name="like" checked>
+			<label for="like{{ .Content.Post.ID }}" onclick="unselectRadio()">
+				<i class="fa-solid fa-heart liked"></i>
+			</label>
+			{{ else }}
 			<input type="radio" id="like{{ .Content.Post.ID }}" name="like">
 			<label for="like{{ .Content.Post.ID }}" onclick="unselectRadio()">
 				<i class="fa-solid fa-heart"></i>
 			</label>
+			{{ end }}
 			<p>{{ .Content.Post.Likes }}</p>
+			{{ if eq .Content.Post.Vote "dislike"}}
+			<input type="radio" id="dislike{{ .Content.Post.ID }}" name="dislike" checked>
+			<label for="dislike{{ .Content.Post.ID }}" onclick="unselectRadio()">
+				<i class="fa-solid fa-heart-crack liked"></i>
+			</label>
+			{{ else }}
 			<input type="radio" id="dislike{{ .Content.Post.ID }}" name="dislike">
 			<label for="dislike{{ .Content.Post.ID }}" onclick="unselectRadio()">
 				<i class="fa-solid fa-heart-crack"></i>
 			</label>
+			{{ end }}
 			<p>{{ .Content.Post.Dislikes }}</p>
 		</form>
 		{{ else }}

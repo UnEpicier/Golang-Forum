@@ -23,6 +23,16 @@ func CategoryHandler(w http.ResponseWriter, r *http.Request) {
 		page.Logged = true
 	}
 
+	filter := ""
+	if r.Method == "POST" {
+		err := r.ParseForm()
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		filter = r.FormValue("filter")
+	}
+
 	if r.URL.Query().Has("id") {
 		uuid := r.URL.Query().Get("id")
 
@@ -61,7 +71,7 @@ func CategoryHandler(w http.ResponseWriter, r *http.Request) {
 
 			posts := []f.Post{}
 
-			row, err = db.Query("SELECT * FROM user as u INNER JOIN post as p ON u.id = p.user_id WHERE p.category_id = ? ORDER BY p.last_update DESC", uuid)
+			row, err = db.Query("SELECT * FROM user as u INNER JOIN post as p ON u.id = p.user_id WHERE p.category_id = ? ORDER By p.last_update DESC", uuid)
 			if err != nil {
 				log.Fatal(err)
 			}
@@ -72,12 +82,6 @@ func CategoryHandler(w http.ResponseWriter, r *http.Request) {
 				if err != nil {
 					log.Fatal(err)
 				}
-
-				post.CreationDate = post.CreationDate.(time.Time).Format("01/02/2006 15:04:05")
-				post.LastUpdate = post.LastUpdate.(time.Time).Format("01/02/2006 15:04:05")
-
-				post.User.CreationDate = post.User.CreationDate.(time.Time).Format("01/02/2006 15:04:05")
-				post.User.LastSeen = post.User.LastSeen.(time.Time).Format("01/02/2006 15:04:05")
 
 				posts = append(posts, post)
 			}
@@ -120,12 +124,64 @@ func CategoryHandler(w http.ResponseWriter, r *http.Request) {
 				row.Close()
 			}
 
+			// Sort posts by last update
+			if filter == "Latest" {
+				for i := 0; i < len(posts); i++ {
+					for j := i + 1; j < len(posts); j++ {
+						if posts[i].LastUpdate.(time.Time).Before(posts[j].LastUpdate.(time.Time)) {
+							temp := posts[i]
+							posts[i] = posts[j]
+							posts[j] = temp
+						}
+					}
+				}
+			} else if filter == "Oldest" {
+				for i := 0; i < len(posts); i++ {
+					for j := i + 1; j < len(posts); j++ {
+						if posts[i].LastUpdate.(time.Time).After(posts[j].LastUpdate.(time.Time)) {
+							temp := posts[i]
+							posts[i] = posts[j]
+							posts[j] = temp
+						}
+					}
+				}
+			} else if filter == "Most Liked" {
+				for i := 0; i < len(posts); i++ {
+					for j := i + 1; j < len(posts); j++ {
+						if posts[i].Likes < posts[j].Likes {
+							temp := posts[i]
+							posts[i] = posts[j]
+							posts[j] = temp
+						}
+					}
+				}
+			} else if filter == "Most Disliked" {
+				for i := 0; i < len(posts); i++ {
+					for j := i + 1; j < len(posts); j++ {
+						if posts[i].Likes > posts[j].Likes {
+							temp := posts[i]
+							posts[i] = posts[j]
+							posts[j] = temp
+						}
+					}
+				}
+			}
+
+			for i := 0; i < len(posts); i++ {
+				posts[i].CreationDate = posts[i].CreationDate.(time.Time).Format("01/02/2006 15:04:05")
+				posts[i].LastUpdate = posts[i].LastUpdate.(time.Time).Format("01/02/2006 15:04:05")
+
+				posts[i].User.CreationDate = posts[i].User.CreationDate.(time.Time).Format("01/02/2006 15:04:05")
+				posts[i].User.LastSeen = posts[i].User.LastSeen.(time.Time).Format("01/02/2006 15:04:05")
+			}
+
 			type c struct {
 				Category f.Category
 				Posts    []f.Post
+				Filter   string
 			}
 
-			page.Content = c{Category: cat, Posts: posts}
+			page.Content = c{Category: cat, Posts: posts, Filter: filter}
 
 			err := tplt.Execute(w, page)
 			if err != nil {

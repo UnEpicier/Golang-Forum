@@ -2,9 +2,10 @@ package forum
 
 import (
 	"database/sql"
-	_ "github.com/mattn/go-sqlite3"
 	"log"
 	"net/http"
+
+	_ "github.com/mattn/go-sqlite3"
 )
 
 func AdminDeleteHandler(w http.ResponseWriter, r *http.Request) {
@@ -50,6 +51,21 @@ func AdminDeleteHandler(w http.ResponseWriter, r *http.Request) {
 					}
 
 					if count > 0 {
+						_, err = db.Exec("DELETE FROM post WHERE user_id = ?", reqID)
+						if err != nil {
+							log.Fatal(err)
+						}
+
+						_, err = db.Exec("DELETE FROM comment WHERE user_id = ?", reqID)
+						if err != nil {
+							log.Fatal(err)
+						}
+
+						_, err = db.Exec("DELETE FROM vote WHERE user_id = ?", reqID)
+						if err != nil {
+							log.Fatal(err)
+						}
+
 						_, err = db.Exec("DELETE FROM user WHERE id = ?", reqID)
 						if err != nil {
 							log.Fatal(err)

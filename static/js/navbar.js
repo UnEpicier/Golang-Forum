@@ -10,3 +10,15 @@ const toggleNav = () => {
 		navbar.classList.add('active')
 	}
 }
+
+const setupNav = () => {
+	const path = window.location.pathname
+	const elements = document.getElementsByClassName("nav-element")
+	for (let i = 0; i < elements.length; i++) {
+		const element = elements[i]
+		if (element.getAttribute("href") === path) {
+			element.classList.add("active")
+		}
+	}
+}
+setupNav()
