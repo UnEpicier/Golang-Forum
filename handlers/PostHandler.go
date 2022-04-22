@@ -50,6 +50,21 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 		row.Close()
 
 		if f.Contains(uuid_list, uuid) {
+			var userID int
+			if cookie != nil {
+				row, err = db.Query("SELECT id FROM user WHERE uuid = ?", cookie.Value)
+				if err != nil {
+					log.Fatal(err)
+				}
+				for row.Next() {
+					err = row.Scan(&userID)
+					if err != nil {
+						log.Fatal(err)
+					}
+				}
+				row.Close()
+			}
+
 			if r.Method == "POST" {
 				err = r.ParseForm()
 				if err != nil {
@@ -59,18 +74,6 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 				if r.FormValue("form") == "createcomment" {
 					content := r.FormValue("content")
 					content = strings.Replace(content, "\r\n", "<br/>", -1)
-
-					row, err = db.Query("SELECT id FROM user WHERE uuid = ?", cookie.Value)
-					if err != nil {
-						log.Fatal(err)
-					}
-					var userID int
-					for row.Next() {
-						err = row.Scan(&userID)
-						if err != nil {
-							log.Fatal(err)
-						}
-					}
 
 					_, err = db.Exec("INSERT INTO comment (content, creation_date, user_id, post_id) VALUES (?, ?, ?, ?)", content, time.Now(), userID, uuid)
 					if err != nil {
@@ -170,6 +173,7 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 			var content f.PostPage
 
 			var post f.Post
+
 			row, err = db.Query("SELECT * FROM user AS u INNER JOIN post AS p ON u.id = p.user_id WHERE p.id = ?", uuid)
 			if err != nil {
 				log.Fatal(err)
@@ -213,36 +217,38 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 			}
 			row.Close()
 
-			row, err = db.Query("SELECT COUNT(*) FROM vote WHERE post_id = ? AND user_id = ? AND type = 'like'", post.ID, post.User.ID)
-			if err != nil {
-				log.Fatal(err)
-			}
-			var userLikes int
-			for row.Next() {
-				err = row.Scan(&userLikes)
+			if cookie != nil {
+				row, err = db.Query("SELECT COUNT(*) FROM vote WHERE post_id = ? AND user_id = ? AND type = 'like'", post.ID, userID)
 				if err != nil {
 					log.Fatal(err)
 				}
-			}
-			row.Close()
-			if userLikes > 0 {
-				post.Vote = "like"
-			}
+				var userLikes int
+				for row.Next() {
+					err = row.Scan(&userLikes)
+					if err != nil {
+						log.Fatal(err)
+					}
+				}
+				row.Close()
+				if userLikes > 0 {
+					post.Vote = "like"
+				}
 
-			row, err = db.Query("SELECT COUNT(*) FROM vote WHERE post_id = ? AND user_id = ? AND type = 'dislike'", post.ID, post.User.ID)
-			if err != nil {
-				log.Fatal(err)
-			}
-			var userDislikes int
-			for row.Next() {
-				err = row.Scan(&userDislikes)
+				row, err = db.Query("SELECT COUNT(*) FROM vote WHERE post_id = ? AND user_id = ? AND type = 'dislike'", post.ID, userID)
 				if err != nil {
 					log.Fatal(err)
 				}
-			}
-			row.Close()
-			if userDislikes > 0 {
-				post.Vote = "dislike"
+				var userDislikes int
+				for row.Next() {
+					err = row.Scan(&userDislikes)
+					if err != nil {
+						log.Fatal(err)
+					}
+				}
+				row.Close()
+				if userDislikes > 0 {
+					post.Vote = "dislike"
+				}
 			}
 
 			row, err = db.Query("SELECT * FROM comment AS c INNER JOIN user AS u ON c.user_id = u.id WHERE post_id = ?", post.ID)
@@ -263,6 +269,7 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 				comment.User.CreationDate = comment.User.CreationDate.(time.Time).Format("01/02/2006 15:04:05")
 				comment.User.LastSeen = comment.User.LastSeen.(time.Time).Format("01/02/2006 15:04:05")
 
+				comment.Content = strings.Replace(comment.Content, "<br/>", "\r\n", -1)
 				comment.Vote = ""
 
 				comments = append(comments, comment)
@@ -294,36 +301,38 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 				}
 				row.Close()
 
-				row, err = db.Query("SELECT COUNT(*) FROM vote WHERE comment_id = ? AND user_id = ? AND type = 'like'", comments[i].ID, post.User.ID)
-				if err != nil {
-					log.Fatal(err)
-				}
-				var userLikes int
-				for row.Next() {
-					err = row.Scan(&userLikes)
+				if cookie != nil {
+					row, err = db.Query("SELECT COUNT(*) FROM vote WHERE comment_id = ? AND user_id = ? AND type = 'like'", comments[i].ID, userID)
 					if err != nil {
 						log.Fatal(err)
 					}
-				}
-				row.Close()
-				if userLikes > 0 {
-					comments[i].Vote = "like"
-				}
+					var userLikes int
+					for row.Next() {
+						err = row.Scan(&userLikes)
+						if err != nil {
+							log.Fatal(err)
+						}
+					}
+					row.Close()
+					if userLikes > 0 {
+						comments[i].Vote = "like"
+					}
 
-				row, err = db.Query("SELECT COUNT(*) FROM vote WHERE comment_id = ? AND user_id = ? AND type = 'dislike'", comments[i].ID, post.User.ID)
-				if err != nil {
-					log.Fatal(err)
-				}
-				var userDislikes int
-				for row.Next() {
-					err = row.Scan(&userDislikes)
+					row, err = db.Query("SELECT COUNT(*) FROM vote WHERE comment_id = ? AND user_id = ? AND type = 'dislike'", comments[i].ID, userID)
 					if err != nil {
 						log.Fatal(err)
 					}
-				}
-				row.Close()
-				if userDislikes > 0 {
-					comments[i].Vote = "dislike"
+					var userDislikes int
+					for row.Next() {
+						err = row.Scan(&userDislikes)
+						if err != nil {
+							log.Fatal(err)
+						}
+					}
+					row.Close()
+					if userDislikes > 0 {
+						comments[i].Vote = "dislike"
+					}
 				}
 			}
 

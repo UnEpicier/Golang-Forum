@@ -4,6 +4,10 @@ body {
 	padding-top: 100px;
 }
 
+.hidden {
+	display: none !important;
+}
+
 .container {
 	margin-bottom: 50px;
 	padding: 30px;
@@ -119,7 +123,7 @@ body {
 
 .like>label>i:not(.liked),
 .likecmt>label>i:not(.liked) {
-	filter: grayscale(50%);
+	filter: grayscale(75%);
 }
 
 .like>label>i.liked,
@@ -139,19 +143,33 @@ body {
 	display: none;
 }
 
-.likecmt>*:nth-child(5),
-.likecmt>*:nth-child(8),
-.like>*:nth-child(5),
-.like>*:nth-child(8) {
+form.likecmt>*:nth-child(5),
+form.likecmt>*:nth-child(8),
+form.like>*:nth-child(5),
+form.like>*:nth-child(8) {
 	margin-right: 5px;
 }
 
-.likecmt>*:nth-child(6),
-.like>*:nth-child(6) {
+form.likecmt>*:nth-child(6),
+form.like>*:nth-child(6) {
 	margin-right: 10px;
 }
 
+div.likecmt>*:nth-child(1),
+div.likecmt>*:nth-child(3),
+div.like>*:nth-child(1),
+div.like>*:nth-child(3) {
+	margin-right: 5px;
+}
+
+div.likecmt>*:nth-child(2),
+div.like>*:nth-child(2) {
+	margin-right: 10px;
+}
+
+.like>i,
 .like>label,
+.likecmt>i,
 .likecmt>label {
 	cursor: pointer;
 }
@@ -232,4 +250,68 @@ body {
 	.cmtcontent {
 		margin: 0;
 	}
+}
+
+/* POPUP */
+
+.popup-bg {
+	position: fixed;
+	top: 0;
+	left: 0;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	padding-top: 100px;
+	width: 100%;
+	height: 100%;
+	background-color: rgba(127, 127, 127, 0.5);
+	z-index: 999999;
+}
+
+.popup {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	width: 100%;
+	max-width: 500px;
+	height: max-content;
+	border-radius: 10px;
+	background-color: #734046;
+}
+
+.close {
+	position: absolute;
+	top: 10px;
+	right: 15px;
+	font-size: 1.5rem;
+	cursor: pointer;
+	color: #eee;
+	user-select: none;
+	transition: filter .3s ease;
+}
+
+.close:hover {
+	filter: brightness(1.1);
+}
+
+.pp-header {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	padding: 20px;
+	width: 100%;
+	border-bottom: 1px solid #E79E4F;
+}
+
+.pp-subtitle {
+	font-size: 1rem;
+	font-weight: 300;
+	color: #ccc;
+	user-select: none;
+}
+
+.pp-body {
+	justify-content: center;
+	padding: 30px;
 }

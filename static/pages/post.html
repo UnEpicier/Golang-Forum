@@ -21,6 +21,7 @@
 			</div>
 			{{.Content.Post.CreationDate}}
 		</div>
+		{{ if .Logged }}
 		<form method="POST" class="like">
 			<input type="hidden" name="form" value="like">
 			<input type="hidden" name="type" value="post">
@@ -36,9 +37,18 @@
 			</label>
 			<p>{{ .Content.Post.Dislikes }}</p>
 		</form>
+		{{ else }}
+		<div class="like">
+			<i class="fa-solid fa-heart" onclick="showPopup()"></i>
+			<p>{{ .Content.Post.Likes }}</p>
+			<i class="fa-solid fa-heart-crack" onclick="showPopup()"></i></i>
+			<p>{{ .Content.Post.Dislikes }}</p>
+		</div>
+		{{ end }}
 		<div class="content">{{.Content.Post.Content}}</div>
 	</div>
 	{{ $len := len .Content.Comments }}
+	{{ $logged := .Logged }}
 	{{ if gt $len 0 }}
 	{{ range $i, $comment := .Content.Comments }}
 	<div class="comment">
@@ -52,29 +62,44 @@
 			</div>
 			{{ .CreationDate }}
 		</div>
+		{{ if $logged }}
 		<form class="likecmt" method="POST">
 			<input type="hidden" name="form" value="like">
 			<input type="hidden" name="type" value="comment">
 			<input type="hidden" name="id" value="{{ .ID }}">
+			{{ if eq .Vote "like"}}
+			<input type="radio" id="like{{ .ID }}" name="like" checked>
+			<label for="like{{ .ID }}" onclick="unselectRadio()">
+				<i class="fa-solid fa-heart liked"></i>
+			</label>
+			{{ else }}
 			<input type="radio" id="like{{ .ID }}" name="like">
 			<label for="like{{ .ID }}" onclick="unselectRadio()">
-				{{ if eq .Vote "like"}}
-				<i class="fa-solid fa-heart liked"></i>
-				{{ else }}
 				<i class="fa-solid fa-heart"></i>
-				{{ end }}
 			</label>
+			{{ end }}
 			<p>{{ .Likes }}</p>
+			{{ if eq .Vote "dislike"}}
+			<input type="radio" id="dislike{{ .ID }}" name="dislike" checked>
+			<label for="dislike{{ .ID }}" onclick="unselectRadio()">
+				<i class="fa-solid fa-heart-crack liked"></i>
+			</label>
+			{{ else }}
 			<input type="radio" id="dislike{{ .ID }}" name="dislike">
 			<label for="dislike{{ .ID }}" onclick="unselectRadio()">
-				{{ if eq .Vote "dislike"}}
-				<i class="fa-solid fa-heart-crack liked"></i>
-				{{ else }}
 				<i class="fa-solid fa-heart-crack"></i>
-				{{ end }}
 			</label>
+			{{ end }}
 			<p>{{.Dislikes }}</p>
 		</form>
+		{{ else }}
+		<div class="likecmt">
+			<i class="fa-solid fa-heart" onclick="showPopup()"></i></i>
+			<p>{{ .Likes }}</p>
+			<i class="fa-solid fa-heart-crack" onclick="showPopup()"></i>
+			<p>{{ .Dislikes }}</p>
+		</div>
+		{{ end }}
 		<p class="cmtcontent">{{ .Content }}</p>
 	</div>
 	{{ end }}
@@ -95,6 +120,20 @@
 	</div>
 	{{ end }}
 </div>
+
+<div class="popup-bg hidden" id="popup">
+	<div class="popup">
+		<i class="fa-solid fa-times close" onclick="closePopup()"></i>
+		<div class="pp-header">
+			<p class="pp-subtitle">You need to be logged in to like or dislike.</p>
+		</div>
+		<div class="row pp-body">
+			<a href="/user/login" class="nav-btn primary">Login</a>
+			<a href="/user/register" class="nav-btn secondary">Register</a>
+		</div>
+	</div>
+</div>
+
 
 <script src="/js/post.js"></script>
 
