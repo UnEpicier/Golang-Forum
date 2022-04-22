@@ -11,9 +11,9 @@
 <h1 class="title">Categories</h1>
 
 {{ if .Logged }}
-<div class="row">
+<div class="row center">
 	{{ if eq .Content.Role "Admin" }}
-	<a href="/write?action=create" class="write">Create a category</a>
+	<button class="write" type="button" onclick="showCreatePopup();">Create a category</button>
 	{{ end }}
 	<a href="/write?action=create" class="write">Create a new post</a>
 </div>
@@ -22,15 +22,39 @@
 {{ if (eq .Content.Error "") }}
 
 <div class="categories">
+	{{ $role := .Content.Role }}
 	{{ range .Content.Categories }}
-	<a class="card" href="/category?id={{ .ID }}">{{ .Name }}</a>
+	<div class="card">
+		<a href="/category?id={{ .ID }}" class="cat">
+			{{ .Name }}
+		</a>
+		{{ if eq $role "Admin" }}
+		<button type="button" class="trash" onclick="deleteCategory();" data-id="{{ .ID }}">
+			<i class="fa-solid fa-trash-can"></i>
+		</button>
+		{{ end }}
+	</div>
 	{{ end }}
 </div>
+<div class="popup-bg hidden" id="delete-popup">
+	<div class="popup">
+		<i class="fa-solid fa-times close" onclick="hideCreatePopup()"></i>
+		<div class="pp-header">
+			<p class="pp-title">Create a Category</p>
+		</div>
+		<form method="POST" name="delete" class="row pp-body">
+			<input type="text" name="category_name" id="category_name" class="input" placeholder="Name of the category"
+				required>
+			<input type="hidden" name="form" value="Create">
+			<input type="submit" class="btn" value="Create">
+		</form>
+	</div>
+</div>
 
-{{ else }}
 
-<p class="error">{{ .Content.Error }}</p>
 
 {{ end }}
+
+<script src="/js/forum.js"></script>
 
 {{ end }}

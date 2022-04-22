@@ -19,6 +19,16 @@
 </div>
 
 <div class="body">
+	<div class="positionfilters">
+		<select class="filters" id="created" name="created">
+			<option value="Lasted">Lasted post</option>
+			<option value="Oldest">Oldest post</option>
+		</select>
+		<select class="filters" id="liked" name="liked">
+			<option value="Most">Most liked post</option>
+			<option value="Few">Few liked post</option>
+		</select>
+	</div>
 	{{ $length := len .Content.Posts }}
 	{{ if eq $length 0 }}
 	<p class="empty">Any posts yet.</p>

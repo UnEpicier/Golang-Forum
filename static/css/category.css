@@ -36,6 +36,27 @@ body {
 	overflow-y: auto;
 }
 
+.positionfilters {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+}
+
+.filters {
+	font-size: 1.1rem;
+	border: none;
+	border-radius: 7px;
+	width: 180px;
+	font-size: 23px;
+	outline: none;
+	margin: 10px;
+}
+
+.filters div {
+	cursor: pointer;
+	font-size: 20px;
+}
+
 .empty {
 	font-size: 1.3rem;
 	color: #E79E4F;

@@ -37,10 +37,11 @@ type Post struct {
 	Dislikes     int
 	CommentNB    int
 	Category     Category
+	Vote         string
 }
 
 type Comment struct {
-	ID           string
+	ID           int
 	Content      string
 	CreationDate interface{}
 	User         User
@@ -48,12 +49,18 @@ type Comment struct {
 	Pinned       int
 	Likes        int
 	Dislikes     int
+	Vote         string
 }
 
 type Write struct {
 	Categories string
 	Action     string
 	Post       Post
+}
+
+type PostPage struct {
+	Post     Post
+	Comments []Comment
 }
 
 /*

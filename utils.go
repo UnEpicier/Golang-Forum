@@ -16,7 +16,7 @@ func CheckPasswordhash(password, hash string) bool {
 	return err == nil
 }
 
-func contains(s []string, e string) bool {
+func Contains(s []string, e string) bool {
 	for _, a := range s {
 		if a == e {
 			return true
@@ -25,7 +25,7 @@ func contains(s []string, e string) bool {
 	return false
 }
 
-func capitalize(s string) string {
+func Capitalize(s string) string {
 	if s == "" {
 		return s
 	}

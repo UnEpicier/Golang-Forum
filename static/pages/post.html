@@ -22,9 +22,18 @@
 			{{.Content.Post.CreationDate}}
 		</div>
 		<form method="POST" class="like">
-			<i class="fa-solid fa-heart"></i>
+			<input type="hidden" name="form" value="like">
+			<input type="hidden" name="type" value="post">
+			<input type="hidden" name="id" value="{{ .Content.Post.ID }}">
+			<input type="radio" id="like{{ .Content.Post.ID }}" name="like">
+			<label for="like{{ .Content.Post.ID }}" onclick="unselectRadio()">
+				<i class="fa-solid fa-heart"></i>
+			</label>
 			<p>{{ .Content.Post.Likes }}</p>
-			<i class="fa-solid fa-heart-crack"></i>
+			<input type="radio" id="dislike{{ .Content.Post.ID }}" name="dislike">
+			<label for="dislike{{ .Content.Post.ID }}" onclick="unselectRadio()">
+				<i class="fa-solid fa-heart-crack"></i>
+			</label>
 			<p>{{ .Content.Post.Dislikes }}</p>
 		</form>
 		<div class="content">{{.Content.Post.Content}}</div>
@@ -43,14 +52,29 @@
 			</div>
 			{{ .CreationDate }}
 		</div>
-		<div class="likecmt">
-			<input type="radio" id="like" name="vote" value="like" checked>
-			<i class="fa-solid fa-heart"></i>
+		<form class="likecmt" method="POST">
+			<input type="hidden" name="form" value="like">
+			<input type="hidden" name="type" value="comment">
+			<input type="hidden" name="id" value="{{ .ID }}">
+			<input type="radio" id="like{{ .ID }}" name="like">
+			<label for="like{{ .ID }}" onclick="unselectRadio()">
+				{{ if eq .Vote "like"}}
+				<i class="fa-solid fa-heart liked"></i>
+				{{ else }}
+				<i class="fa-solid fa-heart"></i>
+				{{ end }}
+			</label>
 			<p>{{ .Likes }}</p>
-			<input type="radio" id="dislike" name="vote" value="dislike" checked>
-			<i class="fa-solid fa-heart-crack"></i>
+			<input type="radio" id="dislike{{ .ID }}" name="dislike">
+			<label for="dislike{{ .ID }}" onclick="unselectRadio()">
+				{{ if eq .Vote "dislike"}}
+				<i class="fa-solid fa-heart-crack liked"></i>
+				{{ else }}
+				<i class="fa-solid fa-heart-crack"></i>
+				{{ end }}
+			</label>
 			<p>{{.Dislikes }}</p>
-		</div>
+		</form>
 		<p class="cmtcontent">{{ .Content }}</p>
 	</div>
 	{{ end }}
@@ -58,6 +82,7 @@
 	{{ if .Logged }}
 	<form method="POST" class="comment-form">
 		<textarea name="content" id="comment-textarea" placeholder="Write a comment..." oninput="autoGrow()"></textarea>
+		<input type="hidden" name="form" value="createcomment">
 		<button type="submit">Comment</button>
 	</form>
 	{{ else }}

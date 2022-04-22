@@ -117,6 +117,16 @@ body {
 	color: #ecb478;
 }
 
+.like>label>i:not(.liked),
+.likecmt>label>i:not(.liked) {
+	filter: grayscale(50%);
+}
+
+.like>label>i.liked,
+.likecmt>label>i.liked {
+	filter: grayscale(0%);
+}
+
 .like,
 .likecmt {
 	display: flex;
@@ -124,18 +134,25 @@ body {
 	margin-top: 10px;
 }
 
-.likecmt>*:nth-child(2n+1),
-.like>*:nth-child(2n+1) {
+.like>input,
+.likecmt>input {
+	display: none;
+}
+
+.likecmt>*:nth-child(5),
+.likecmt>*:nth-child(8),
+.like>*:nth-child(5),
+.like>*:nth-child(8) {
 	margin-right: 5px;
 }
 
-.likecmt>*:nth-child(2n),
-.like>*:nth-child(2n) {
+.likecmt>*:nth-child(6),
+.like>*:nth-child(6) {
 	margin-right: 10px;
 }
 
-.like>i,
-.likecmt>i {
+.like>label,
+.likecmt>label {
 	cursor: pointer;
 }
 

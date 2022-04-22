@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	forum "forum"
+	forum "forum/handlers"
 	"log"
 	"net/http"
 	"os"
