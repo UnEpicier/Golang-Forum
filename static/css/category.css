@@ -65,6 +65,14 @@ body {
 	color: #E79E4F;
 }
 
+.pinned {
+	margin-bottom: 10px;
+	transform-origin: center center;
+	transform: rotate(45deg);
+	width: max-content;
+	color: #ccc;
+}
+
 .card {
 	display: flex;
 	flex-direction: column;
@@ -89,6 +97,10 @@ body {
 .col {
 	display: flex;
 	flex-direction: column;
+}
+
+.card-header>.col:last-child {
+	align-items: flex-end;
 }
 
 .card-title {

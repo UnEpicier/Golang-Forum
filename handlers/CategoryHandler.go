@@ -69,7 +69,7 @@ func CategoryHandler(w http.ResponseWriter, r *http.Request) {
 				}
 			}
 
-			posts := []f.Post{}
+			p := []f.Post{}
 
 			row, err = db.Query("SELECT * FROM user as u INNER JOIN post as p ON u.id = p.user_id WHERE p.category_id = ? ORDER By p.last_update DESC", uuid)
 			if err != nil {
@@ -83,8 +83,23 @@ func CategoryHandler(w http.ResponseWriter, r *http.Request) {
 					log.Fatal(err)
 				}
 
-				posts = append(posts, post)
+				p = append(p, post)
 			}
+
+			// Move comments that are pinned to the top
+			var pinnedPosts []f.Post
+			var unpinnedPosts []f.Post
+			for _, post := range p {
+				if post.Pinned == 1 {
+					pinnedPosts = append(pinnedPosts, post)
+				} else {
+					unpinnedPosts = append(unpinnedPosts, post)
+				}
+			}
+
+			posts := []f.Post{}
+			posts = append(posts, pinnedPosts...)
+			posts = append(posts, unpinnedPosts...)
 
 			for i := 0; i < len(posts); i++ {
 				row, err = db.Query("SELECT COUNT(*) FROM vote WHERE post_id = ? AND type = 'like'", posts[i].ID)

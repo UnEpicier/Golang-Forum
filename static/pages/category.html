@@ -64,6 +64,9 @@
 				</div>
 			</div>
 			<div class="col">
+				{{ if .Pinned }}
+				<i class="fa-solid fa-thumbtack pinned"></i>
+				{{ end }}
 				<p class="date">{{ .CreationDate }}</p>
 			</div>
 		</div>
