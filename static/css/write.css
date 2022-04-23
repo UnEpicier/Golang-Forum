@@ -113,3 +113,8 @@ body {
 .btn:hover {
 	background-color: #eaac69;
 }
+
+.btn:disabled {
+	background-color: #bfbfbf;
+	cursor: not-allowed;
+}

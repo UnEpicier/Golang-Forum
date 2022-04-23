@@ -51,19 +51,56 @@ func AdminDeleteHandler(w http.ResponseWriter, r *http.Request) {
 					}
 
 					if count > 0 {
-						_, err = db.Exec("DELETE FROM post WHERE user_id = ?", reqID)
+						row, err := db.Query("SELECT id FROM post WHERE user_id = ?", reqID)
 						if err != nil {
 							log.Fatal(err)
 						}
-
-						_, err = db.Exec("DELETE FROM comment WHERE user_id = ?", reqID)
-						if err != nil {
-							log.Fatal(err)
+						posts := []int{}
+						for row.Next() {
+							var postID int
+							err = row.Scan(&postID)
+							if err != nil {
+								log.Fatal(err)
+							}
+							posts = append(posts, postID)
 						}
 
-						_, err = db.Exec("DELETE FROM vote WHERE user_id = ?", reqID)
-						if err != nil {
-							log.Fatal(err)
+						comments := []int{}
+						for _, postID := range posts {
+							_, err = db.Exec("DELETE FROM vote WHERE post_id = ?", postID)
+							if err != nil {
+								log.Fatal(err)
+							}
+
+							row, err = db.Query("SELECT id FROM comment WHERE post_id = ?", postID)
+							if err != nil {
+								log.Fatal(err)
+							}
+							for row.Next() {
+								var commentID int
+								err = row.Scan(&commentID)
+								if err != nil {
+									log.Fatal(err)
+								}
+								comments = append(comments, commentID)
+							}
+
+							_, err = db.Exec("DELETE FROM vote WHERE comment_id = ?", postID)
+							if err != nil {
+								log.Fatal(err)
+							}
+						}
+
+						for _, commentID := range comments {
+							_, err = db.Exec("DELETE FROM vote WHERE comment_id = ?", commentID)
+							if err != nil {
+								log.Fatal(err)
+							}
+
+							_, err = db.Exec("DELETE FROM comment WHERE id = ?", commentID)
+							if err != nil {
+								log.Fatal(err)
+							}
 						}
 
 						_, err = db.Exec("DELETE FROM user WHERE id = ?", reqID)
