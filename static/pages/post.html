@@ -61,6 +61,7 @@
 		{{ end }}
 		<div class="content">{{.Content.Post.Content}}</div>
 	</div>
+	{{ $postid := .Content.Post.ID }}
 	{{ $len := len .Content.Comments }}
 	{{ $logged := .Logged }}
 	{{ if gt $len 0 }}
@@ -74,7 +75,15 @@
 				<span class="role" id="{{ .User.Role }}">{{ .User.Role }}</span>
 				{{ end }}
 			</div>
-			{{ .CreationDate }}
+			<div class="col">
+				{{ if .Pinned }}
+				<i class="fa-solid fa-thumbtack pinned"></i>
+				{{ end }}
+				{{ .CreationDate }}
+				<!-- <a href="/delete?type=comment&id={{ .ID }}&post={{ $postid }}">
+					<i class="fa-solid fa-trash"></i>
+				</a> -->
+			</div>
 		</div>
 		{{ if $logged }}
 		<form class="likecmt" method="POST">

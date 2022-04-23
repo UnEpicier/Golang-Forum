@@ -251,11 +251,11 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 				}
 			}
 
-			row, err = db.Query("SELECT * FROM comment AS c INNER JOIN user AS u ON c.user_id = u.id WHERE post_id = ?", post.ID)
+			row, err = db.Query("SELECT * FROM comment AS c INNER JOIN user AS u ON c.user_id = u.id WHERE post_id = ? ORDER BY c.creation_date ASC", post.ID)
 			if err != nil {
 				log.Fatal(err)
 			}
-			var comments []f.Comment
+			var c []f.Comment
 			var uid string
 			for row.Next() {
 				var comment f.Comment
@@ -272,9 +272,24 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 				comment.Content = strings.Replace(comment.Content, "<br/>", "\r\n", -1)
 				comment.Vote = ""
 
-				comments = append(comments, comment)
+				c = append(c, comment)
 			}
 			row.Close()
+
+			// Move comments that are pinned to the top
+			var pinnedComments []f.Comment
+			var unpinnedComments []f.Comment
+			for _, comment := range c {
+				if comment.Pinned == 1 {
+					pinnedComments = append(pinnedComments, comment)
+				} else {
+					unpinnedComments = append(unpinnedComments, comment)
+				}
+			}
+
+			comments := []f.Comment{}
+			comments = append(comments, pinnedComments...)
+			comments = append(comments, unpinnedComments...)
 
 			for i := range comments {
 				row, err = db.Query("SELECT COUNT(*) FROM vote WHERE comment_id = ? AND type = 'like'", comments[i].ID)

@@ -8,6 +8,18 @@ body {
 	display: none !important;
 }
 
+.pinned {
+	margin-bottom: 10px;
+	transform-origin: center center;
+	transform: rotate(45deg);
+}
+
+.col {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-end;
+}
+
 .container {
 	margin-bottom: 50px;
 	padding: 30px;

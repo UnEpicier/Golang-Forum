@@ -33,7 +33,11 @@ func DeleteHandler(w http.ResponseWriter, r *http.Request) {
 				if err != nil {
 					log.Fatal(err)
 				}
-				http.Redirect(w, r, "/user/profile", http.StatusFound)
+				if r.URL.Query().Has("post") {
+					http.Redirect(w, r, "/post?id="+r.URL.Query().Get("post"), http.StatusFound)
+				} else {
+					http.Redirect(w, r, "/user/profile", http.StatusFound)
+				}
 			} else if r.URL.Query().Get("type") == "category" {
 				var post []f.Post
 				var comment []f.Comment
