@@ -95,45 +95,64 @@
 						<p class="email">{{ .Email }}</p>
 						<p class="date">Creation Date:<br />{{ .CreationDate }}</p>
 						<p class="date">Last Seen:<br />{{ .LastSeen }}</p>
-					</div>
-					<p class="bio">{{ .Biography }}</p>
-				</div>
-				<div class="action">
-					{{ if ne .Role "Admin" }}
-					<a href="/admin/profile?id={{ .ID }}" class="nav-btn primary">Edit</a>
-					<a href="/admin/delete?id={{ .ID }}&type=user" class="nav-btn primary">Delete</a>
-					{{ end }}
-					<a href="/admin/posts?id={{ .ID }}" class="nav-btn primary">View posts</a>
-					<a href="/admin/comments?id={{ .ID }}" class="nav-btn primary">View comments</a>
-				</div>
-			</div>
-			{{ end }}
-		</div>
-	</div>
-
-	<!-- Reports -->
-	<div class="tab hidden" id="reports">
-		<div class="list">
-			<div class="header">
-				<p class="title">Users</p>
-			</div>
-
-			<div class="body">
-				{{ $length := len .Content.Reports.Users }}
-				{{ if eq $length 0 }}
-				<p class="empty">Any users reported.</p>
-				{{ else }}
-				{{ range $report := .Content.Reports.Users }}
-				<div class="card">
-					<div class="card-header">
-						<div class="username">
-							<p class="card-title">{{ .User.Username }}</p>
-							{{ if ne .User.Role "Member" }}
-							<p class="role" id="{{ .User.Role }}">{{ .User.Role }}</p>
-							{{ end }}
+						<div class="selectRole">
+							<select class="role-select">
+								<option value="Member" {{ if eq .Role "Member" }}selected{{ end }}>Member</option>
+								<option value="Moderator" {{ if eq .Role "Moderator" }}selected{{ end }}>Moderator
+								</option>
+								<option value="Admin" {{ if eq .Role "Admin" }}selected{{ end }}>Admin</option>
+							</select>
 						</div>
 						<p class="date">Creation date: {{ .User.CreationDate }}</p>
 						<p class="date">Last seen: {{ .User.LastSeen }}</p>
+					</div>
+				</div>
+				<p class="bio">{{ .Biography }}</p>
+			</div>
+			<div class="action">
+				{{ if ne .Role "Admin" }}
+				<a href="/admin/profile?id={{ .ID }}" class="nav-btn primary">Edit</a>
+				<a href="/admin/delete?id={{ .ID }}&type=user" class="nav-btn primary">Delete</a>
+				{{ end }}
+				<button class="nav-btn primary" onclick="showPopup('viewpost-popup{{ .ID }}')">View posts</button>
+				<a href="/admin/comments?id={{ .ID }}" class="nav-btn primary">View comments</a>
+			</div>
+		</div>
+		<div class="popup-bg hidden" id="viewpost-popup{{ .ID }}">
+			<div class="popup">
+				<i class="fa-solid fa-times close" onclick="hidePopup('viewpost-popup{{ .ID }}')"></i>
+				<div class="pp-header">
+					<p class="pp-title">{{ .Username }}'s Post(s)'</p>
+				</div>
+				<div class="postcontainer">
+
+				</div>
+			</div>
+		</div>
+		{{ end }}
+	</div>
+</div>
+
+<!-- Reports -->
+<div class="tab hidden" id="reports">
+	<div class="list">
+		<div class="header">
+			<p class="title">Users</p>
+		</div>
+
+		<div class="body">
+			{{ $length := len .Content.Reports.Users }}
+			{{ if eq $length 0 }}
+			<p class="empty">Any users reported.</p>
+			{{ else }}
+			{{ range $report := .Content.Reports.Users }}
+			<div class="card">
+				<div class="card-header">
+					<div class="username">
+						<p class="card-title">{{ .User.Username }}</p>
+						{{ if ne .User.Role "Member" }}
+						<p class="role" id="{{ .User.Role }}">{{ .User.Role }}</p>
+						{{ end }}
 					</div>
 					<div class="card-body">
 						{{ .Reason }}

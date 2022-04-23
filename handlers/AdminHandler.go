@@ -80,7 +80,17 @@ func AdminHandler(w http.ResponseWriter, r *http.Request) {
 			for row.Next() {
 				err = row.Scan(&forum.Comments)
 				if err != nil {
-					log.Fatal(err)
+					log<div class="selectRole">
+					<select class="role-select">
+						<option value="Member" {{ if eq .User.Role "Member" }}selected{{ end }}>Member</option>
+						<option value="Moderator" {{ if eq .User.Role "Moderator" }}selected{{ end }}>Moderator
+						</option>
+						<option value="Admin" {{ if eq .User.Role "Admin" }}selected{{ end }}>Admin</option>
+					</select>
+				</div>
+				<p class="date">Creation date: {{ .User.CreationDate }}</p>
+				<p class="date">Last seen: {{ .User.LastSeen }}</p>
+			</div>.Fatal(err)
 				}
 			}
 			row.Close()

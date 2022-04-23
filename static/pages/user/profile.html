@@ -152,13 +152,13 @@
 			<input type="submit" class="btn" value="Save">
 		</form>
 		<p class="danger" data-text="Danger Zone"></p>
-		<button class="btn" type="button" onclick="showDeletePopup();">Delete Account</button>
+		<button class="btn" type="button" onclick="showPopup('delete-popup');">Delete Account</button>
 	</div>
 </div>
 
 <div class="popup-bg hidden" id="delete-popup">
 	<div class="popup">
-		<i class="fa-solid fa-times close" onclick="hideDeletePopup()"></i>
+		<i class="fa-solid fa-times close" onclick="hidePopup('delete-popup')"></i>
 		<div class="pp-header">
 			<p class="pp-title">Delete Account</p>
 			<p class="pp-subtitle">Are you sure you want to delete your account?</p>

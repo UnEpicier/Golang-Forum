@@ -86,7 +86,6 @@ func CategoryHandler(w http.ResponseWriter, r *http.Request) {
 				p = append(p, post)
 			}
 
-			// Move comments that are pinned to the top
 			var pinnedPosts []f.Post
 			var unpinnedPosts []f.Post
 			for _, post := range p {
@@ -94,6 +93,48 @@ func CategoryHandler(w http.ResponseWriter, r *http.Request) {
 					pinnedPosts = append(pinnedPosts, post)
 				} else {
 					unpinnedPosts = append(unpinnedPosts, post)
+				}
+			}
+
+			if filter == "Latest" {
+				for i := 0; i < len(unpinnedPosts); i++ {
+					for j := i + 1; j < len(unpinnedPosts); j++ {
+						if unpinnedPosts[i].LastUpdate.(time.Time).Before(unpinnedPosts[j].LastUpdate.(time.Time)) {
+							temp := unpinnedPosts[i]
+							unpinnedPosts[i] = unpinnedPosts[j]
+							unpinnedPosts[j] = temp
+						}
+					}
+				}
+			} else if filter == "Oldest" {
+				for i := 0; i < len(unpinnedPosts); i++ {
+					for j := i + 1; j < len(unpinnedPosts); j++ {
+						if unpinnedPosts[i].LastUpdate.(time.Time).After(unpinnedPosts[j].LastUpdate.(time.Time)) {
+							temp := unpinnedPosts[i]
+							unpinnedPosts[i] = unpinnedPosts[j]
+							unpinnedPosts[j] = temp
+						}
+					}
+				}
+			} else if filter == "Most" {
+				for i := 0; i < len(unpinnedPosts); i++ {
+					for j := i + 1; j < len(unpinnedPosts); j++ {
+						if unpinnedPosts[i].Likes < unpinnedPosts[j].Likes {
+							temp := unpinnedPosts[i]
+							unpinnedPosts[i] = unpinnedPosts[j]
+							unpinnedPosts[j] = temp
+						}
+					}
+				}
+			} else if filter == "Least" {
+				for i := 0; i < len(unpinnedPosts); i++ {
+					for j := i + 1; j < len(unpinnedPosts); j++ {
+						if unpinnedPosts[i].Likes > unpinnedPosts[j].Likes {
+							temp := unpinnedPosts[i]
+							unpinnedPosts[i] = unpinnedPosts[j]
+							unpinnedPosts[j] = temp
+						}
+					}
 				}
 			}
 
@@ -114,7 +155,7 @@ func CategoryHandler(w http.ResponseWriter, r *http.Request) {
 				}
 				row.Close()
 
-				row, err = db.Query("SELECT COUNT(*) FROM vote WHERE post_id = ? AND type = 'dislikes'", posts[i].ID)
+				row, err = db.Query("SELECT COUNT(*) FROM vote WHERE post_id = ? AND type = 'dislike'", posts[i].ID)
 				if err != nil {
 					log.Fatal(err)
 				}
@@ -137,49 +178,6 @@ func CategoryHandler(w http.ResponseWriter, r *http.Request) {
 					}
 				}
 				row.Close()
-			}
-
-			// Sort posts by last update
-			if filter == "Latest" {
-				for i := 0; i < len(posts); i++ {
-					for j := i + 1; j < len(posts); j++ {
-						if posts[i].LastUpdate.(time.Time).Before(posts[j].LastUpdate.(time.Time)) {
-							temp := posts[i]
-							posts[i] = posts[j]
-							posts[j] = temp
-						}
-					}
-				}
-			} else if filter == "Oldest" {
-				for i := 0; i < len(posts); i++ {
-					for j := i + 1; j < len(posts); j++ {
-						if posts[i].LastUpdate.(time.Time).After(posts[j].LastUpdate.(time.Time)) {
-							temp := posts[i]
-							posts[i] = posts[j]
-							posts[j] = temp
-						}
-					}
-				}
-			} else if filter == "Most Liked" {
-				for i := 0; i < len(posts); i++ {
-					for j := i + 1; j < len(posts); j++ {
-						if posts[i].Likes < posts[j].Likes {
-							temp := posts[i]
-							posts[i] = posts[j]
-							posts[j] = temp
-						}
-					}
-				}
-			} else if filter == "Most Disliked" {
-				for i := 0; i < len(posts); i++ {
-					for j := i + 1; j < len(posts); j++ {
-						if posts[i].Likes > posts[j].Likes {
-							temp := posts[i]
-							posts[i] = posts[j]
-							posts[j] = temp
-						}
-					}
-				}
 			}
 
 			for i := 0; i < len(posts); i++ {

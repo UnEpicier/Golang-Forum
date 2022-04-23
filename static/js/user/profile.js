@@ -40,13 +40,13 @@ const showError = () => {
 }
 showError()
 
-const showDeletePopup = () => {
-	document.getElementById('delete-popup').classList.remove('hidden')
+const showPopup = (id) => {
+	document.getElementById(id).classList.remove('hidden')
 	document.body.style.overflow = "hidden"
 }
 
-const hideDeletePopup = () => {
-	document.getElementById('delete-popup').classList.add('hidden')
+const hidePopup = (id) => {
+	document.getElementById(id).classList.add('hidden')
 	document.body.style.overflow = "auto"
 }
 
