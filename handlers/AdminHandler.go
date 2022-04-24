@@ -269,7 +269,7 @@ func AdminHandler(w http.ResponseWriter, r *http.Request) {
 				for row.Next() {
 					var p f.Comment
 					var skip interface{}
-					err = row.Scan(&p.ID, &p.Content, &p.CreationDate, &skip, &p.PostID, &p.Pinned)
+					err = row.Scan(&p.ID, &p.Content, &p.CreationDate, &skip, &skip, &p.Pinned)
 					if err != nil {
 						log.Fatal(err)
 					}
