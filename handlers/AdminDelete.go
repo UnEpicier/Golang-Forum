@@ -108,7 +108,7 @@ func AdminDeleteHandler(w http.ResponseWriter, r *http.Request) {
 							log.Fatal(err)
 						}
 
-						http.Redirect(w, r, "/", http.StatusOK)
+						http.Redirect(w, r, "/", http.StatusFound)
 					} else {
 						http.Redirect(w, r, "/", http.StatusFound)
 					}

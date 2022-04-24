@@ -86,6 +86,44 @@ func CategoryHandler(w http.ResponseWriter, r *http.Request) {
 				p = append(p, post)
 			}
 
+			for i := 0; i < len(p); i++ {
+				row, err = db.Query("SELECT COUNT(*) FROM vote WHERE post_id = ? AND type = 'like'", p[i].ID)
+				if err != nil {
+					log.Fatal(err)
+				}
+				for row.Next() {
+					err = row.Scan(&p[i].Likes)
+					if err != nil {
+						log.Fatal(err)
+					}
+				}
+				row.Close()
+
+				row, err = db.Query("SELECT COUNT(*) FROM vote WHERE post_id = ? AND type = 'dislike'", p[i].ID)
+				if err != nil {
+					log.Fatal(err)
+				}
+				for row.Next() {
+					err = row.Scan(&p[i].Dislikes)
+					if err != nil {
+						log.Fatal(err)
+					}
+				}
+				row.Close()
+
+				row, err = db.Query("SELECT COUNT(*) FROM comment WHERE post_id = ?", p[i].ID)
+				if err != nil {
+					log.Fatal(err)
+				}
+				for row.Next() {
+					err = row.Scan(&p[i].CommentNB)
+					if err != nil {
+						log.Fatal(err)
+					}
+				}
+				row.Close()
+			}
+
 			var pinnedPosts []f.Post
 			var unpinnedPosts []f.Post
 			for _, post := range p {
@@ -143,49 +181,11 @@ func CategoryHandler(w http.ResponseWriter, r *http.Request) {
 			posts = append(posts, unpinnedPosts...)
 
 			for i := 0; i < len(posts); i++ {
-				row, err = db.Query("SELECT COUNT(*) FROM vote WHERE post_id = ? AND type = 'like'", posts[i].ID)
-				if err != nil {
-					log.Fatal(err)
-				}
-				for row.Next() {
-					err = row.Scan(&posts[i].Likes)
-					if err != nil {
-						log.Fatal(err)
-					}
-				}
-				row.Close()
+				posts[i].CreationDate = posts[i].CreationDate.(time.Time).Format("02/01/2006 15:04:05")
+				posts[i].LastUpdate = posts[i].LastUpdate.(time.Time).Format("02/01/2006 15:04:05")
 
-				row, err = db.Query("SELECT COUNT(*) FROM vote WHERE post_id = ? AND type = 'dislike'", posts[i].ID)
-				if err != nil {
-					log.Fatal(err)
-				}
-				for row.Next() {
-					err = row.Scan(&posts[i].Dislikes)
-					if err != nil {
-						log.Fatal(err)
-					}
-				}
-				row.Close()
-
-				row, err = db.Query("SELECT COUNT(*) FROM comment WHERE post_id = ?", posts[i].ID)
-				if err != nil {
-					log.Fatal(err)
-				}
-				for row.Next() {
-					err = row.Scan(&posts[i].CommentNB)
-					if err != nil {
-						log.Fatal(err)
-					}
-				}
-				row.Close()
-			}
-
-			for i := 0; i < len(posts); i++ {
-				posts[i].CreationDate = posts[i].CreationDate.(time.Time).Format("01/02/2006 15:04:05")
-				posts[i].LastUpdate = posts[i].LastUpdate.(time.Time).Format("01/02/2006 15:04:05")
-
-				posts[i].User.CreationDate = posts[i].User.CreationDate.(time.Time).Format("01/02/2006 15:04:05")
-				posts[i].User.LastSeen = posts[i].User.LastSeen.(time.Time).Format("01/02/2006 15:04:05")
+				posts[i].User.CreationDate = posts[i].User.CreationDate.(time.Time).Format("02/01/2006 15:04:05")
+				posts[i].User.LastSeen = posts[i].User.LastSeen.(time.Time).Format("02/01/2006 15:04:05")
 			}
 
 			type c struct {

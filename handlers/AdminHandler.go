@@ -80,17 +80,7 @@ func AdminHandler(w http.ResponseWriter, r *http.Request) {
 			for row.Next() {
 				err = row.Scan(&forum.Comments)
 				if err != nil {
-					log<div class="selectRole">
-					<select class="role-select">
-						<option value="Member" {{ if eq .User.Role "Member" }}selected{{ end }}>Member</option>
-						<option value="Moderator" {{ if eq .User.Role "Moderator" }}selected{{ end }}>Moderator
-						</option>
-						<option value="Admin" {{ if eq .User.Role "Admin" }}selected{{ end }}>Admin</option>
-					</select>
-				</div>
-				<p class="date">Creation date: {{ .User.CreationDate }}</p>
-				<p class="date">Last seen: {{ .User.LastSeen }}</p>
-			</div>.Fatal(err)
+					log.Fatal(err)
 				}
 			}
 			row.Close()
@@ -253,6 +243,24 @@ func AdminHandler(w http.ResponseWriter, r *http.Request) {
 			}
 			row.Close()
 
+			if r.Method == "POST" {
+				err := r.ParseForm()
+				if err != nil {
+					log.Fatal(err)
+				}
+				form := r.FormValue("form")
+
+				if form == "role" {
+					role := r.FormValue("promote")
+					userID := r.FormValue("userID")
+					_, err = db.Exec("UPDATE user SET role = ? WHERE id = ?", role, userID)
+					if err != nil {
+						log.Fatal(err)
+					}
+					http.Redirect(w, r, "/admin", http.StatusFound)
+				}
+
+			}
 			/* REPORTS TAB */
 			reports := []f.Report{}
 

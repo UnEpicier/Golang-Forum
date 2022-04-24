@@ -11,9 +11,21 @@
 
 <div class="container">
 	<div class="tabs">
-		<span class="tab-btn active" onclick="toggleTab('stats');">Stats</span>
-		<span class="tab-btn" onclick="toggleTab('users');">Users</span>
-		<span class="tab-btn" onclick="toggleTab('reports');">Reports</span>
+		<span class="tab-btn active" onclick="toggleTab('stats');">
+			<i class="fa-solid fa-angle-up"></i>
+			Stats
+			<i class="fa-solid fa-angle-up"></i>
+		</span>
+		<span class="tab-btn" onclick="toggleTab('users');">
+			<i class="fa-solid fa-angle-up"></i>
+			Users
+			<i class="fa-solid fa-angle-up"></i>
+		</span>
+		<span class="tab-btn" onclick="toggleTab('reports');">
+			<i class="fa-solid fa-angle-up"></i>
+			Reports
+			<i class="fa-solid fa-angle-up"></i>
+		</span>
 	</div>
 
 	<!-- Stats -->
@@ -84,7 +96,7 @@
 			</div>
 		</div>
 		<div class="users">
-			{{ range $user := .Content.Users }}
+			{{ range .Content.Users }}
 			<div class="card card-user">
 				<div class="card-header">
 					<div class="col">
@@ -93,131 +105,163 @@
 							<p class="role" id="{{ .Role }}">{{ .Role }}</p>
 						</div>
 						<p class="email">{{ .Email }}</p>
-						<p class="date">Creation Date:<br />{{ .CreationDate }}</p>
-						<p class="date">Last Seen:<br />{{ .LastSeen }}</p>
+						<div class="row">
+							<p class="date">Creation Date:<br />{{ .CreationDate }}</p>
+							<p class="date">Last Seen:<br />{{ .LastSeen }}</p>
+						</div>
+						{{ if ne .Role "Admin" }}
 						<div class="selectRole">
-							<select class="role-select">
+							<select class="role-select" onchange="promoteUser()" data-id="{{ .ID  }}">
 								<option value="Member" {{ if eq .Role "Member" }}selected{{ end }}>Member</option>
 								<option value="Moderator" {{ if eq .Role "Moderator" }}selected{{ end }}>Moderator
 								</option>
 								<option value="Admin" {{ if eq .Role "Admin" }}selected{{ end }}>Admin</option>
 							</select>
 						</div>
-						<p class="date">Creation date: {{ .User.CreationDate }}</p>
-						<p class="date">Last seen: {{ .User.LastSeen }}</p>
-					</div>
-				</div>
-				<p class="bio">{{ .Biography }}</p>
-			</div>
-			<div class="action">
-				{{ if ne .Role "Admin" }}
-				<a href="/admin/profile?id={{ .ID }}" class="nav-btn primary">Edit</a>
-				<a href="/admin/delete?id={{ .ID }}&type=user" class="nav-btn primary">Delete</a>
-				{{ end }}
-				<button class="nav-btn primary" onclick="showPopup('viewpost-popup{{ .ID }}')">View posts</button>
-				<a href="/admin/comments?id={{ .ID }}" class="nav-btn primary">View comments</a>
-			</div>
-		</div>
-		<div class="popup-bg hidden" id="viewpost-popup{{ .ID }}">
-			<div class="popup">
-				<i class="fa-solid fa-times close" onclick="hidePopup('viewpost-popup{{ .ID }}')"></i>
-				<div class="pp-header">
-					<p class="pp-title">{{ .Username }}'s Post(s)'</p>
-				</div>
-				<div class="postcontainer">
-
-				</div>
-			</div>
-		</div>
-		{{ end }}
-	</div>
-</div>
-
-<!-- Reports -->
-<div class="tab hidden" id="reports">
-	<div class="list">
-		<div class="header">
-			<p class="title">Users</p>
-		</div>
-
-		<div class="body">
-			{{ $length := len .Content.Reports.Users }}
-			{{ if eq $length 0 }}
-			<p class="empty">Any users reported.</p>
-			{{ else }}
-			{{ range $report := .Content.Reports.Users }}
-			<div class="card">
-				<div class="card-header">
-					<div class="username">
-						<p class="card-title">{{ .User.Username }}</p>
-						{{ if ne .User.Role "Member" }}
-						<p class="role" id="{{ .User.Role }}">{{ .User.Role }}</p>
 						{{ end }}
 					</div>
-					<div class="card-body">
-						{{ .Reason }}
+				</div>
+				{{ if ne .Biography "" }}
+				<p class="bio">{{ .Biography }}</p>
+				{{ end }}
+				<div class="action">
+					{{ if ne .Role "Admin" }}
+					<a href="/admin/profile?id={{ .ID }}" class="nav-btn primary">Edit</a>
+					<a href="/admin/delete?id={{ .ID }}&type=user" class="nav-btn primary">Delete</a>
+					{{ end }}
+					<button class="nav-btn primary" onclick="showPopup('viewpost-popup{{ .ID }}')">View posts</button>
+					<a href=" /admin/comments?id={{ .ID }}" class="nav-btn primary">View
+						comments</a>
+				</div>
+			</div>
+			<div class="popup-bg hidden" id="viewpost-popup{{ .ID }}">
+				<div class="popup">
+					<i class="fa-solid fa-times close" onclick="test()"></i>
+					<div class="pp-header">
+						<p class="pp-title">
+							<!-- {{ .Username }}'s Post(s)' -->
+							USERNAME
+						</p>
+					</div>
+					<div class="postcontainer">
+						<!-- {{ $length :=len .Posts }} {{ if eq $length 0 }} <p class="empty">Any posts yet.</p>
+						{{ else }}
+						{{ range .Posts }} -->
+						<div class="card">
+							<div class="row">
+								<div class="col">
+									<p class="card-title">titre</p>
+									<p class="date">date</p>
+									<p class="content">contenu</p>
+								</div>
+								<div class="col">
+									<p class="card-category">category</p>
+									<a class="action-btn" href="/delete?type=post&id={{ .ID }}">
+										<i class="fa-solid fa-trash-can card-icon"></i>
+									</a>
+									<a class="action-btn" href="/write?action=edit&id={{ .ID }}">
+										<i class="fa-solid fa-pen card-icon"></i>
+									</a>
+								</div>
+							</div>
+							<a href="/post?id={{ .ID }}" class="card-btn nav-btn">View post</a>
+						</div>
+						<!-- {{ end }} -->
+						<!-- {{ end }} -->
 					</div>
 				</div>
-				{{ end }}
-				{{ end }}
 			</div>
+			{{ end }}
 		</div>
+	</div>
+
+
+	<!-- Reports -->
+	<div class="tab hidden" id="reports">
 		<div class="list">
 			<div class="header">
-				<p class="title">Posts</p>
+				<p class="title">Users</p>
 			</div>
 
 			<div class="body">
-				{{ $length := len .Content.Reports.Posts }}
+				{{ $length := len .Content.Reports.Users }}
 				{{ if eq $length 0 }}
-				<p class="empty">Any posts reported.</p>
+				<p class="empty">Any users reported.</p>
 				{{ else }}
-				{{ range $report := .Content.Reports.Posts }}
+				{{ range $report := .Content.Reports.Users }}
 				<div class="card">
 					<div class="card-header">
-						<p class="card-title">{{ .Post.Title }}</p>
 						<div class="username">
-							<p class="name">{{ .User.Username }}</p>
+							<p class="card-title">{{ .User.Username }}</p>
 							{{ if ne .User.Role "Member" }}
 							<p class="role" id="{{ .User.Role }}">{{ .User.Role }}</p>
 							{{ end }}
 						</div>
-					</div>
-					<div class="card-body">
-						{{ .Reason }}
-					</div>
-				</div>
-				{{ end }}
-				{{ end }}
-			</div>
-		</div>
-		<div class="list">
-			<div class="header">
-				<p class="title">Comments</p>
-			</div>
-
-			<div class="body">
-				{{ $length := len .Content.Reports.Comments }}
-				{{ if eq $length 0 }}
-				<p class="empty">Any comments reported.</p>
-				{{ else }}
-				{{ range $report := .Content.Reports.Comments }}
-				<div class="card">
-					<div class="card-header">
-						<p class="card-title">{{ .Post.Title }}</p>
-						<div class="username">
-							<p class="name">{{ .User.Username }}</p>
-							{{ if ne .User.Role "Member" }}
-							<p class="role" id="{{ .User.Role }}">{{ .User.Role }}</p>
-							{{ end }}
+						<div class="card-body">
+							{{ .Reason }}
 						</div>
 					</div>
-					<div class="card-body">
-						{{ .Reason }}
-					</div>
+					{{ end }}
+					{{ end }}
 				</div>
-				{{ end }}
-				{{ end }}
+			</div>
+			<div class="list">
+				<div class="header">
+					<p class="title">Posts</p>
+				</div>
+
+				<div class="body">
+					{{ $length := len .Content.Reports.Posts }}
+					{{ if eq $length 0 }}
+					<p class="empty">Any posts reported.</p>
+					{{ else }}
+					{{ range $report := .Content.Reports.Posts }}
+					<div class="card">
+						<div class="card-header">
+							<p class="card-title">{{ .Post.Title }}</p>
+							<div class="username">
+								<p class="name">{{ .User.Username }}</p>
+								{{ if ne .User.Role "Member" }}
+								<p class="role" id="{{ .User.Role }}">{{ .User.Role }}</p>
+								{{ end }}
+							</div>
+						</div>
+						<div class="card-body">
+							{{ .Reason }}
+						</div>
+					</div>
+					{{ end }}
+					{{ end }}
+				</div>
+			</div>
+			<div class="list">
+				<div class="header">
+					<p class="title">Comments</p>
+				</div>
+
+				<div class="body">
+					{{ $length := len .Content.Reports.Comments }}
+					{{ if eq $length 0 }}
+					<p class="empty">Any comments reported.</p>
+					{{ else }}
+					{{ range $report := .Content.Reports.Comments }}
+					<div class="card">
+						<div class="card-header">
+							<p class="card-title">{{ .Post.Title }}</p>
+							<div class="username">
+								<p class="name">{{ .User.Username }}</p>
+								{{ if ne .User.Role "Member" }}
+								<p class="role" id="{{ .User.Role }}">{{ .User.Role }}</p>
+								{{ end }}
+							</div>
+						</div>
+						<div class="card-body">
+							{{ .Reason }}
+						</div>
+					</div>
+					{{ end }}
+					{{ end }}
+				</div>
 			</div>
 		</div>
 	</div>

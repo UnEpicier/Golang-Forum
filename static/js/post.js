@@ -1,11 +1,25 @@
 function autoGrow() {
 	var textarea = event.target;
-	textarea.style.height = "5px";
-	textarea.style.height = (textarea.scrollHeight) + "px";
+
+	if (textarea.name = "reason") {
+		console.log(textarea.style.height)
+		if (parseInt((textarea.style.height).slice(0, -2)) >= 400) {
+			textarea.style.overflow = 'auto'
+		} else {
+			textarea.style.height = "5px";
+			textarea.style.height = (textarea.scrollHeight) + "px";
+		}
+	} else {
+		textarea.style.height = "5px";
+		textarea.style.height = (textarea.scrollHeight) + "px";
+	}
 }
 
 if (document.getElementById('comment-textarea')) {
 	document.getElementById('comment-textarea').style.height = "100px"
+}
+if (document.getElementById('report-textarea')) {
+	document.getElementById('report-textarea').style.height = "100px"
 }
 
 function unselectRadio() {
@@ -41,10 +55,46 @@ function unselectRadio() {
 	radio.parentElement.submit()
 }
 
-function showPopup() {
-	document.getElementById("popup").classList.remove("hidden")
+function showLoggedPopup() {
+	document.getElementById("logged").classList.remove("hidden")
+	document.body.style.overflow = 'hidden'
+}
+
+function closeLoggedPopup() {
+	document.getElementById("logged").classList.add("hidden")
+	document.body.style.overflow = 'auto'
+}
+
+/*
+ * @param {string} type	=> 'post', 'comment'
+ * @param {string} id => 'id' = data-id
+ */
+function showReportPopup(type) {
+	const id = event.target.getAttribute('data-id')
+
+	if (type == "post" || type == "comment") {
+		document.getElementById("report").classList.remove("hidden")
+		document.body.style.overflow = 'hidden'
+
+		document.getElementById("report-title").innerText = document.getElementById("report-title").innerText + ' ' + type
+
+		const form = document.getElementById("report-form")
+
+		const type_ = document.createElement('input')
+		type_.type = 'hidden'
+		type_.name = 'type'
+		type_.value = type
+		form.appendChild(type_)
+
+		const id_ = document.createElement('input')
+		id_.type = 'hidden'
+		id_.name = 'id'
+		id_.value = id
+		form.appendChild(id_)
+	}
 }
 
 function closePopup() {
-	document.getElementById("popup").classList.add("hidden")
+	event.target.parentElement.parentElement.classList.add("hidden")
+	document.body.style.overflow = 'auto'
 }

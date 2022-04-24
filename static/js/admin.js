@@ -231,3 +231,33 @@ function search() {
 		}
 	}
 }
+
+function promoteUser() {
+	const role = event.target.value;
+	const userID = event.target.getAttribute("data-id");
+
+	const form = document.createElement('form');
+	form.method = 'POST';
+
+	const input = document.createElement('input');
+	input.type = 'hidden';
+	input.name = 'form';
+	input.value = 'role';
+	form.appendChild(input);
+
+	const promote = document.createElement('input');
+	promote.type = 'hidden';
+	promote.name = 'promote';
+	promote.value = role;
+	form.appendChild(promote);
+
+	const user = document.createElement('input');
+	user.type = 'hidden';
+	user.name = 'userID';
+	user.value = userID;
+	form.appendChild(user);
+
+	document.body.appendChild(form);
+	form.submit();
+	document.body.removeChild(form);
+}

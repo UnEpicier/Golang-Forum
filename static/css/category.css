@@ -43,16 +43,14 @@ body {
 }
 
 .filters {
-	font-size: 15px;
-	border: none;
-	border-radius: 7px;
-	width: 180px;
-	outline: none;
 	margin-left: 10px;
 	margin-right: 10px;
 	margin-bottom: 25px;
 	padding: 3px;
+	border-radius: 7px;
 	border: 2px solid #E79E4F;
+	font-size: 19px;
+	outline: none;
 }
 
 .filters div {

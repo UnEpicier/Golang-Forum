@@ -97,3 +97,7 @@ const sendPic = () => {
 
 	const pic = event.target.parentElement.submit()
 }
+
+function test() {
+	console.log('passed')
+}

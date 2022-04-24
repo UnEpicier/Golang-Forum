@@ -26,7 +26,10 @@ body {
 }
 
 .tab-btn {
-	display: block;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 0 10px;
 	width: 100%;
 	height: 60px;
 	border: none;
@@ -47,6 +50,38 @@ body {
 .tab-btn.active {
 	background-color: #925159;
 	color: #E79E4F;
+}
+
+.tab-btn>i {
+	transform-origin: center center;
+	opacity: 0;
+	transition:
+		transform .5s ease,
+		opacity .5s ease;
+}
+
+.tab-btn:hover>i {
+	opacity: .5;
+}
+
+.tab-btn:hover>i:first-child {
+	opacity: .5;
+	transform: rotate(90deg);
+}
+
+.tab-btn:hover>i:last-child {
+	opacity: .5;
+	transform: rotate(-90deg);
+}
+
+.tab-btn.active>i:first-child {
+	opacity: 1;
+	transform: rotate(90deg);
+}
+
+.tab-btn.active>i:last-child {
+	opacity: 1;
+	transform: rotate(-90deg);
 }
 
 @media screen and (max-width: 768px) {
@@ -127,6 +162,15 @@ body {
 
 .col:last-child {
 	text-align: right;
+}
+
+.redirect {
+	display: flex;
+	flex-direction: row;
+}
+
+.redirect>*:first-child {
+	margin-right: 10px;
 }
 
 .pic {
