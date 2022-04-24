@@ -71,6 +71,7 @@ function closeLoggedPopup() {
  */
 function showReportPopup(type) {
 	const id = event.target.getAttribute('data-id')
+	const uid = event.target.getAttribute('data-uid')
 
 	if (type == "post" || type == "comment") {
 		document.getElementById("report").classList.remove("hidden")
@@ -91,6 +92,21 @@ function showReportPopup(type) {
 		id_.name = 'id'
 		id_.value = id
 		form.appendChild(id_)
+
+		const uid_ = document.createElement('input')
+		uid_.type = 'hidden'
+		uid_.name = 'uid'
+		uid_.value = uid
+		form.appendChild(uid_)
+
+		if (type == "comment") {
+			const idp = event.target.getAttribute('data-pid')
+			const pid_ = document.createElement('input')
+			pid_.type = 'hidden'
+			pid_.name = 'pid'
+			pid_.value = idp
+			form.appendChild(pid_)
+		}
 	}
 }
 

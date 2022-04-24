@@ -2,6 +2,7 @@ package forum
 
 import (
 	"database/sql"
+	"fmt"
 	f "forum"
 	"html/template"
 	"log"
@@ -243,6 +244,40 @@ func AdminHandler(w http.ResponseWriter, r *http.Request) {
 			}
 			row.Close()
 
+			for i := 0; i < len(admin.Users); i++ {
+				row, err = db.Query("SELECT * FROM post WHERE user_id = ?", admin.Users[i].ID)
+				if err != nil {
+					log.Fatal(err)
+				}
+				for row.Next() {
+					var p f.Post
+					var skip interface{}
+					err = row.Scan(&p.ID, &p.Title, &p.Content, &p.CreationDate, &skip, &p.CategoryId, &p.Pinned, &p.LastUpdate)
+					if err != nil {
+						fmt.Println("Posts")
+						log.Fatal(err)
+					}
+					admin.Users[i].Posts = append(admin.Users[i].Posts, p)
+				}
+				row.Close()
+
+				row, err = db.Query("SELECT * FROM comment WHERE user_id = ?", admin.Users[i].ID)
+				if err != nil {
+					log.Fatal(err)
+					fmt.Println("Posts")
+				}
+				for row.Next() {
+					var p f.Comment
+					var skip interface{}
+					err = row.Scan(&p.ID, &p.Content, &p.CreationDate, &skip, &p.PostID, &p.Pinned)
+					if err != nil {
+						log.Fatal(err)
+					}
+					admin.Users[i].Comments = append(admin.Users[i].Comments, p)
+				}
+				row.Close()
+			}
+
 			if r.Method == "POST" {
 				err := r.ParseForm()
 				if err != nil {
@@ -257,7 +292,7 @@ func AdminHandler(w http.ResponseWriter, r *http.Request) {
 					if err != nil {
 						log.Fatal(err)
 					}
-					http.Redirect(w, r, "/admin", http.StatusFound)
+					http.Redirect(w, r, "/admin#users", http.StatusFound)
 				}
 
 			}
@@ -281,7 +316,7 @@ func AdminHandler(w http.ResponseWriter, r *http.Request) {
 				if err != nil {
 					log.Fatal(err)
 				}
-				report.CreationDate = report.CreationDate.(time.Time).Format("2006/01/02 15:04:05")
+				report.CreationDate = report.CreationDate.(time.Time).Format("02/01/2006 15:04:05")
 
 				uids = append(uids, userID)
 				pids = append(pids, postID)
@@ -298,7 +333,7 @@ func AdminHandler(w http.ResponseWriter, r *http.Request) {
 						log.Fatal(err)
 					}
 					for row.Next() {
-						err = row.Scan(&reports[i].User.ID, &reports[i].User.Uuid, &reports[i].User.Username, &reports[i].User.Email, &reports[i].User.Password, &reports[i].User.Role, &reports[i].User.CreationDate, &reports[i].User.Biography, &reports[i].User.LastSeen)
+						err = row.Scan(&reports[i].User.ID, &reports[i].User.Uuid, &reports[i].User.Username, &reports[i].User.ProfilePic, &reports[i].User.Email, &reports[i].User.Password, &reports[i].User.Role, &reports[i].User.CreationDate, &reports[i].User.Biography, &reports[i].User.LastSeen)
 						if err != nil {
 							log.Fatal(err)
 						}
@@ -311,7 +346,7 @@ func AdminHandler(w http.ResponseWriter, r *http.Request) {
 						log.Fatal(err)
 					}
 					for row.Next() {
-						err = row.Scan(&reports[i].Post.ID, &reports[i].Post.Title, &reports[i].Post.Content, &reports[i].Post.CreationDate, &skip, &reports[i].Post.CategoryId, &reports[i].Post.Pinned, &reports[i].Post.LastUpdate, &reports[i].User.ID, &reports[i].User.Uuid, &reports[i].User.Username, &reports[i].User.Email, &reports[i].User.Password, &reports[i].User.Role, &reports[i].User.CreationDate, &reports[i].User.Biography, &reports[i].User.LastSeen)
+						err = row.Scan(&reports[i].Post.ID, &reports[i].Post.Title, &reports[i].Post.Content, &reports[i].Post.CreationDate, &skip, &reports[i].Post.CategoryId, &reports[i].Post.Pinned, &reports[i].Post.LastUpdate, &reports[i].User.ID, &reports[i].User.Uuid, &reports[i].User.ProfilePic, &reports[i].User.Username, &reports[i].User.Email, &reports[i].User.Password, &reports[i].User.Role, &reports[i].User.CreationDate, &reports[i].User.Biography, &reports[i].User.LastSeen)
 						if err != nil {
 							log.Fatal(err)
 						}
@@ -324,7 +359,7 @@ func AdminHandler(w http.ResponseWriter, r *http.Request) {
 						log.Fatal(err)
 					}
 					for row.Next() {
-						err = row.Scan(&reports[i].Comment.ID, &reports[i].Comment.Content, &reports[i].Comment.CreationDate, &skip, &skip, &reports[i].Comment.Pinned, &reports[i].Post.ID, &reports[i].Post.Title, &reports[i].Post.Content, &reports[i].Post.CreationDate, &skip, &reports[i].Post.CategoryId, &reports[i].Post.Pinned, &reports[i].Post.LastUpdate, &reports[i].User.ID, &reports[i].User.Uuid, &reports[i].User.Username, &reports[i].User.Email, &reports[i].User.Password, &reports[i].User.Role, &reports[i].User.CreationDate, &reports[i].User.Biography, &reports[i].User.LastSeen)
+						err = row.Scan(&reports[i].Comment.ID, &reports[i].Comment.Content, &reports[i].Comment.CreationDate, &skip, &skip, &reports[i].Comment.Pinned, &reports[i].Post.ID, &reports[i].Post.Title, &reports[i].Post.Content, &reports[i].Post.CreationDate, &skip, &reports[i].Post.CategoryId, &reports[i].Post.Pinned, &reports[i].Post.LastUpdate, &reports[i].User.ID, &reports[i].User.Uuid, &reports[i].User.Username, &reports[i].User.ProfilePic, &reports[i].User.Email, &reports[i].User.Password, &reports[i].User.Role, &reports[i].User.CreationDate, &reports[i].User.Biography, &reports[i].User.LastSeen)
 						if err != nil {
 							log.Fatal(err)
 						}

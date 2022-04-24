@@ -11,21 +11,21 @@
 
 <div class="container">
 	<div class="tabs">
-		<span class="tab-btn active" onclick="toggleTab('stats');">
+		<a class="tab-btn active" href="#stats" onclick="setTimeout(() => {setupTabs()}, 10);">
 			<i class="fa-solid fa-angle-up"></i>
 			Stats
 			<i class="fa-solid fa-angle-up"></i>
-		</span>
-		<span class="tab-btn" onclick="toggleTab('users');">
+		</a>
+		<a class="tab-btn" href="#users" onclick="setTimeout(() => {setupTabs()}, 10);">
 			<i class="fa-solid fa-angle-up"></i>
 			Users
 			<i class="fa-solid fa-angle-up"></i>
-		</span>
-		<span class="tab-btn" onclick="toggleTab('reports');">
+		</a>
+		<a class="tab-btn" href="#reports" onclick="setTimeout(() => {setupTabs()}, 10);">
 			<i class="fa-solid fa-angle-up"></i>
 			Reports
 			<i class="fa-solid fa-angle-up"></i>
-		</span>
+		</a>
 	</div>
 
 	<!-- Stats -->
@@ -130,23 +130,24 @@
 					<a href="/admin/delete?id={{ .ID }}&type=user" class="nav-btn primary">Delete</a>
 					{{ end }}
 					<button class="nav-btn primary" onclick="showPopup('viewpost-popup{{ .ID }}')">View posts</button>
-					<a href=" /admin/comments?id={{ .ID }}" class="nav-btn primary">View
-						comments</a>
+					<button class="nav-btn primary" onclick="showPopup('viewpost-popup{{ .ID }}')">View
+						comments</button>
 				</div>
 			</div>
 			<div class="popup-bg hidden" id="viewpost-popup{{ .ID }}">
 				<div class="popup">
-					<i class="fa-solid fa-times close" onclick="test()"></i>
+					<i class="fa-solid fa-times close" onclick="hidePopup('viewpost-popup{{ .ID }}')"></i>
 					<div class="pp-header">
 						<p class="pp-title">
-							<!-- {{ .Username }}'s Post(s)' -->
-							USERNAME
+							{{ .Username }}'s Post(s)
 						</p>
 					</div>
 					<div class="postcontainer">
-						<!-- {{ $length :=len .Posts }} {{ if eq $length 0 }} <p class="empty">Any posts yet.</p>
+						{{ $length :=len .Posts }}
+						{{ if eq $length 0 }}
+						<p class="empty">Any posts yet.</p>
 						{{ else }}
-						{{ range .Posts }} -->
+						{{ range .Posts }}
 						<div class="card">
 							<div class="row">
 								<div class="col">
@@ -166,15 +167,14 @@
 							</div>
 							<a href="/post?id={{ .ID }}" class="card-btn nav-btn">View post</a>
 						</div>
-						<!-- {{ end }} -->
-						<!-- {{ end }} -->
+						{{ end }}
+						{{ end }}
 					</div>
 				</div>
 			</div>
 			{{ end }}
 		</div>
 	</div>
-
 
 	<!-- Reports -->
 	<div class="tab hidden" id="reports">

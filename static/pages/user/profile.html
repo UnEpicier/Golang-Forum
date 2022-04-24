@@ -10,16 +10,16 @@
 
 <div class="profile">
 	<div class="tabs">
-		<button class="tab-btn active" onclick="toggleTab('profile')">
+		<a class="tab-btn active" href="#profile" onclick="setTimeout(() => {setupTabs()}, 10);">
 			<i class="fa-solid fa-angle-up"></i>
 			Profile
 			<i class="fa-solid fa-angle-up"></i>
-		</button>
-		<button class="tab-btn" onclick="toggleTab('settings')">
+		</a>
+		<a class="tab-btn" href="#settings" onclick="setTimeout(() => {setupTabs()}, 10);">
 			<i class="fa-solid fa-angle-up"></i>
 			Settings
 			<i class="fa-solid fa-angle-up"></i>
-		</button>
+		</a>
 	</div>
 
 	<!-- Profile -->

@@ -23,8 +23,10 @@
 			</div>
 			<div class="col">
 				<p>{{.Content.Post.CreationDate}}</p>
+				{{ if or (eq .Content.Post.User.Role "Admin") (eq .Content.Post.User.Role "Moderator") }}
 				<i class="fa-solid fa-circle-exclamation report" onclick="showReportPopup('post')"
-					data-id="{{ .Content.Post.ID }}"></i>
+					data-id="{{ .Content.Post.ID }}" data-uid="{{ .Content.Post.User.ID }}"></i>
+				{{ end }}
 			</div>
 		</div>
 		{{ if .Logged }}
@@ -68,6 +70,7 @@
 		<div class="content">{{.Content.Post.Content}}</div>
 	</div>
 	{{ $postid := .Content.Post.ID }}
+	{{ $userid := .Content.Post.User.ID }}
 	{{ $len := len .Content.Comments }}
 	{{ $logged := .Logged }}
 	{{ if gt $len 0 }}
@@ -86,6 +89,10 @@
 				<i class="fa-solid fa-thumbtack pinned"></i>
 				{{ end }}
 				{{ .CreationDate }}
+				{{if or (eq .User.Role "Admin") (eq .User.Role "Moderator") }}
+				<i class="fa-solid fa-circle-exclamation report" onclick="showReportPopup('post')"
+					data-id="{{ $postid }}" data-uid="{{ $userid }}"></i>
+				{{end}}
 			</div>
 		</div>
 		{{ if $logged }}
@@ -165,11 +172,12 @@
 	<div class="popup">
 		<i class="fa-solid fa-times close" onclick="closePopup()"></i>
 		<div class="pp-header">
-			<p class="pp-title" id="report-title">Report this </p>
+			<p class="pp-title" id="report-title">Report this</p>
 		</div>
 		<form class="pp-body" id="report-form" method="POST">
 			<textarea name="reason" class="textarea" id="report-textarea" oninput="autoGrow()"
 				placeholder="Reason..."></textarea>
+			<input type="hidden" name="form" value="report">
 			<button type="submit" class="submit">Report</button>
 		</form>
 	</div>

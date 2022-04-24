@@ -2,6 +2,7 @@ package forum
 
 import (
 	"database/sql"
+	"fmt"
 	f "forum"
 	"html/template"
 	"log"
@@ -166,6 +167,26 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 							}
 						}
 
+					}
+				} else if r.FormValue("form") == "report" {
+					typ := r.FormValue("type")
+					id := r.FormValue("id")
+					uid := r.FormValue("uid")
+					reason := r.FormValue("reason")
+					fmt.Println("Passed", typ, id, reason)
+					if typ == "post" {
+						e, err := db.Exec("INSERT INTO report (type, reason, creation_date, user_id, post_id) VALUES (?, ?, ?, ?, ?)", typ, reason, time.Now(), uid, id)
+						if err != nil {
+							log.Fatal(err)
+						}
+						fmt.Println(e)
+					} else if typ == "comment" {
+						pid := r.FormValue("pid")
+						e, err := db.Exec("INSERT INTO report (type, reason, creation_date, user_id, post_id, comment_id) VALUES (?, ?, ?, ?, ?, ?)", typ, reason, time.Now(), uid, pid, id)
+						if err != nil {
+							log.Fatal(err)
+						}
+						fmt.Println(e)
 					}
 				}
 			}

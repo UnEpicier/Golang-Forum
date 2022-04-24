@@ -9,15 +9,32 @@ const toggleTab = (id) => {
 		}
 	}
 
+	// add anchor to the current url
+
 	const tabLinks = document.getElementsByClassName("tab-btn");
 	for (const btn of tabLinks) {
-		if ((btn.innerText).toLowerCase() === id) {
+		if ((btn.innerText).replace(" ", "").toLowerCase() === id) {
 			btn.classList.add("active");
 		} else {
 			btn.classList.remove("active");
 		}
 	}
 
+}
+
+const setupTabs = () => {
+	const url = window.location.href
+	const anchor = url.split("#")[1]
+
+	const tabs = document.getElementsByClassName("tab")
+	for (let i = 0; i < tabs.length; i++) {
+		if (tabs[i].id === anchor) {
+			toggleTab(anchor)
+		}
+	}
+}
+if (document.getElementsByClassName('tabs')) {
+	setupTabs()
 }
 
 const showError = () => {
@@ -38,7 +55,6 @@ const showError = () => {
 		}
 	}
 }
-showError()
 
 const showPopup = (id) => {
 	document.getElementById(id).classList.remove('hidden')
@@ -89,15 +105,15 @@ const sendBio = () => {
 /*
 On page ready
 */
-document.getElementById('bio').style.height = "5px"
-document.getElementById('bio').style.height = (document.getElementById('bio').scrollHeight) + "px"
+if (window.location.pathname == "/user/profile") {
+	document.getElementById('bio').style.height = "5px"
+	document.getElementById('bio').style.height = (document.getElementById('bio').scrollHeight) + "px"
+
+	showError()
+}
 
 const sendPic = () => {
 	event.preventDefault()
 
 	const pic = event.target.parentElement.submit()
-}
-
-function test() {
-	console.log('passed')
 }

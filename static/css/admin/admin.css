@@ -37,6 +37,7 @@ body {
 	background-color: transparent;
 	font-size: 1.3rem;
 	font-weight: 300;
+	text-decoration: none;
 	color: #af6617;
 	cursor: pointer;
 	transition: background-color .3s ease, color .3s ease;
@@ -665,4 +666,9 @@ body {
 	margin-left: 10px;
 	padding: 3px;
 	border: 2px solid #E79E4F;
+}
+
+.empty {
+	padding-top: 20px;
+	padding-bottom: 20px;
 }
