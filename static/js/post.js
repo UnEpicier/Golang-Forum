@@ -1,7 +1,7 @@
 function autoGrow() {
 	var textarea = event.target;
 
-	if (textarea.name = "reason") {
+	if (textarea.name == "reason") {
 		console.log(textarea.style.height)
 		if (parseInt((textarea.style.height).slice(0, -2)) >= 400) {
 			textarea.style.overflow = 'auto'

@@ -74,7 +74,6 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 
 				if r.FormValue("form") == "createcomment" {
 					content := r.FormValue("content")
-					content = strings.Replace(content, "\r\n", "<br/>", -1)
 
 					_, err = db.Exec("INSERT INTO comment (content, creation_date, user_id, post_id) VALUES (?, ?, ?, ?)", content, time.Now(), userID, uuid)
 					if err != nil {
