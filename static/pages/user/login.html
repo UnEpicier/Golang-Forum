@@ -1,0 +1,28 @@
+{{ template "base" . }}
+{{ define "header"}}
+
+<title>Login | Forum</title>
+<link rel="stylesheet" href="/css/user/login.css">
+
+{{ end }}
+
+{{ define "body"}}
+
+<form class="form" method="POST">
+	<i class="icon fas fa-lock"></i>
+	{{ if (ne .Error "")}}
+	<p class="backend_error">{{ .Error }}</p>
+	{{ end }}
+	<input type="email" name="email" placeholder="Email" required />
+	<input type="password" name="passwd" placeholder="Password" required />
+
+	<label for="keep-alive" class="cb">
+		<input type="checkbox" class="checkbox" name="keep-alive" id="keep-alive">
+		Stay connected
+	</label>
+
+	<button>Login</button>
+	<a href="/user/register" class="btn-secondary">Register</a>
+</form>
+
+{{ end }}

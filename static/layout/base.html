@@ -1,0 +1,47 @@
+{{ define "base" }}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<link rel="shortcut icon" type="image/png" href="/assets/favicon.png"/>
+
+	<link rel="stylesheet" href="/css/globals.css">
+	<link rel="stylesheet" href="/css/navbar.css">
+	<script src="https://kit.fontawesome.com/be99fc89f1.js" crossorigin="anonymous"></script>
+	{{ template "header" . }}
+</head>
+
+<body>
+	<div class="nav-toggler" onclick="toggleNav()">
+		<span></span>
+		<span></span>
+		<span></span>
+	</div>
+	<nav class="navbar">
+		<p class="nav-title">Forum</p>
+		<div class="nav-list">
+			<a href="/" class="nav-element">Home</a>
+			<a href="/forum" class="nav-element">Forum</a>
+		</div>
+		<div class="nav-user">
+			{{ if .Logged }}
+			<a href="/user/profile" class="nav-btn primary">Profile</a>
+			<a href="/user/logout" class="nav-btn secondary">Logout</a>
+			{{ else }}
+			<a href="/user/login" class="nav-btn primary">Login</a>
+			<a href="/user/register" class="nav-btn secondary">Register</a>
+			{{ end }}
+		</div>
+	</nav>
+	<script src="/js/navbar.js"></script>
+	{{ template "body" . }}
+</body>
+
+</html>
+
+{{ end }}

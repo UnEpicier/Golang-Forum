@@ -1,0 +1,88 @@
+{{ template "base" . }}
+
+{{ define "header" }}
+
+<title>{{.Content.Category.Name}} | Forum</title>
+<link rel="stylesheet" href="/css/category.css">
+
+{{ end }}
+
+{{ define "body" }}
+
+<h1 class="title">{{.Content.Category.Name}}</h1>
+
+<div class="row">
+	<a href="/forum" class="write">Back</a>
+	{{ if .Logged }}
+	<a href="/write?action=create&category-id={{ .Content.Category.ID }}" class="write">Create a new post</a>
+	{{ end }}
+</div>
+
+<div class="body">
+	<div class="positionfilters">
+		<select class="filters" id="filter" onchange="applyFilters()">
+			{{ if eq .Content.Filter "Latest" }}
+			<option value="Latest" selected>Latest post</option>
+			{{ else }}
+			<option value="Latest">Latest post</option>
+			{{ end }}
+			{{ if eq .Content.Filter "Oldest" }}
+			<option value="Oldest" selected>Oldest post</option>
+			{{ else }}
+			<option value="Oldest">Oldest post</option>
+			{{ end }}
+			{{ if eq .Content.Filter "Most" }}
+			<option value="Most" selected>Most liked post</option>
+			{{ else }}
+			<option value="Most">Most liked post</option>
+			{{ end }}
+			{{ if eq .Content.Filter "Least" }}
+			<option value="Least" selected>Least liked post</option>
+			{{ else }}
+			<option value="Least">Least liked post</option>
+			{{ end }}
+		</select>
+	</div>
+	{{ $length := len .Content.Posts }}
+	{{ if eq $length 0 }}
+	<p class="empty">Any posts yet.</p>
+	{{ else }}
+	{{ range .Content.Posts }}
+	<a class="card" href="/post?id={{ .ID }}">
+		<!-- ADD HREF -->
+		<div class="card-header">
+			<div class="col">
+				<p class="card-title">{{ .Title }}</p>
+				<div class="user row">
+					<img src="{{ .User.ProfilePic }}" class="profilepic">
+					<div class="row">
+						<p class="card-author">{{ .User.Username }}</p>
+						{{ if ne .User.Role "Member" }}
+						<span class="role" id="{{ .User.Role }}">{{.User.Role}}</span>
+						{{ end }}
+					</div>
+				</div>
+			</div>
+			<div class="col">
+				{{ if .Pinned }}
+				<i class="fa-solid fa-thumbtack pinned"></i>
+				{{ end }}
+				<p class="date">{{ .CreationDate }}</p>
+			</div>
+		</div>
+		<div class="row">
+			<div class="votes">
+				<i class="fa-solid fa-heart"></i>
+				<p>{{ .Likes }}</p>
+				<i class="fa-solid fa-heart-crack"></i>
+				<p>{{ .Dislikes }}</p>
+			</div>
+			<p class="comments">Comments: {{ .CommentNB }}</p>
+		</div>
+	</a>
+	{{ end }}
+	{{ end }}
+</div>
+<script src="/js/category.js"></script>
+
+{{ end }}

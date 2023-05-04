@@ -1,0 +1,406 @@
+body {
+	display: flex;
+	justify-content: center;
+	padding-top: 100px;
+}
+
+.hidden {
+	display: none !important;
+}
+
+.pinned {
+	margin-bottom: 10px;
+	transform-origin: center center;
+	transform: rotate(45deg);
+}
+
+.pinned::after {
+	content: "Pinned";
+	position: absolute;
+	top: 50%;
+	left: 0;
+	transform: translate(-90%, 65%) rotate(-45deg);
+	display: none;
+	justify-content: center;
+	align-items: center;
+	padding: 10px;
+	border-radius: 5px;
+	background-color: #000000AA;
+	font-size: .8rem;
+	letter-spacing: 2px;
+	text-align: center;
+	text-transform: capitalize;
+	color: #fff;
+	opacity: 0;
+	cursor: default;
+	transition: opacity .2s ease;
+}
+
+.pinned:hover::after {
+	display: flex;
+	opacity: 1;
+}
+
+.col {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-end;
+}
+
+.container {
+	margin-bottom: 50px;
+	padding: 30px;
+	width: 95%;
+	max-width: 800px;
+	height: max-content;
+	border-radius: 10px;
+	border: 1px solid #A05344;
+	background: #734046;
+}
+
+.topic {
+	margin-bottom: 30px;
+	padding: 20px;
+	border-radius: 10px;
+	background: #321F28;
+}
+
+.title {
+	font-size: 1.6em;
+	color: #E79E4F;
+}
+
+.info {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	align-items: flex-start;
+	margin-bottom: 10px;
+	font-size: 1rem;
+	color: #E79E4F;
+}
+
+.info>.col:first-child {
+	align-items: flex-start;
+}
+
+.report {
+	position: relative;
+	margin-top: 10px;
+	cursor: pointer;
+}
+
+.report::after {
+	content: "Report";
+	position: absolute;
+	top: 50%;
+	left: 0;
+	transform: translate(calc(-100% - 5px), -50%);
+	display: none;
+	justify-content: center;
+	align-items: center;
+	padding: 10px;
+	border-radius: 5px;
+	background-color: #000000AA;
+	font-size: .8rem;
+	letter-spacing: 2px;
+	text-align: center;
+	color: #fff;
+	opacity: 0;
+	cursor: default;
+	transition: opacity .2s ease;
+}
+
+.report:hover::after {
+	display: flex;
+	opacity: 1;
+}
+
+.user {
+	margin-bottom: 5px;
+	display: flex;
+	align-items: center;
+}
+
+.profilepic {
+	margin-right: 10px;
+	width: 30px;
+	height: 30px;
+	border-radius: 50%;
+}
+
+.user>p {
+	line-height: 1.5rem;
+}
+
+.role {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	margin-left: 5px;
+	padding: 3px 5px;
+	border-radius: 3px;
+	font-size: .8rem;
+	color: #fff;
+	user-select: none;
+}
+
+.role#Admin {
+	background-color: #FD5D5D;
+}
+
+.role#Mod {
+	background-color: #FFB72B;
+}
+
+.content {
+	margin: 0 10px;
+	padding-top: 10px;
+	font-size: 1.1rem;
+	color: #eaac69;
+}
+
+.comment {
+	padding: 20px;
+	border-radius: 10px;
+	background: #593747;
+}
+
+.comment:not(:last-child) {
+	margin-bottom: 30px;
+}
+
+.infocmt {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	align-items: center;
+	font-size: 1.1rem;
+	color: #eaac69;
+}
+
+.cmtcontent {
+	margin: 0 10px;
+	padding-top: 10px;
+	font-size: 1rem;
+	color: #ecb478;
+}
+
+.like {
+	color: #E79E4F;
+}
+
+.likecmt {
+	color: #ecb478;
+}
+
+.like>label>i:not(.liked),
+.likecmt>label>i:not(.liked) {
+	filter: grayscale(75%);
+}
+
+.like>label>i.liked,
+.likecmt>label>i.liked {
+	filter: grayscale(0%);
+}
+
+.like,
+.likecmt {
+	display: flex;
+	align-items: center;
+	margin-top: 10px;
+}
+
+.like>input,
+.likecmt>input {
+	display: none;
+}
+
+form.likecmt>*:nth-child(5),
+form.likecmt>*:nth-child(8),
+form.like>*:nth-child(5),
+form.like>*:nth-child(8) {
+	margin-right: 5px;
+}
+
+form.likecmt>*:nth-child(6),
+form.like>*:nth-child(6) {
+	margin-right: 10px;
+}
+
+div.likecmt>*:nth-child(1),
+div.likecmt>*:nth-child(3),
+div.like>*:nth-child(1),
+div.like>*:nth-child(3) {
+	margin-right: 5px;
+}
+
+div.likecmt>*:nth-child(2),
+div.like>*:nth-child(2) {
+	margin-right: 10px;
+}
+
+.like>i,
+.like>label,
+.likecmt>i,
+.likecmt>label {
+	cursor: pointer;
+}
+
+.comment-form {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	padding: 20px;
+	width: 100%;
+	border-radius: 10px;
+	background-color: #593747;
+}
+
+.comment-form>p {
+	margin-bottom: 20px;
+	color: #fff;
+}
+
+.textarea {
+	position: relative;
+	margin-bottom: 20px;
+	padding: 10px;
+	border-radius: 7px;
+	width: 100%;
+	border: none;
+	background-color: rgb(187, 111, 96, .5);
+	font-size: 1.2rem;
+	font-weight: 300;
+	color: #ddd;
+	cursor: text;
+	outline: none;
+	resize: none;
+	overflow: hidden;
+	transition: background-color .3s ease;
+}
+
+.textarea::placeholder {
+	color: #ddd;
+}
+
+.textarea .empty {
+	font-size: 1.2rem;
+}
+
+.submit {
+	align-self: flex-end;
+	padding: 15px;
+	border: 0;
+	border-radius: 5px;
+	background: #E79E4F;
+	font-size: 14px;
+	text-transform: uppercase;
+	text-decoration: none;
+	color: #321F28;
+	outline: 0;
+	transition: background-color .3s ease;
+	cursor: pointer;
+}
+
+.submit:hover {
+	background-color: #eaac69;
+}
+
+.row {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	align-items: center;
+}
+
+@media screen and (max-width: 768px) {
+	.container {
+		padding: 10px;
+	}
+
+	.content,
+	.cmtcontent {
+		margin: 0;
+	}
+}
+
+/* POPUP */
+
+.popup-bg {
+	position: fixed;
+	top: 0;
+	left: 0;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	padding-top: 100px;
+	width: 100%;
+	height: 100%;
+	background-color: rgba(127, 127, 127, 0.5);
+	z-index: 999999;
+}
+
+.popup {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	width: 100%;
+	max-width: 500px;
+	height: max-content;
+	border-radius: 10px;
+	background-color: #734046;
+}
+
+.close {
+	position: absolute;
+	top: 10px;
+	right: 15px;
+	font-size: 1.5rem;
+	cursor: pointer;
+	color: #eee;
+	user-select: none;
+	transition: filter .3s ease;
+}
+
+.close:hover {
+	filter: brightness(1.1);
+}
+
+.pp-header {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	padding: 20px;
+	width: 100%;
+	border-bottom: 1px solid #E79E4F;
+}
+
+.pp-title {
+	font-size: 1.5rem;
+	font-weight: 300;
+	color: #E79E4F;
+	user-select: none;
+}
+
+.pp-body {
+	justify-content: center;
+	padding: 30px;
+}
+
+.popup-bg#report .pp-body {
+	display: flex;
+	flex-direction: column;
+	width: 100%;
+}
+
+.popup-bg#report .pp-body>.submit {
+	align-self: flex-end;
+}
+
+.popup-bg#report .pp-body>.textarea {
+	max-height: 400px;
+}

@@ -1,0 +1,181 @@
+body {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	padding-top: 100px;
+}
+
+.title {
+	margin-bottom: 30px;
+	font-size: 3rem;
+	font-weight: 300;
+	color: #E79E4F;
+}
+
+.write {
+	display: block;
+	margin: 10px 10px 20px;
+	padding: 15px 30px;
+	border-radius: 10px;
+	background-color: #E79E4F;
+	font-size: 1.1rem;
+	font-weight: 300;
+	text-align: center;
+	text-decoration: none;
+	color: #fff;
+	user-select: none;
+}
+
+.body {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	padding: 20px 10px;
+	width: 100%;
+	max-width: 900px;
+	overflow-y: auto;
+}
+
+.positionfilters {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+}
+
+.filters {
+	margin-left: 10px;
+	margin-right: 10px;
+	margin-bottom: 25px;
+	padding: 3px;
+	border-radius: 7px;
+	border: 2px solid #E79E4F;
+	font-size: 19px;
+	outline: none;
+}
+
+.filters div {
+	cursor: pointer;
+	font-size: 10px;
+}
+
+.empty {
+	font-size: 1.3rem;
+	color: #E79E4F;
+}
+
+.pinned {
+	margin-bottom: 10px;
+	transform-origin: center center;
+	transform: rotate(45deg);
+	width: max-content;
+	color: #ccc;
+}
+
+.card {
+	display: flex;
+	flex-direction: column;
+	padding: 20px 40px;
+	width: 90%;
+	border-radius: 10px;
+	background-color: #bb6f60;
+	text-decoration: none;
+}
+
+.card:not(:last-child) {
+	margin-bottom: 30px;
+}
+
+.card-header {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.col {
+	display: flex;
+	flex-direction: column;
+}
+
+.card-header>.col:last-child {
+	align-items: flex-end;
+}
+
+.card-title {
+	font-size: 1.3rem;
+	color: #eee;
+}
+
+.user {
+	margin: 5px 0 10px;
+}
+
+.user.row {
+	align-items: center;
+}
+
+.profilepic {
+	width: 35px;
+	height: 35px;
+	border-radius: 50%;
+}
+
+.profilepic+.row {
+	margin-left: 10px;
+}
+
+.card-author {
+	font-size: 1.1rem;
+	line-height: 1.5rem;
+	color: #ccc;
+}
+
+.role {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	margin-left: 5px;
+	padding: 3px 5px;
+	border-radius: 3px;
+	color: #fff;
+	user-select: none;
+}
+
+.role#Admin {
+	background-color: #FD5D5D;
+}
+
+.role#Mod {
+	background-color: #FFB72B;
+}
+
+.date {
+	font-size: .9rem;
+	color: #ccc;
+}
+
+.row {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+}
+
+.comments {
+	text-align: right;
+	color: #eee;
+}
+
+.votes {
+	display: flex;
+	flex-direction: row;
+	font-size: 1rem;
+	color: #eee;
+}
+
+.votes>*:nth-child(2n+1) {
+	margin-right: 3px;
+}
+
+.votes>*:nth-child(2n):not(:last-child) {
+	margin-right: 10px;
+}

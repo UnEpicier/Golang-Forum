@@ -1,0 +1,302 @@
+{{ template "base" . }}
+
+{{ define "header" }}
+
+<title>Admin | Forum</title>
+<link rel="stylesheet" href="/css/admin/admin.css">
+
+{{ end }}
+
+{{ define "body" }}
+
+<div class="container">
+	<div class="tabs">
+		<a class="tab-btn active" href="#stats" onclick="setTimeout(() => {setupTabs()}, 10);">
+			<i class="fa-solid fa-angle-up"></i>
+			Stats
+			<i class="fa-solid fa-angle-up"></i>
+		</a>
+		<a class="tab-btn" href="#users" onclick="setTimeout(() => {setupTabs()}, 10);">
+			<i class="fa-solid fa-angle-up"></i>
+			Users
+			<i class="fa-solid fa-angle-up"></i>
+		</a>
+		<a class="tab-btn" href="#reports" onclick="setTimeout(() => {setupTabs()}, 10);">
+			<i class="fa-solid fa-angle-up"></i>
+			Reports
+			<i class="fa-solid fa-angle-up"></i>
+		</a>
+	</div>
+
+	<!-- Stats -->
+	<div class="tab" id="stats">
+		<div class="stat">
+			<span class="stat-title" style="margin-bottom: 10px;">Globals</span>
+			<div class="stat-row">
+				<div class="stat-col">
+					<p class="col-title">Users</p>
+					<div class="grid-row">
+						<div class="grid-col">
+							<p class="col-value">Total</p>
+							<p class="col-value">Admins</p>
+							<p class="col-value">Mods</p>
+							<p class="col-value">Members</p>
+						</div>
+						<div class="grid-col">
+							<p class="col-value">{{ .Content.Stats.Users.Total }}</p>
+							<p class="col-value">{{ .Content.Stats.Users.Admins }}</p>
+							<p class="col-value">{{ .Content.Stats.Users.Mods }}</p>
+							<p class="col-value">{{ .Content.Stats.Users.Members }}</p>
+						</div>
+					</div>
+				</div>
+				<div class="stat-col">
+					<p class="col-title">Forum</p>
+					<div class="grid-row">
+						<div class="grid-col">
+							<p class="col-value">Categories</p>
+							<p class="col-value">Posts</p>
+							<p class="col-value">Comments</p>
+							<p class="col-value">&nbsp;</p>
+						</div>
+						<div class="grid-col">
+							<p class="col-value">{{ .Content.Stats.Forum.Categories }}</p>
+							<p class="col-value">{{ .Content.Stats.Forum.Posts }}</p>
+							<p class="col-value">{{ .Content.Stats.Forum.Comments }}</p>
+							<p class="col-value">&nbsp;</p>
+						</div>
+					</div>
+
+				</div>
+			</div>
+		</div>
+		<div class="stat">
+			<span class="stat-title">Users Inscription</span>
+			<canvas id="inscrChart"></canvas>
+		</div>
+		<div class="stat">
+			<span class="stat-title">Categories</span>
+			<canvas id="categoriesChart"></canvas>
+		</div>
+		<div class="stat">
+			<span class="stat-title">Categories Activity</span>
+			<canvas id="catActChart"></canvas>
+		</div>
+	</div>
+
+	<!-- User -->
+	<div class="tab hidden" id="users">
+		<div class="tab-header">
+			<div class="search-group">
+				<input type="text" class="search-input" id="searchbar" placeholder="Search by username"
+					oninput="search()">
+				<button class="search-btn">
+					<i class="fa fa-search"></i>
+				</button>
+			</div>
+		</div>
+		<div class="users">
+			{{ range .Content.Users }}
+			<div class="card card-user">
+				<div class="card-header">
+					<div class="col">
+						<div class="username">
+							<p class="name">{{ .Username }}</p>
+							<p class="role" id="{{ .Role }}">{{ .Role }}</p>
+						</div>
+						<p class="email">{{ .Email }}</p>
+						<div class="row">
+							<p class="date">Creation Date:<br />{{ .CreationDate }}</p>
+							<p class="date">Last Seen:<br />{{ .LastSeen }}</p>
+						</div>
+						{{ if ne .Role "Admin" }}
+						<div class="selectRole">
+							<select class="role-select" onchange="promoteUser()" data-id="{{ .ID  }}">
+								<option value="Member" {{ if eq .Role "Member" }}selected{{ end }}>Member</option>
+								<option value="Moderator" {{ if eq .Role "Moderator" }}selected{{ end }}>Moderator
+								</option>
+								<option value="Admin" {{ if eq .Role "Admin" }}selected{{ end }}>Admin</option>
+							</select>
+						</div>
+						{{ end }}
+					</div>
+				</div>
+				{{ if ne .Biography "" }}
+				<p class="bio">{{ .Biography }}</p>
+				{{ end }}
+				<div class="action">
+					{{ if ne .Role "Admin" }}
+					<a href="/admin/profile?id={{ .ID }}" class="nav-btn primary">Edit</a>
+					<a href="/admin/delete?id={{ .ID }}&type=user" class="nav-btn primary">Delete</a>
+					{{ end }}
+					<button class="nav-btn primary" onclick="showPopup('viewpost-popup{{ .ID }}')">View posts</button>
+					<button class="nav-btn primary" onclick="showPopup('viewpost-popup{{ .ID }}')">View
+						comments</button>
+				</div>
+			</div>
+			<div class="popup-bg hidden" id="viewpost-popup{{ .ID }}">
+				<div class="popup">
+					<i class="fa-solid fa-times close" onclick="hidePopup('viewpost-popup{{ .ID }}')"></i>
+					<div class="pp-header">
+						<p class="pp-title">
+							{{ .Username }}'s Post(s)
+						</p>
+					</div>
+					<div class="postcontainer">
+						{{ $length :=len .Posts }}
+						{{ if eq $length 0 }}
+						<p class="empty">Any posts yet.</p>
+						{{ else }}
+						{{ range .Posts }}
+						<div class="card">
+							<div class="row">
+								<div class="col">
+									<p class="card-title">titre</p>
+									<p class="date">date</p>
+									<p class="content">contenu</p>
+								</div>
+								<div class="col">
+									<p class="card-category">category</p>
+									<a class="action-btn" href="/delete?type=post&id={{ .ID }}">
+										<i class="fa-solid fa-trash-can card-icon"></i>
+									</a>
+									<a class="action-btn" href="/write?action=edit&id={{ .ID }}">
+										<i class="fa-solid fa-pen card-icon"></i>
+									</a>
+								</div>
+							</div>
+							<a href="/post?id={{ .ID }}" class="card-btn nav-btn">View post</a>
+						</div>
+						{{ end }}
+						{{ end }}
+					</div>
+				</div>
+			</div>
+			{{ end }}
+		</div>
+	</div>
+
+	<!-- Reports -->
+	<div class="tab hidden" id="reports">
+		<div class="list">
+			<div class="header">
+				<p class="title">Users</p>
+			</div>
+
+			<div class="body">
+				{{ $length := len .Content.Reports.Users }}
+				{{ if eq $length 0 }}
+				<p class="empty">Any users reported.</p>
+				{{ else }}
+				{{ range $report := .Content.Reports.Users }}
+				<div class="card">
+					<div class="card-header">
+						<div class="username">
+							<p class="card-title">{{ .User.Username }}</p>
+							{{ if ne .User.Role "Member" }}
+							<p class="role" id="{{ .User.Role }}">{{ .User.Role }}</p>
+							{{ end }}
+						</div>
+						<div class="card-body">
+							{{ .Reason }}
+						</div>
+					</div>
+					{{ end }}
+					{{ end }}
+				</div>
+			</div>
+			<div class="list">
+				<div class="header">
+					<p class="title">Posts</p>
+				</div>
+
+				<div class="body">
+					{{ $length := len .Content.Reports.Posts }}
+					{{ if eq $length 0 }}
+					<p class="empty">Any posts reported.</p>
+					{{ else }}
+					{{ range $report := .Content.Reports.Posts }}
+					<div class="card">
+						<div class="card-header">
+							<p class="card-title">{{ .Post.Title }}</p>
+							<div class="username">
+								<p class="name">{{ .User.Username }}</p>
+								{{ if ne .User.Role "Member" }}
+								<p class="role" id="{{ .User.Role }}">{{ .User.Role }}</p>
+								{{ end }}
+							</div>
+						</div>
+						<div class="card-body">
+							{{ .Reason }}
+						</div>
+					</div>
+					{{ end }}
+					{{ end }}
+				</div>
+			</div>
+			<div class="list">
+				<div class="header">
+					<p class="title">Comments</p>
+				</div>
+
+				<div class="body">
+					{{ $length := len .Content.Reports.Comments }}
+					{{ if eq $length 0 }}
+					<p class="empty">Any comments reported.</p>
+					{{ else }}
+					{{ range $report := .Content.Reports.Comments }}
+					<div class="card">
+						<div class="card-header">
+							<p class="card-title">{{ .Post.Title }}</p>
+							<div class="username">
+								<p class="name">{{ .User.Username }}</p>
+								{{ if ne .User.Role "Member" }}
+								<p class="role" id="{{ .User.Role }}">{{ .User.Role }}</p>
+								{{ end }}
+							</div>
+						</div>
+						<div class="card-body">
+							{{ .Reason }}
+						</div>
+					</div>
+					{{ end }}
+					{{ end }}
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- DATA -->
+<div id="data" class="hidden">
+	<div>
+		{{ range .Content.Stats.Categories }}
+		<div class="data-category">
+			<p>{{ .Name }}</p>
+			<p>{{ .Count }}</p>
+		</div>
+		{{ end }}
+	</div>
+	<div>
+		{{ range .Content.Stats.CatActivities }}
+		<div class="data-catactivities">
+			<p>{{ .Name }}</p>
+			<p>{{ .Activity }}</p>
+		</div>
+		{{ end }}
+	</div>
+	<div>
+		{{ range .Content.Stats.Inscriptions }}
+		<div class="data-inscription">
+			<p>{{ .Month }}</p>
+			<p>{{ .Count }}</p>
+		</div>
+		{{ end }}
+	</div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/chart.min.js"></script>
+<script src="/js/user/profile.js"></script>
+<script src="/js/admin.js"></script>
+
+{{ end }}

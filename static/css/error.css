@@ -1,0 +1,27 @@
+body {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+}
+
+.title {
+	font-size: 3rem;
+	font-weight: 300;
+	color: #E79E4F;
+}
+
+.text {
+	margin: 1.5rem 0;
+	font-size: 1.2rem;
+	color: #A05344;
+}
+
+.btn {
+	display: block;
+	padding: 18px 30px;
+	border-radius: 10px;
+	background-color: #A05344;
+	text-decoration: none;
+	color: #E79E4F;
+}

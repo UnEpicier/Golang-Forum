@@ -1,0 +1,189 @@
+{{ template "base" . }}
+{{ define "header" }}
+
+<title>{{.Content.Post.Title}} | Forum</title>
+<link rel="stylesheet" href="/css/post.css">
+
+{{ end }}
+
+{{ define "body" }}
+
+<div class="container">
+	<div class="topic">
+		<div class="info">
+			<div class="col">
+				<div class="title">{{.Content.Post.Title}}</div>
+				<div class="user">
+					<img src="{{ .Content.Post.User.ProfilePic }}" class="profilepic">
+					<p>{{.Content.Post.User.Username}}</p>
+					{{ if ne .Content.Post.User.Role "Member" }}
+					<span class="role" id="{{ .Content.Post.User.Role }}">{{ .Content.Post.User.Role }}</span>
+					{{ end }}
+				</div>
+			</div>
+			<div class="col">
+				<p>{{.Content.Post.CreationDate}}</p>
+				{{ if or (eq .Content.Post.User.Role "Admin") (eq .Content.Post.User.Role "Moderator") }}
+				<i class="fa-solid fa-circle-exclamation report" onclick="showReportPopup('post')"
+					data-id="{{ .Content.Post.ID }}" data-uid="{{ .Content.Post.User.ID }}"></i>
+				{{ end }}
+			</div>
+		</div>
+		{{ if .Logged }}
+		<form method="POST" class="like">
+			<input type="hidden" name="form" value="like">
+			<input type="hidden" name="type" value="post">
+			<input type="hidden" name="id" value="{{ .Content.Post.ID }}">
+			{{ if eq .Content.Post.Vote "like"}}
+			<input type="radio" id="like{{ .Content.Post.ID }}" name="like" checked>
+			<label for="like{{ .Content.Post.ID }}" onclick="unselectRadio()">
+				<i class="fa-solid fa-heart liked"></i>
+			</label>
+			{{ else }}
+			<input type="radio" id="like{{ .Content.Post.ID }}" name="like">
+			<label for="like{{ .Content.Post.ID }}" onclick="unselectRadio()">
+				<i class="fa-solid fa-heart"></i>
+			</label>
+			{{ end }}
+			<p>{{ .Content.Post.Likes }}</p>
+			{{ if eq .Content.Post.Vote "dislike"}}
+			<input type="radio" id="dislike{{ .Content.Post.ID }}" name="dislike" checked>
+			<label for="dislike{{ .Content.Post.ID }}" onclick="unselectRadio()">
+				<i class="fa-solid fa-heart-crack liked"></i>
+			</label>
+			{{ else }}
+			<input type="radio" id="dislike{{ .Content.Post.ID }}" name="dislike">
+			<label for="dislike{{ .Content.Post.ID }}" onclick="unselectRadio()">
+				<i class="fa-solid fa-heart-crack"></i>
+			</label>
+			{{ end }}
+			<p>{{ .Content.Post.Dislikes }}</p>
+		</form>
+		{{ else }}
+		<div class="like">
+			<i class="fa-solid fa-heart" onclick="showLoggedPopup()"></i>
+			<p>{{ .Content.Post.Likes }}</p>
+			<i class="fa-solid fa-heart-crack" onclick="showLoggedPopup()"></i></i>
+			<p>{{ .Content.Post.Dislikes }}</p>
+		</div>
+		{{ end }}
+		<div class="content">{{.Content.Post.Content}}</div>
+	</div>
+	{{ $postid := .Content.Post.ID }}
+	{{ $userid := .Content.Post.User.ID }}
+	{{ $len := len .Content.Comments }}
+	{{ $logged := .Logged }}
+	{{ if gt $len 0 }}
+	{{ range $i, $comment := .Content.Comments }}
+	<div class="comment">
+		<div class="infocmt">
+			<div class="user">
+				<img src="{{ .User.ProfilePic }}" class="profilepic">
+				<p>{{ .User.Username }}</p>
+				{{ if ne .User.Role "Member" }}
+				<span class="role" id="{{ .User.Role }}">{{ .User.Role }}</span>
+				{{ end }}
+			</div>
+			<div class="col">
+				{{ if .Pinned }}
+				<i class="fa-solid fa-thumbtack pinned"></i>
+				{{ end }}
+				{{ .CreationDate }}
+				{{if or (eq .User.Role "Admin") (eq .User.Role "Moderator") }}
+				<i class="fa-solid fa-circle-exclamation report" onclick="showReportPopup('post')"
+					data-id="{{ $postid }}" data-uid="{{ $userid }}"></i>
+				{{end}}
+			</div>
+		</div>
+		{{ if $logged }}
+		<form class="likecmt" method="POST">
+			<input type="hidden" name="form" value="like">
+			<input type="hidden" name="type" value="comment">
+			<input type="hidden" name="id" value="{{ .ID }}">
+			{{ if eq .Vote "like"}}
+			<input type="radio" id="like{{ .ID }}" name="like" checked>
+			<label for="like{{ .ID }}" onclick="unselectRadio()">
+				<i class="fa-solid fa-heart liked"></i>
+			</label>
+			{{ else }}
+			<input type="radio" id="like{{ .ID }}" name="like">
+			<label for="like{{ .ID }}" onclick="unselectRadio()">
+				<i class="fa-solid fa-heart"></i>
+			</label>
+			{{ end }}
+			<p>{{ .Likes }}</p>
+			{{ if eq .Vote "dislike"}}
+			<input type="radio" id="dislike{{ .ID }}" name="dislike" checked>
+			<label for="dislike{{ .ID }}" onclick="unselectRadio()">
+				<i class="fa-solid fa-heart-crack liked"></i>
+			</label>
+			{{ else }}
+			<input type="radio" id="dislike{{ .ID }}" name="dislike">
+			<label for="dislike{{ .ID }}" onclick="unselectRadio()">
+				<i class="fa-solid fa-heart-crack"></i>
+			</label>
+			{{ end }}
+			<p>{{.Dislikes }}</p>
+		</form>
+		{{ else }}
+		<div class="likecmt">
+			<i class="fa-solid fa-heart" onclick="showLoggedPopup()"></i></i>
+			<p>{{ .Likes }}</p>
+			<i class="fa-solid fa-heart-crack" onclick="showLoggedPopup()"></i>
+			<p>{{ .Dislikes }}</p>
+		</div>
+		{{ end }}
+		<p class="cmtcontent">{{ .Content }}</p>
+	</div>
+	{{ end }}
+	{{ end }}
+	{{ if .Logged }}
+	<form method="POST" class="comment-form">
+		<textarea name="content" id="comment-textarea" class="textarea" placeholder="Write a comment..."
+			oninput="autoGrow()"></textarea>
+		<input type="hidden" name="form" value="createcomment">
+		<button type="submit" class="submit">Comment</button>
+	</form>
+	{{ else }}
+	<div class="comment-form">
+		<p>You must be logged in to comment.</p>
+		<div class="row">
+			<a href="/user/login" class="nav-btn primary">Login</a>
+			<a href="/user/register" class="nav-btn secondary">Sign in</a>
+		</div>
+	</div>
+	{{ end }}
+</div>
+
+<div class="popup-bg hidden" id="logged">
+	<div class="popup">
+		<i class="fa-solid fa-times close" onclick="closeLoggedPopup()"></i>
+		<div class="pp-header">
+			<p class="pp-subtitle">You need to be logged in to like or dislike.</p>
+		</div>
+		<div class="row pp-body">
+			<a href="/user/login" class="nav-btn primary">Login</a>
+			<a href="/user/register" class="nav-btn secondary">Register</a>
+		</div>
+	</div>
+</div>
+
+<div class="popup-bg hidden" id="report">
+	<div class="popup">
+		<i class="fa-solid fa-times close" onclick="closePopup()"></i>
+		<div class="pp-header">
+			<p class="pp-title" id="report-title">Report this</p>
+		</div>
+		<form class="pp-body" id="report-form" method="POST">
+			<textarea name="reason" class="textarea" id="report-textarea" oninput="autoGrow()"
+				placeholder="Reason..."></textarea>
+			<input type="hidden" name="form" value="report">
+			<button type="submit" class="submit">Report</button>
+		</form>
+	</div>
+</div>
+
+
+<script src="/js/post.js"></script>
+
+{{ end }}

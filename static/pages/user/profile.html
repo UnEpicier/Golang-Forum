@@ -1,0 +1,191 @@
+{{ template "base" . }}
+{{ define "header"}}
+
+<title>Profile | Forum</title>
+<link rel="stylesheet" href="/css/user/profile.css">
+
+{{ end }}
+
+{{ define "body"}}
+
+<div class="profile">
+	<div class="tabs">
+		<a class="tab-btn active" href="#profile" onclick="setTimeout(() => {setupTabs()}, 10);">
+			<i class="fa-solid fa-angle-up"></i>
+			Profile
+			<i class="fa-solid fa-angle-up"></i>
+		</a>
+		<a class="tab-btn" href="#settings" onclick="setTimeout(() => {setupTabs()}, 10);">
+			<i class="fa-solid fa-angle-up"></i>
+			Settings
+			<i class="fa-solid fa-angle-up"></i>
+		</a>
+	</div>
+
+	<!-- Profile -->
+	<div class="tab" id="profile">
+		<div class="infos">
+			<div class="col">
+				<div class="row">
+					<div class="pic">
+						<img src="{{ .Content.ProfilePic }}" class="profilepic">
+						<form class="inputGroup" method="POST" enctype="multipart/form-data">
+							<input type="file" oninput="sendPic()" name="pic" accept="image/png, image/jpeg, image/gif">
+							<input type="hidden" name="form" value="profilepic">
+							<i class="fa-solid fa-user-pen pic-icon"></i>
+						</form>
+					</div>
+					<div class="col">
+						<div class="row">
+							<p class="username">{{ .Content.Username }}</p>
+							{{ if ne .Content.Role "Member" }}
+							<span class="role" id="{{ .Content.Role }}">{{ .Content.Role }}</span>
+							{{ end }}
+						</div>
+						<p class="email">{{ .Content.Email }}</p>
+					</div>
+				</div>
+				<p class="joined">Joined at: {{ .Content.CreationDate }}</p>
+			</div>
+			<div class="redirect">
+				{{ if eq .Content.Role "Admin" }}
+				<a href="/admin" class="btn logout">Admin</a>
+				{{ end }}
+				<a href="/user/logout" class="btn logout">Logout</a>
+			</div>
+		</div>
+		<div style="position: relative;">
+			<textarea class="desc" onfocusout="sendBio();" id="bio" placeholder="No biography"
+				oninput="autoGrow()">{{ .Content.Biography }}</textarea>
+			<i class="fa-solid fa-pen pen" onclick="document.getElementById('bio').focus()"></i>
+		</div>
+
+		<div class="container">
+			<div class="header">
+				<p class="subtitle">Posts</p>
+			</div>
+
+			<div class="body">
+				{{ $length := len .Content.Posts }}
+				{{ if eq $length 0 }}
+				<p class="empty">Any posts yet.</p>
+				{{ else }}
+				{{ range .Content.Posts }}
+				<div class="card">
+					<div class="row">
+						<div class="col">
+							<p class="card-title">{{ .Title }}</p>
+							<p class="date">{{ .CreationDate }}</p>
+							<p class="content">{{ .Content }}</p>
+						</div>
+						<div class="col">
+							<p class="card-category">{{ .Category.Name }}</p>
+							<a class="action-btn" href="/delete?type=post&id={{ .ID }}">
+								<i class="fa-solid fa-trash-can card-icon"></i>
+							</a>
+							<a class="action-btn" href="/write?action=edit&id={{ .ID }}">
+								<i class="fa-solid fa-pen card-icon"></i>
+							</a>
+						</div>
+					</div>
+					<a href="/post?id={{ .ID }}" class="card-btn nav-btn">View post</a>
+				</div>
+				{{ end }}
+				{{ end }}
+			</div>
+		</div>
+
+		<div class="container">
+			<div class="header">
+				<p class="subtitle">Comments</p>
+			</div>
+
+			<div class="body">
+				{{ $length := len .Content.Comments }}
+				{{ if eq $length 0 }}
+				<p class="empty">Any comments yet.</p>
+				{{ else }}
+				{{ range .Content.Comments }}
+				<div class="card">
+					<div class="row">
+						<div class="col">
+							<p class="card-category">Post: {{ .PostID.Title }}</p>
+							<p class="content">{{ .Content }}</p>
+						</div>
+						<div class="col">
+							<p class="date">{{ .CreationDate }}</p>
+							<a class="action-btn" href="/delete?type=comment&id={{ .ID }}">
+								<i class="fa-solid fa-trash-can card-icon"></i>
+							</a>
+							<a class="action-btn" href="/post?id={{ .PostID.ID }}">
+								<i class="fa-solid fa-pen card-icon"></i>
+							</a>
+						</div>
+					</div>
+					<a href="/post?id={{ .PostID.ID }}#comment-{{ .ID }}" class="card-btn nav-btn">View post</a>
+				</div>
+				{{ end }}
+				{{ end }}
+			</div>
+		</div>
+
+	</div>
+
+	<!-- Settings -->
+	<div class="tab hidden" id="settings">
+		<p class="title">Settings</p>
+		<form method="POST" class="row">
+			<p class="subtitle">Change Username</p>
+			<p class="error hidden" id="username"></p>
+			<input type="text" name="username" class="input" placeholder="Current username" required>
+			<input type="text" name="newusername" class="input" placeholder="New username" required>
+			<input type="password" name="passwd" class="input" placeholder="Type your password" required>
+			<input type="hidden" name="form" value="username">
+			<input type="submit" class="btn" value="Save">
+		</form>
+		<div class="sep"></div>
+		<form method="POST" class="row">
+			<p class="subtitle">Change Email</p>
+			<p class="error hidden" id="email"></p>
+			<input type="email" name="oldemail" class="input" placeholder="Current email" required>
+			<input type="email" name="newemail" class="input" placeholder="New email" required>
+			<input type="email" name="confemail" class="input" placeholder="Confirm new email" required>
+			<input type="password" name="passwd" class="input" placeholder="Type your password" required>
+			<input type="hidden" name="form" value="email">
+			<input type="submit" class="btn" value="Save">
+		</form>
+		<div class="sep"></div>
+		<form method="POST" name="password" class="row">
+			<p class="subtitle">Change Password</p>
+			<p class="error hidden" id="password"></p>
+			<input type="password" name="oldpswd" class="input" placeholder="Current password" required>
+			<input type="password" name="newpswd" class="input" placeholder="New password" required>
+			<input type="password" name="confpswd" class="input" placeholder="Confirm password" required>
+			<input type="hidden" name="form" value="password">
+			<input type="submit" class="btn" value="Save">
+		</form>
+		<p class="danger" data-text="Danger Zone"></p>
+		<button class="btn" type="button" onclick="showPopup('delete-popup');">Delete Account</button>
+	</div>
+</div>
+
+<div class="popup-bg hidden" id="delete-popup">
+	<div class="popup">
+		<i class="fa-solid fa-times close" onclick="hidePopup('delete-popup')"></i>
+		<div class="pp-header">
+			<p class="pp-title">Delete Account</p>
+			<p class="pp-subtitle">Are you sure you want to delete your account?</p>
+		</div>
+		<form method="POST" name="delete" class="row pp-body">
+			<input type="password" name="passwd" class="input" placeholder="Type your password" required>
+			<input type="hidden" name="form" value="delete">
+			<input type="submit" class="btn" value="Delete">
+		</form>
+	</div>
+</div>
+
+<span id="error" class="hidden">{{ .Error }}</span>
+
+<script src="/js/user/profile.js"></script>
+
+{{ end }}
